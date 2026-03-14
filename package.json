@@ -1,0 +1,73 @@
+{
+  "name": "mouse-animations",
+  "version": "0.1.0",
+  "description": "Seven cursor and mouse effects in one tiny TypeScript library. No dependencies, no framework lock-in, full lifecycle control — with an optional jQuery plugin included.",
+  "type": "module",
+  "main": "./dist/mouse-animations.cjs",
+  "module": "./dist/mouse-animations.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./dist/mouse-animations.js",
+      "require": "./dist/mouse-animations.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./jquery": {
+      "import": "./dist/mouse-animations.jquery.js",
+      "require": "./dist/mouse-animations.jquery.cjs",
+      "types": "./dist/jquery.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite playground",
+    "build": "tsc && vite build",
+    "build:playground": "vite build playground --outDir ../dist-playground",
+    "preview": "vite preview playground"
+  },
+  "devDependencies": {
+    "@types/jquery": "^4.0.0",
+    "@types/node": "^25.5.0",
+    "typescript": "^5.4.0",
+    "vite": "^8.0.0",
+    "vite-plugin-dts": "^4.5.4"
+  },
+  "keywords": [
+    "mouse",
+    "animation",
+    "cursor-effects",
+    "mouse-effects",
+    "cursor-animation",
+    "mouse-animation",
+    "effects",
+    "cursor",
+    "trail",
+    "ripple",
+    "particles",
+    "magnetic",
+    "parallax",
+    "tilt",
+    "typescript",
+    "jquery"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tgomilar/mouse-animations"
+  },
+  "homepage": "https://tgomilar.github.io/mouse-animations/",
+  "bugs": {
+    "url": "https://github.com/tgomilar/mouse-animations/issues"
+  },
+  "peerDependencies": {
+    "jquery": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "jquery": {
+      "optional": true
+    }
+  }
+}
