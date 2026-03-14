@@ -51,7 +51,10 @@
     "parallax",
     "tilt",
     "typescript",
-    "jquery"
+    "jquery",
+    "jquery-plugin",
+    "plugin",
+    "library"
   ],
   "license": "MIT",
   "repository": {
