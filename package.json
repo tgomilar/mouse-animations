@@ -1,6 +1,6 @@
 {
   "name": "mouse-animations",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Seven cursor and mouse effects in one tiny TypeScript library. No dependencies, no framework lock-in, full lifecycle control — with an optional jQuery plugin included.",
   "type": "module",
   "main": "./dist/mouse-animations.cjs",
