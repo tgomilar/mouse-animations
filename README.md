@@ -1,6 +1,7 @@
 # mouse-animations
 
-A lightweight, framework-agnostic TypeScript library for cursor and mouse effects. Zero dependencies. Under 5 kB gzipped.
+A lightweight, framework-agnostic JavaScript library for cursor and mouse effects. Zero dependencies. Under 5 kB gzipped. Fully typed TypeScript support.
+
 Seven cursor and mouse effects in one tiny library. No dependencies, no framework lock-in, full lifecycle control.
 Optional jQuery plugin included.
 
@@ -24,8 +25,18 @@ Optional jQuery plugin included.
 
 ## Installation
 
+**npm**
+
 ```bash
 npm install mouse-animations
+```
+
+**CDN (no build step)**
+
+```html
+<script type="module">
+  import { Trail } from "https://cdn.jsdelivr.net/npm/mouse-animations/+esm";
+</script>
 ```
 
 ---
