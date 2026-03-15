@@ -33,18 +33,25 @@ export default defineConfig({
         'mouse-animations':        resolve(__dirname, 'src/index.ts'),
         'mouse-animations.jquery': resolve(__dirname, 'src/jquery.ts'),
       },
-      formats: ['es', 'cjs'],
-      fileName: (format, entryName) =>
-        `${entryName}.${format === 'es' ? 'js' : 'cjs'}`,
     },
     rolldownOptions: {
       external: ['jquery'],
-      output: {
-        exports: 'named',
-        globals: { jquery: 'jQuery' },
-        // Stable chunk name without content hash
-        chunkFileNames: (chunk) => `${chunk.name}.js`,
-      },
+      output: [
+        {
+          format: 'es',
+          exports: 'named',
+          globals: { jquery: 'jQuery' },
+          entryFileNames: '[name].js',
+          chunkFileNames: '[name].js',
+        },
+        {
+          format: 'cjs',
+          exports: 'named',
+          globals: { jquery: 'jQuery' },
+          entryFileNames: '[name].cjs',
+          chunkFileNames: '[name].cjs',
+        },
+      ],
     },
   },
 });
