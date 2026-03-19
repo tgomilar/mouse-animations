@@ -86,3 +86,20 @@ export interface TiltOptions {
   /** Show a glare highlight overlay. Default: false */
   glare?: boolean;
 }
+
+export interface ImageCursorOptions {
+  /** Image URL or inline SVG string (starting with '<svg') to use as cursor */
+  src: string;
+  /** Cursor element width in px. Default: 32 */
+  width?: number;
+  /** Cursor element height in px. Default: 32 */
+  height?: number;
+  /** Horizontal offset from cursor position in px. Default: 0 */
+  offsetX?: number;
+  /** Vertical offset from cursor position in px. Default: 0 */
+  offsetY?: number;
+  /** Lerp smoothness factor (0–1). 1 = instant snap, lower = lag. Default: 1 */
+  smoothness?: number;
+  /** Hide the native cursor. Default: true */
+  hideDefault?: boolean;
+}

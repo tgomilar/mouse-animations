@@ -474,6 +474,45 @@
         color: #475569;
       }
 
+      /* ── Preset buttons (image-cursor) ── */
+      .preset-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .preset-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        border: 2px solid var(--border-hi);
+        background: var(--surface2);
+        color: var(--text);
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          border-color 0.15s,
+          background 0.15s,
+          transform 0.15s;
+        padding: 0;
+        line-height: 1;
+        font-family: var(--font);
+      }
+
+      .preset-btn:hover {
+        border-color: var(--accent);
+        background: rgba(167, 139, 250, 0.08);
+      }
+
+      .preset-btn.on {
+        border-color: var(--accent);
+        background: rgba(167, 139, 250, 0.15);
+        transform: scale(1.1);
+      }
+
       /* ── Footer ── */
       footer {
         margin-top: 80px;
@@ -566,7 +605,7 @@
         <p>
           A lightweight, framework-agnostic JavaScript library for cursor and mouse effects: <a href="#card-trail">trail</a>, <a href="#card-ripple">ripple</a>,
           <a href="#card-cursor">custom cursor</a>, <a href="#card-magnetic">magnetic</a>, <a href="#card-particles">particles</a>,
-          <a href="#card-parallax">parallax</a>, and <a href="#card-tilt">tilt</a>. <br />
+          <a href="#card-parallax">parallax</a>, <a href="#card-tilt">tilt</a>, and <a href="#card-image-cursor">image cursor</a>. <br />
           TypeScript support with full type definitions.<br />
           Also available as a <a href="#card-jquery">jQuery plugin</a>.
         </p>
@@ -994,6 +1033,47 @@
             <div class="code-wrap">
               <div class="code-label">Usage</div>
               <pre><code id="code-tilt"></code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── IMAGE CURSOR ── -->
+        <section class="card" id="card-image-cursor">
+          <div class="card-head">
+            <div>
+              <h2>Image Cursor</h2>
+              <p>Replaces the native cursor with a custom image or inline SVG that follows the mouse.</p>
+              <p>Move your mouse anywhere on the page</p>
+            </div>
+            <button class="toggle" id="btn-image-cursor">Enable</button>
+          </div>
+          <div class="card-foot">
+            <div class="controls">
+              <div class="ctrl">
+                <label>Preset</label>
+                <div class="preset-row" id="imgcursor-presets">
+                  <button class="preset-btn on" data-preset="star" title="Star">★</button>
+                  <button class="preset-btn" data-preset="arrow" title="Arrow">↖</button>
+                  <button class="preset-btn" data-preset="crosshair" title="Crosshair">⊕</button>
+                  <button class="preset-btn" data-preset="heart" title="Heart">♥</button>
+                </div>
+              </div>
+              <div class="ctrl">
+                <label>Width <output id="imgcursor-width-val">32</output> px</label>
+                <input type="range" id="imgcursor-width" min="16" max="80" value="32" />
+              </div>
+              <div class="ctrl">
+                <label>Height <output id="imgcursor-height-val">32</output> px</label>
+                <input type="range" id="imgcursor-height" min="16" max="80" value="32" />
+              </div>
+              <div class="ctrl">
+                <label>Smoothness <output id="imgcursor-smooth-val">1.00</output></label>
+                <input type="range" id="imgcursor-smooth" min="5" max="100" value="100" />
+              </div>
+            </div>
+            <div class="code-wrap">
+              <div class="code-label">Usage</div>
+              <pre><code id="code-image-cursor"></code></pre>
             </div>
           </div>
         </section>

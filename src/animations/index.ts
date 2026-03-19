@@ -5,3 +5,4 @@ export { Magnetic } from './magnetic';
 export { Particles } from './particles';
 export { Parallax } from './parallax';
 export { Tilt } from './tilt';
+export { ImageCursor } from './image-cursor';

@@ -7,6 +7,7 @@ export type {
   ParticlesOptions,
   ParallaxOptions,
   TiltOptions,
+  ImageCursorOptions,
 } from './core/types';
 
 export { Trail } from './animations/trail';
@@ -16,3 +17,4 @@ export { Magnetic } from './animations/magnetic';
 export { Particles } from './animations/particles';
 export { Parallax } from './animations/parallax';
 export { Tilt } from './animations/tilt';
+export { ImageCursor } from './animations/image-cursor';
