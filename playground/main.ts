@@ -1,4 +1,4 @@
-import { Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax, Tilt } from 'mouse-animations';
+import { Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax, Tilt, ImageCursor } from 'mouse-animations';
 
 // ─── Utils ────────────────────────────────────────────────────────────────────
 
@@ -535,6 +535,77 @@ function setCardActive(buttonId: string, cardId: string, active: boolean): void 
     } else {
       instance = new Tilt(getOpts());
       setCardActive('btn-tilt', 'card-tilt', true);
+    }
+  });
+}
+
+// ─── Image Cursor ─────────────────────────────────────────────────────────────
+
+{
+  let instance: ImageCursor | null = null;
+
+  const PRESETS: Record<string, string> = {
+    star:      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><polygon points="16,2 20,12 30,12 22,19 25,30 16,24 7,30 10,19 2,12 12,12" fill="#fbbf24" stroke="#f59e0b" stroke-width="1"/></svg>`,
+    arrow:     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M4 2L4 26L10 20L16 30L20 28L14 18L22 18Z" fill="#a78bfa" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round"/></svg>`,
+    crosshair: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="12" fill="none" stroke="#60a5fa" stroke-width="2"/><line x1="16" y1="2" x2="16" y2="10" stroke="#60a5fa" stroke-width="2"/><line x1="16" y1="22" x2="16" y2="30" stroke="#60a5fa" stroke-width="2"/><line x1="2" y1="16" x2="10" y2="16" stroke="#60a5fa" stroke-width="2"/><line x1="22" y1="16" x2="30" y2="16" stroke="#60a5fa" stroke-width="2"/><circle cx="16" cy="16" r="2" fill="#60a5fa"/></svg>`,
+    heart:     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M16 28C16 28 4 20 4 11C4 7 7 4 11 4C13.5 4 15.5 5.5 16 7C16.5 5.5 18.5 4 21 4C25 4 28 7 28 11C28 20 16 28 16 28Z" fill="#f43f5e" stroke="#be123c" stroke-width="1"/></svg>`,
+  };
+
+  let activePreset = 'star';
+
+  function getOpts() {
+    return {
+      src:        PRESETS[activePreset]!,
+      width:      +getInput('imgcursor-width').value,
+      height:     +getInput('imgcursor-height').value,
+      smoothness: +(+getInput('imgcursor-smooth').value / 100).toFixed(2),
+    };
+  }
+
+  function refresh(): void {
+    const opts = getOpts();
+    // Show abbreviated src in the snippet so it stays readable
+    renderCode('code-image-cursor', 'ImageCursor', { ...opts, src: '<svg ...>' });
+    if (instance) { instance.destroy(); instance = new ImageCursor(opts); }
+  }
+
+  renderCode('code-image-cursor', 'ImageCursor', { ...getOpts(), src: '<svg ...>' });
+
+  document.querySelectorAll<HTMLElement>('#imgcursor-presets .preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll<HTMLElement>('#imgcursor-presets .preset-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      activePreset = btn.dataset['preset']!;
+      refresh();
+    });
+  });
+
+  getInput('imgcursor-width').addEventListener('input', event => {
+    const value = +(event.target as HTMLInputElement).value;
+    getOutput('imgcursor-width-val').value = String(value);
+    refresh();
+  });
+
+  getInput('imgcursor-height').addEventListener('input', event => {
+    const value = +(event.target as HTMLInputElement).value;
+    getOutput('imgcursor-height-val').value = String(value);
+    refresh();
+  });
+
+  getInput('imgcursor-smooth').addEventListener('input', event => {
+    const value = +(event.target as HTMLInputElement).value;
+    getOutput('imgcursor-smooth-val').value = (value / 100).toFixed(2);
+    refresh();
+  });
+
+  getElement('btn-image-cursor').addEventListener('click', () => {
+    if (instance) {
+      instance.destroy();
+      instance = null;
+      setCardActive('btn-image-cursor', 'card-image-cursor', false);
+    } else {
+      instance = new ImageCursor(getOpts());
+      setCardActive('btn-image-cursor', 'card-image-cursor', true);
     }
   });
 }

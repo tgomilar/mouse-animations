@@ -1,6 +1,6 @@
 import jQuery from "jquery";
-import { Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax, Tilt } from "./index";
-import type { TrailOptions, RippleOptions, CustomCursorOptions, MagneticOptions, ParticlesOptions, ParallaxOptions, TiltOptions } from "./core/types";
+import { Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax, Tilt, ImageCursor } from "./index";
+import type { TrailOptions, RippleOptions, CustomCursorOptions, MagneticOptions, ParticlesOptions, ParallaxOptions, TiltOptions, ImageCursorOptions } from "./core/types";
 
 type AnimInstance = { enable(): void; disable(): void; destroy(): void };
 type Method = "enable" | "disable" | "destroy";
@@ -15,6 +15,7 @@ declare global {
     particles(opts?: ParticlesOptions | Method): this;
     parallax(opts?: SelectorOpts<ParallaxOptions> | Method): this;
     tilt(opts?: SelectorOpts<TiltOptions> | Method): this;
+    imageCursor(opts?: ImageCursorOptions | Method): this;
   }
 }
 
@@ -74,6 +75,8 @@ function makeSelectorPlugin<T extends { selector: string }>(
     return this;
   };
 }
+
+jQuery.fn.imageCursor = makePlugin<ImageCursorOptions>("ma.imageCursor", ImageCursor);
 
 jQuery.fn.magnetic = makeSelectorPlugin<MagneticOptions>("ma.magnetic", Magnetic);
 jQuery.fn.parallax = makeSelectorPlugin<ParallaxOptions>("ma.parallax", Parallax);
