@@ -102,4 +102,21 @@ export interface ImageCursorOptions {
   smoothness?: number;
   /** Hide the native cursor. Default: true */
   hideDefault?: boolean;
+  /**
+   * Inject `* { cursor: none !important }` to defeat cursor: pointer on every
+   * element (links, buttons, inputs…). Stronger than hideDefault. Default: false
+   */
+  overrideAll?: boolean;
+  /**
+   * Alternate cursor images per interaction state.
+   * Built-in keys: `'hover'` (a, button, input…), `'active'` (mousedown held).
+   * Any other string key is treated as a CSS selector — matched via closest().
+   * @example
+   * states: {
+   *   hover:  '<svg .../>',
+   *   active: '<svg .../>',
+   *   '.my-zone': '/special.png',
+   * }
+   */
+  states?: Record<string, string>;
 }
