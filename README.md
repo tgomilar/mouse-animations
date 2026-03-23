@@ -2,7 +2,7 @@
 
 A lightweight, framework-agnostic JavaScript library for cursor and mouse effects. Zero dependencies. Under 5 kB gzipped. Fully typed TypeScript support.
 
-Seven cursor and mouse effects in one tiny library. No dependencies, no framework lock-in, full lifecycle control.
+Eight cursor and mouse effects in one tiny library. No dependencies, no framework lock-in, full lifecycle control.
 Optional jQuery plugin included.
 
 **[Live Playground →](https://tgomilar.github.io/mouse-animations/)**
@@ -11,15 +11,16 @@ Optional jQuery plugin included.
 
 ## Effects
 
-| Effect           | Description                                                     |
-| ---------------- | --------------------------------------------------------------- |
-| **Trail**        | Fading dot trail that follows the cursor on a canvas overlay    |
-| **Ripple**       | Expanding circle at each click position                         |
-| **CustomCursor** | Dot + smoothly lagging outer ring replacing the native cursor   |
-| **Magnetic**     | Pulls matching elements toward the cursor as it approaches      |
-| **Particles**    | Burst of coloured particles on each click                       |
-| **Parallax**     | Elements shift subtly as the mouse moves across the viewport    |
-| **Tilt**         | 3D perspective tilt that follows the cursor within each element |
+| Effect            | Description                                                          |
+| ----------------- | -------------------------------------------------------------------- |
+| **Trail**         | Fading dot trail that follows the cursor on a canvas overlay         |
+| **Ripple**        | Expanding circle at each click position                              |
+| **CustomCursor**  | Dot + smoothly lagging outer ring replacing the native cursor        |
+| **Magnetic**      | Pulls matching elements toward the cursor as it approaches           |
+| **Particles**     | Burst of coloured particles on each click                            |
+| **Parallax**      | Elements shift subtly as the mouse moves across the viewport         |
+| **Tilt**          | 3D perspective tilt that follows the cursor within each element      |
+| **ImageCursor**   | Replaces the native cursor with a custom image or inline SVG         |
 
 ---
 
@@ -68,7 +69,7 @@ interface MouseAnimationsBase {
 All option types are exported for use in TypeScript projects:
 
 ```ts
-import type { TrailOptions, TiltOptions /*, …*/ } from "mouse-animations";
+import type { TrailOptions, TiltOptions, ImageCursorOptions /*, …*/ } from "mouse-animations";
 ```
 
 ---
@@ -197,6 +198,64 @@ const tilt = new Tilt({
 
 ---
 
+### ImageCursor
+
+Replaces the native cursor with a custom image URL or inline SVG string.
+
+```ts
+import { ImageCursor } from "mouse-animations";
+
+const cursor = new ImageCursor({
+  src: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'>...</svg>",
+  width: 32,         // cursor element width in px
+  height: 32,        // cursor element height in px
+  offsetX: 0,        // horizontal offset from cursor position in px
+  offsetY: 0,        // vertical offset from cursor position in px
+  smoothness: 1,     // lerp factor (0–1); 1 = instant snap, lower = lag
+  hideDefault: true, // hide the native cursor
+  overrideAll: false, // inject * { cursor: none !important } — defeats cursor: pointer on buttons/links
+  states: {               // alternate images per interaction state (optional)
+    hover: "<svg .../>",  // built-in: shown over a, button, input, select, textarea…
+    active: "<svg .../>", // built-in: shown while mousedown is held
+    ".my-zone": "<svg .../>", // custom: any CSS selector matched via closest()
+  },
+});
+```
+
+An image URL is also accepted as `src`:
+
+```ts
+new ImageCursor({ src: "/my-cursor.png", width: 40, height: 40 });
+```
+
+#### State-based cursors
+
+Use `states` to show a different cursor image on interactive elements or while the mouse button is held. Any key other than the built-ins is treated as a CSS selector matched via `closest()`.
+
+```ts
+const cursor = new ImageCursor({
+  src: starSvg,
+  overrideAll: true,
+  states: {
+    hover: handSvg,         // a, button, input, select, textarea…
+    active: clickSvg,       // while mousedown is held
+    ".danger-zone": warnSvg, // any CSS selector
+  },
+});
+```
+
+#### `setSource(state, src)`
+
+Swap a cursor image at runtime without recreating the instance:
+
+```ts
+cursor.setSource("normal", newSvg);
+cursor.setSource("hover", newHandSvg);
+cursor.setSource(".danger-zone", "/new-warn.png");
+```
+
+---
+
 ## jQuery plugin
 
 All effects are available as jQuery methods. jQuery `>=3.0.0` is an optional peer dependency.
@@ -213,6 +272,7 @@ $("body").trail({ color: "#a78bfa", size: 8 });
 $("body").ripple({ duration: 700, maxSize: 120 });
 $("body").customCursor({ innerColor: "#a78bfa", smoothness: 0.12 });
 $("body").particles({ count: 24 });
+$("body").imageCursor({ src: "<svg .../>", overrideAll: true, states: { hover: "<svg .../>" } });
 
 // Selector-based effects — one instance covers all matched elements.
 // The selector option is optional: if omitted, a unique class is stamped
@@ -234,18 +294,19 @@ $("body").trail("destroy");
 All effects are independent and can run simultaneously:
 
 ```ts
-import { Trail, Ripple, Particles, CustomCursor, Magnetic, Parallax, Tilt } from "mouse-animations";
+import { Trail, Ripple, Particles, CustomCursor, Magnetic, Parallax, Tilt, ImageCursor } from "mouse-animations";
 
-const trail = new Trail({ color: "#a78bfa" });
-const ripple = new Ripple({ color: "rgba(167,139,250,0.35)" });
+const trail    = new Trail({ color: "#a78bfa" });
+const ripple   = new Ripple({ color: "rgba(167,139,250,0.35)" });
 const particles = new Particles({ count: 24 });
-const cursor = new CustomCursor({ innerColor: "#a78bfa" });
+const cursor   = new CustomCursor({ innerColor: "#a78bfa" });
 const magnetic = new Magnetic({ selector: ".magnetic-btn" });
 const parallax = new Parallax({ selector: ".layer" });
-const tilt = new Tilt({ selector: ".card", glare: true });
+const tilt     = new Tilt({ selector: ".card", glare: true });
+const imgCursor = new ImageCursor({ src: starSvg, overrideAll: true });
 
 // Clean up all at once
-[trail, ripple, particles, cursor, magnetic, parallax, tilt].forEach((e) => e.destroy());
+[trail, ripple, particles, cursor, magnetic, parallax, tilt, imgCursor].forEach((e) => e.destroy());
 ```
 
 ---
