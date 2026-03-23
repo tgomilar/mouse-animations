@@ -1,9 +1,6 @@
 # mouse-animations
 
-A lightweight, framework-agnostic JavaScript library for cursor and mouse effects. Zero dependencies. Under 5 kB gzipped. Fully typed TypeScript support.
-
-Cursor and mouse effects in one tiny library. No dependencies, no framework lock-in, full lifecycle control.
-Optional jQuery plugin included.
+A lightweight, framework-agnostic library for cursor and mouse effects. Zero dependencies, under 5 kB gzipped, fully typed. Optional jQuery plugin included.
 
 **[Live Playground →](https://tgomilar.github.io/mouse-animations/)**
 
@@ -11,18 +8,18 @@ Optional jQuery plugin included.
 
 ## Effects
 
-| Effect            | Description                                                          |
-| ----------------- | -------------------------------------------------------------------- |
-| **Trail**         | Fading dot trail that follows the cursor on a canvas overlay         |
-| **Ripple**        | Expanding circle at each click position                              |
-| **CustomCursor**  | Dot + smoothly lagging outer ring replacing the native cursor        |
-| **Magnetic**      | Pulls matching elements toward the cursor as it approaches           |
-| **Particles**     | Burst of coloured particles on each click                            |
-| **Parallax**      | Elements shift subtly as the mouse moves across the viewport         |
-| **Tilt**          | 3D perspective tilt that follows the cursor within each element      |
-| **Spotlight**     | Radial gradient glow that follows the cursor inside each element     |
-| **Invert**  | Colored circle that inverts content beneath it via mix-blend-mode   |
-| **Image**   | Replaces the native cursor with a custom image or inline SVG         |
+| Effect           | Description                                                         |
+| ---------------- | ------------------------------------------------------------------- |
+| **Trail**        | Fading dot trail that follows the cursor on a canvas overlay        |
+| **Ripple**       | Expanding circle at each click position                             |
+| **CustomCursor** | Dot + smoothly lagging outer ring replacing the native cursor       |
+| **Magnetic**     | Pulls matching elements toward the cursor as it approaches          |
+| **Particles**    | Burst of coloured particles on each click                           |
+| **Parallax**     | Elements shift subtly as the mouse moves across the viewport        |
+| **Tilt**         | 3D perspective tilt that follows the cursor within each element     |
+| **Spotlight**    | Radial gradient glow that follows the cursor inside each element    |
+| **Invert**       | Colored circle that inverts content beneath it via mix-blend-mode   |
+| **Image**        | Replaces the native cursor with a custom image or inline SVG        |
 
 ---
 
@@ -71,7 +68,11 @@ interface MouseAnimationsBase {
 All option types are exported for use in TypeScript projects:
 
 ```ts
-import type { TrailOptions, TiltOptions, ImageOptions /*, …*/ } from "mouse-animations";
+import type {
+  TrailOptions, RippleOptions, CustomCursorOptions,
+  MagneticOptions, ParticlesOptions, ParallaxOptions,
+  TiltOptions, SpotlightOptions, InvertOptions, ImageOptions,
+} from "mouse-animations";
 ```
 
 ---
@@ -239,6 +240,11 @@ const cursor = new Invert({
 
 Replaces the native cursor with a custom image URL or inline SVG string.
 
+> **Note:** The name `Image` shadows the DOM built-in `Image` constructor (`HTMLImageElement`) within the same file. If you need both, use an alias:
+> ```ts
+> import { Image as CursorImage } from "mouse-animations";
+> ```
+
 ```ts
 import { Image } from "mouse-animations";
 
@@ -333,19 +339,21 @@ $("body").trail("destroy");
 All effects are independent and can run simultaneously:
 
 ```ts
-import { Trail, Ripple, Particles, CustomCursor, Magnetic, Parallax, Tilt, Image } from "mouse-animations";
+import { Trail, Ripple, Particles, CustomCursor, Magnetic, Parallax, Tilt, Spotlight, Invert, Image } from "mouse-animations";
 
-const trail    = new Trail({ color: "#a78bfa" });
-const ripple   = new Ripple({ color: "rgba(167,139,250,0.35)" });
+const trail     = new Trail({ color: "#a78bfa" });
+const ripple    = new Ripple({ color: "rgba(167,139,250,0.35)" });
 const particles = new Particles({ count: 24 });
-const cursor   = new CustomCursor({ innerColor: "#a78bfa" });
-const magnetic = new Magnetic({ selector: ".magnetic-btn" });
-const parallax = new Parallax({ selector: ".layer" });
-const tilt     = new Tilt({ selector: ".card", glare: true });
-const imgCursor = new Image({ src: starSvg, overrideAll: true });
+const cursor    = new CustomCursor({ innerColor: "#a78bfa" });
+const magnetic  = new Magnetic({ selector: ".magnetic-btn" });
+const parallax  = new Parallax({ selector: ".layer" });
+const tilt      = new Tilt({ selector: ".card", glare: true });
+const spotlight = new Spotlight({ selector: ".card" });
+const invert    = new Invert({ size: 40 });
+const image     = new Image({ src: starSvg, overrideAll: true });
 
 // Clean up all at once
-[trail, ripple, particles, cursor, magnetic, parallax, tilt, imgCursor].forEach((e) => e.destroy());
+[trail, ripple, particles, cursor, magnetic, parallax, tilt, spotlight, invert, image].forEach((e) => e.destroy());
 ```
 
 ---
