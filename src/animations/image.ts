@@ -1,4 +1,4 @@
-import type { MouseAnimationsBase, ImageCursorOptions } from '../core/types';
+import type { MouseAnimationsBase, ImageOptions } from '../core/types';
 
 /** Elements that trigger the built-in 'hover' state. */
 const INTERACTIVE = 'a, button, [role="button"], input, select, textarea, label, summary, [tabindex]:not([tabindex="-1"])';
@@ -6,7 +6,7 @@ const INTERACTIVE = 'a, button, [role="button"], input, select, textarea, label,
 /**
  * Replaces the native cursor with a custom image or inline SVG element.
  */
-export class ImageCursor implements MouseAnimationsBase {
+export class Image implements MouseAnimationsBase {
   private src: string;
   private readonly states: Record<string, string>;
   private readonly opts: {
@@ -25,10 +25,11 @@ export class ImageCursor implements MouseAnimationsBase {
   private curY = 0;
   private rafId: number | null = null;
   private active = false;
+  private firstMove = true;
   private currentState = 'normal';
   private isMouseDown = false;
 
-  constructor(options: ImageCursorOptions) {
+  constructor(options: ImageOptions) {
     const { src, states = {}, overrideAll = false, hideDefault = true,
             width = 32, height = 32, offsetX = 0, offsetY = 0, smoothness = 1 } = options;
     this.src = src;
@@ -44,7 +45,8 @@ export class ImageCursor implements MouseAnimationsBase {
 
   private buildElement(src: string): HTMLElement {
     const el = document.createElement('div');
-    el.className = '__ma-img-cursor';
+    el.className = '__ma-img';
+    el.hidden = true;
     this.renderContent(el, src);
     return el;
   }
@@ -67,12 +69,12 @@ export class ImageCursor implements MouseAnimationsBase {
   private injectStyles(): HTMLStyleElement {
     const s = document.createElement('style');
     s.textContent = `
-      .__ma-img-cursor {
+      .__ma-img {
         position: fixed; top: 0; left: 0;
         pointer-events: none; z-index: 1000000;
         will-change: transform; user-select: none;
       }
-      .__ma-hide-cursor, .__ma-hide-cursor * { cursor: none !important; }
+      .__ma-hide, .__ma-hide * { cursor: none !important; }
     `;
     document.head.appendChild(s);
     return s;
@@ -88,6 +90,13 @@ export class ImageCursor implements MouseAnimationsBase {
   private onMouseMove = (e: MouseEvent): void => {
     this.mouseX = e.clientX;
     this.mouseY = e.clientY;
+    if (this.firstMove) {
+      this.firstMove = false;
+      this.curX = this.mouseX;
+      this.curY = this.mouseY;
+      this.updatePosition();
+      this.el.hidden = false;
+    }
     if (this.opts.smoothness >= 1) {
       this.curX = this.mouseX; this.curY = this.mouseY;
       this.updatePosition();
@@ -171,23 +180,23 @@ export class ImageCursor implements MouseAnimationsBase {
       this.overrideStyle.textContent = '* { cursor: none !important; }';
       document.head.appendChild(this.overrideStyle);
     } else if (this.opts.hideDefault) {
-      document.body.classList.add('__ma-hide-cursor');
+      document.body.classList.add('__ma-hide');
     }
 
+    this.firstMove = true;
     document.addEventListener('mousemove', this.onMouseMove);
     if (this.hasStates) {
       document.addEventListener('mouseover', this.onMouseOver);
       document.addEventListener('mousedown', this.onMouseDown);
       document.addEventListener('mouseup', this.onMouseUp);
     }
-    this.el.hidden = false;
     if (this.opts.smoothness < 1) this.rafId = requestAnimationFrame(this.loop);
   }
 
   disable(): void {
     if (!this.active) return;
     this.active = false;
-    document.body.classList.remove('__ma-hide-cursor');
+    document.body.classList.remove('__ma-hide');
     if (this.overrideStyle) { this.overrideStyle.remove(); this.overrideStyle = null; }
     document.removeEventListener('mousemove', this.onMouseMove);
     document.removeEventListener('mouseover', this.onMouseOver);

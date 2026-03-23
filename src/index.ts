@@ -8,7 +8,8 @@ export type {
   ParallaxOptions,
   TiltOptions,
   SpotlightOptions,
-  ImageCursorOptions,
+  InvertOptions,
+  ImageOptions,
 } from './core/types';
 
 export { Trail } from './animations/trail';
@@ -19,4 +20,5 @@ export { Particles } from './animations/particles';
 export { Parallax } from './animations/parallax';
 export { Tilt } from './animations/tilt';
 export { Spotlight } from './animations/spotlight';
-export { ImageCursor } from './animations/image-cursor';
+export { Invert } from './animations/invert';
+export { Image } from './animations/image';

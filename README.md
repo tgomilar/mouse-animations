@@ -21,7 +21,8 @@ Optional jQuery plugin included.
 | **Parallax**      | Elements shift subtly as the mouse moves across the viewport         |
 | **Tilt**          | 3D perspective tilt that follows the cursor within each element      |
 | **Spotlight**     | Radial gradient glow that follows the cursor inside each element     |
-| **ImageCursor**   | Replaces the native cursor with a custom image or inline SVG         |
+| **Invert**  | Colored circle that inverts content beneath it via mix-blend-mode   |
+| **Image**   | Replaces the native cursor with a custom image or inline SVG         |
 
 ---
 
@@ -70,7 +71,7 @@ interface MouseAnimationsBase {
 All option types are exported for use in TypeScript projects:
 
 ```ts
-import type { TrailOptions, TiltOptions, ImageCursorOptions /*, …*/ } from "mouse-animations";
+import type { TrailOptions, TiltOptions, ImageOptions /*, …*/ } from "mouse-animations";
 ```
 
 ---
@@ -215,14 +216,33 @@ const spotlight = new Spotlight({
 
 ---
 
-### ImageCursor
+### Invert
+
+Renders an opaque circle that follows the cursor and inverts the colors of everything beneath it using `mix-blend-mode: difference`. Works on text, images, and any colored content.
+
+> The inversion result depends on the circle color. White (`#ffffff`, default) produces the classic full inversion. Use a different color if the page background is light — for example `#000000` inverts on white backgrounds identically.
+
+```ts
+import { Invert } from "mouse-animations";
+
+const cursor = new Invert({
+  size: 40,          // circle diameter in px
+  color: "#ffffff",  // circle color — affects the inversion output. Default: '#ffffff'
+  smoothness: 1,     // lerp factor (0–1); 1 = instant snap, lower = lag
+  hideDefault: true, // hide the native cursor
+});
+```
+
+---
+
+### Image
 
 Replaces the native cursor with a custom image URL or inline SVG string.
 
 ```ts
-import { ImageCursor } from "mouse-animations";
+import { Image } from "mouse-animations";
 
-const cursor = new ImageCursor({
+const cursor = new Image({
   src: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'>...</svg>",
   width: 32,         // cursor element width in px
   height: 32,        // cursor element height in px
@@ -242,7 +262,7 @@ const cursor = new ImageCursor({
 An image URL is also accepted as `src`:
 
 ```ts
-new ImageCursor({ src: "/my-cursor.png", width: 40, height: 40 });
+new Image({ src: "/my-cursor.png", width: 40, height: 40 });
 ```
 
 #### State-based cursors
@@ -250,7 +270,7 @@ new ImageCursor({ src: "/my-cursor.png", width: 40, height: 40 });
 Use `states` to show a different cursor image on interactive elements or while the mouse button is held. Any key other than the built-ins is treated as a CSS selector matched via `closest()`.
 
 ```ts
-const cursor = new ImageCursor({
+const cursor = new Image({
   src: starSvg,
   overrideAll: true,
   states: {
@@ -289,7 +309,8 @@ $("body").trail({ color: "#a78bfa", size: 8 });
 $("body").ripple({ duration: 700, maxSize: 120 });
 $("body").customCursor({ innerColor: "#a78bfa", smoothness: 0.12 });
 $("body").particles({ count: 24 });
-$("body").imageCursor({ src: "<svg .../>", overrideAll: true, states: { hover: "<svg .../>" } });
+$("body").invert({ size: 40, color: "#ffffff" });
+$("body").image({ src: "<svg .../>", overrideAll: true, states: { hover: "<svg .../>" } });
 
 // Selector-based effects — one instance covers all matched elements.
 // The selector option is optional: if omitted, a unique class is stamped
@@ -312,7 +333,7 @@ $("body").trail("destroy");
 All effects are independent and can run simultaneously:
 
 ```ts
-import { Trail, Ripple, Particles, CustomCursor, Magnetic, Parallax, Tilt, ImageCursor } from "mouse-animations";
+import { Trail, Ripple, Particles, CustomCursor, Magnetic, Parallax, Tilt, Image } from "mouse-animations";
 
 const trail    = new Trail({ color: "#a78bfa" });
 const ripple   = new Ripple({ color: "rgba(167,139,250,0.35)" });
@@ -321,7 +342,7 @@ const cursor   = new CustomCursor({ innerColor: "#a78bfa" });
 const magnetic = new Magnetic({ selector: ".magnetic-btn" });
 const parallax = new Parallax({ selector: ".layer" });
 const tilt     = new Tilt({ selector: ".card", glare: true });
-const imgCursor = new ImageCursor({ src: starSvg, overrideAll: true });
+const imgCursor = new Image({ src: starSvg, overrideAll: true });
 
 // Clean up all at once
 [trail, ripple, particles, cursor, magnetic, parallax, tilt, imgCursor].forEach((e) => e.destroy());

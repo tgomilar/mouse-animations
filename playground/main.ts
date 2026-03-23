@@ -1,4 +1,4 @@
-import { Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax, Tilt, Spotlight, ImageCursor } from 'mouse-animations';
+import { Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax, Tilt, Spotlight, Invert, Image } from 'mouse-animations';
 
 // ─── Utils ────────────────────────────────────────────────────────────────────
 
@@ -85,8 +85,6 @@ function setCardActive(buttonId: string, cardId: string, active: boolean): void 
   }
 
   renderCode('code-trail', 'Trail', getOpts());
-  instance = new Trail(getOpts());
-  setCardActive('btn-trail', 'card-trail', true);
 
   getInput('trail-color').addEventListener('input', event => {
     const color = (event.target as HTMLInputElement).value;
@@ -599,10 +597,63 @@ function setCardActive(buttonId: string, cardId: string, active: boolean): void 
   });
 }
 
+// ─── Invert Cursor ────────────────────────────────────────────────────────────
+
+{
+  let instance: Invert | null = null;
+
+  function getOpts() {
+    return {
+      color:      getInput('invert-color').value,
+      size:       +getInput('invert-size').value,
+      smoothness: +(+getInput('invert-smooth').value / 100).toFixed(2),
+    };
+  }
+
+  function refresh(): void {
+    const opts = getOpts();
+    renderCode('code-invert', 'Invert', opts);
+    if (instance) { instance.destroy(); instance = new Invert(opts); }
+  }
+
+  renderCode('code-invert', 'Invert', getOpts());
+  instance = new Invert(getOpts());
+  setCardActive('btn-invert', 'card-invert', true);
+
+  getInput('invert-color').addEventListener('input', event => {
+    const color = (event.target as HTMLInputElement).value;
+    getElement('invert-color-hex').textContent = color;
+    refresh();
+  });
+
+  getInput('invert-size').addEventListener('input', event => {
+    const value = +(event.target as HTMLInputElement).value;
+    getOutput('invert-size-val').value = String(value);
+    refresh();
+  });
+
+  getInput('invert-smooth').addEventListener('input', event => {
+    const value = +(event.target as HTMLInputElement).value;
+    getOutput('invert-smooth-val').value = (value / 100).toFixed(2);
+    refresh();
+  });
+
+  getElement('btn-invert').addEventListener('click', () => {
+    if (instance) {
+      instance.destroy();
+      instance = null;
+      setCardActive('btn-invert', 'card-invert', false);
+    } else {
+      instance = new Invert(getOpts());
+      setCardActive('btn-invert', 'card-invert', true);
+    }
+  });
+}
+
 // ─── Image Cursor ─────────────────────────────────────────────────────────────
 
 {
-  let instance: ImageCursor | null = null;
+  let instance: Image | null = null;
 
   const PRESETS: Record<string, string> = {
     star:      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><polygon points="16,2 20,12 30,12 22,19 25,30 16,24 7,30 10,19 2,12 12,12" fill="#fbbf24" stroke="#f59e0b" stroke-width="1"/></svg>`,
@@ -652,11 +703,11 @@ function setCardActive(buttonId: string, cardId: string, active: boolean): void 
   }
 
   function refresh(): void {
-    renderCode('code-image-cursor', 'ImageCursor', displayOpts());
-    if (instance) { instance.destroy(); instance = new ImageCursor(getOpts()); }
+    renderCode('code-image', 'Image', displayOpts());
+    if (instance) { instance.destroy(); instance = new Image(getOpts()); }
   }
 
-  renderCode('code-image-cursor', 'ImageCursor', displayOpts());
+  renderCode('code-image', 'Image', displayOpts());
 
   document.querySelectorAll<HTMLElement>('#imgcursor-presets .preset-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -697,14 +748,14 @@ function setCardActive(buttonId: string, cardId: string, active: boolean): void 
   getInput('imgcursor-override').addEventListener('change', () => refresh());
   getInput('imgcursor-active').addEventListener('change', () => refresh());
 
-  getElement('btn-image-cursor').addEventListener('click', () => {
+  getElement('btn-image').addEventListener('click', () => {
     if (instance) {
       instance.destroy();
       instance = null;
-      setCardActive('btn-image-cursor', 'card-image-cursor', false);
+      setCardActive('btn-image', 'card-image', false);
     } else {
-      instance = new ImageCursor(getOpts());
-      setCardActive('btn-image-cursor', 'card-image-cursor', true);
+      instance = new Image(getOpts());
+      setCardActive('btn-image', 'card-image', true);
     }
   });
 }
