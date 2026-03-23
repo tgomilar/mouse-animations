@@ -2,7 +2,7 @@
 
 A lightweight, framework-agnostic JavaScript library for cursor and mouse effects. Zero dependencies. Under 5 kB gzipped. Fully typed TypeScript support.
 
-Eight cursor and mouse effects in one tiny library. No dependencies, no framework lock-in, full lifecycle control.
+Cursor and mouse effects in one tiny library. No dependencies, no framework lock-in, full lifecycle control.
 Optional jQuery plugin included.
 
 **[Live Playground →](https://tgomilar.github.io/mouse-animations/)**
