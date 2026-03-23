@@ -20,6 +20,7 @@ Optional jQuery plugin included.
 | **Particles**     | Burst of coloured particles on each click                            |
 | **Parallax**      | Elements shift subtly as the mouse moves across the viewport         |
 | **Tilt**          | 3D perspective tilt that follows the cursor within each element      |
+| **Spotlight**     | Radial gradient glow that follows the cursor inside each element     |
 | **ImageCursor**   | Replaces the native cursor with a custom image or inline SVG         |
 
 ---
@@ -198,6 +199,22 @@ const tilt = new Tilt({
 
 ---
 
+### Spotlight
+
+Renders a radial gradient glow that follows the cursor inside each matched element. Works best on dark cards and panels.
+
+```ts
+import { Spotlight } from "mouse-animations";
+
+const spotlight = new Spotlight({
+  selector: ".card", // CSS selector for elements (required)
+  color: "rgba(255,255,255,0.12)", // spotlight glow color
+  size: 200, // spotlight radius in px
+});
+```
+
+---
+
 ### ImageCursor
 
 Replaces the native cursor with a custom image URL or inline SVG string.
@@ -280,6 +297,7 @@ $("body").imageCursor({ src: "<svg .../>", overrideAll: true, states: { hover: "
 $(".btn").magnetic({ strength: 0.4, radius: 120 });
 $(".layer").parallax({ depth: 20, ease: 0.1 });
 $(".card").tilt({ maxTilt: 15, perspective: 800, glare: true });
+$(".card").spotlight({ color: "rgba(255,255,255,0.12)", size: 200 });
 
 // All plugins support enable / disable / destroy
 $("body").trail("disable");
