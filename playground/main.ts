@@ -35,6 +35,11 @@ function buildCodeSnippet(className: string, opts: Record<string, unknown>): str
           .map(item => `<span class="tok-str">'${escapeHtml(item)}'</span>`)
           .join('<span class="tok-pun">, </span>') +
         '<span class="tok-pun">]</span>';
+    } else if (typeof value === 'object' && value !== null) {
+      const inner = Object.entries(value as Record<string, unknown>)
+        .map(([k, v]) => `<span class="tok-key">${k}</span><span class="tok-pun">: </span><span class="tok-str">'${escapeHtml(String(v))}'</span>`)
+        .join('<span class="tok-pun">, </span>');
+      renderedValue = `<span class="tok-pun">{ </span>${inner}<span class="tok-pun"> }</span>`;
     } else {
       renderedValue = `<span class="tok-num">${value}</span>`;
     }
@@ -551,31 +556,67 @@ function setCardActive(buttonId: string, cardId: string, active: boolean): void 
     heart:     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M16 28C16 28 4 20 4 11C4 7 7 4 11 4C13.5 4 15.5 5.5 16 7C16.5 5.5 18.5 4 21 4C25 4 28 7 28 11C28 20 16 28 16 28Z" fill="#f43f5e" stroke="#be123c" stroke-width="1"/></svg>`,
   };
 
+  const HOVER_PRESETS: Record<string, string> = {
+    hand:  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="11" y="2" width="4" height="13" rx="2" fill="#a78bfa"/><rect x="17" y="7" width="4" height="9" rx="2" fill="#a78bfa"/><rect x="23" y="9" width="4" height="8" rx="2" fill="#a78bfa"/><rect x="5" y="13" width="6" height="8" rx="2" fill="#a78bfa"/><rect x="11" y="15" width="16" height="10" rx="3" fill="#a78bfa"/></svg>`,
+    lens:  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="13" cy="13" r="9" fill="none" stroke="#60a5fa" stroke-width="2.5"/><line x1="19.5" y1="19.5" x2="29" y2="29" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+    spark: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M16 2L17.5 13L28 16L17.5 19L16 30L14.5 19L4 16L14.5 13Z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1"/></svg>`,
+  };
+
+  const ACTIVE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="5" fill="#f43f5e"/><circle cx="16" cy="16" r="10" fill="none" stroke="#f43f5e" stroke-width="2" opacity="0.6"/><circle cx="16" cy="16" r="15" fill="none" stroke="#f43f5e" stroke-width="1" opacity="0.3"/></svg>`;
+
   let activePreset = 'star';
+  let activeHover  = 'none';
 
   function getOpts() {
+    const states: Record<string, string> = {};
+    if (activeHover !== 'none') states['hover'] = HOVER_PRESETS[activeHover]!;
+    if (getInput('imgcursor-active').checked) states['active'] = ACTIVE_SVG;
     return {
-      src:        PRESETS[activePreset]!,
-      width:      +getInput('imgcursor-width').value,
-      height:     +getInput('imgcursor-height').value,
-      smoothness: +(+getInput('imgcursor-smooth').value / 100).toFixed(2),
+      src:         PRESETS[activePreset]!,
+      width:       +getInput('imgcursor-width').value,
+      height:      +getInput('imgcursor-height').value,
+      smoothness:  +(+getInput('imgcursor-smooth').value / 100).toFixed(2),
+      overrideAll: getInput('imgcursor-override').checked,
+      ...(Object.keys(states).length ? { states } : {}),
     };
   }
 
-  function refresh(): void {
+  function displayOpts() {
     const opts = getOpts();
-    // Show abbreviated src in the snippet so it stays readable
-    renderCode('code-image-cursor', 'ImageCursor', { ...opts, src: '<svg ...>' });
-    if (instance) { instance.destroy(); instance = new ImageCursor(opts); }
+    const display: Record<string, unknown> = {
+      src: '<svg ...>',
+      width: opts.width, height: opts.height, smoothness: opts.smoothness,
+    };
+    if (opts.overrideAll) display['overrideAll'] = true;
+    if (opts.states) {
+      display['states'] = Object.fromEntries(
+        Object.keys(opts.states).map(k => [k, '<svg ...>'])
+      );
+    }
+    return display;
   }
 
-  renderCode('code-image-cursor', 'ImageCursor', { ...getOpts(), src: '<svg ...>' });
+  function refresh(): void {
+    renderCode('code-image-cursor', 'ImageCursor', displayOpts());
+    if (instance) { instance.destroy(); instance = new ImageCursor(getOpts()); }
+  }
+
+  renderCode('code-image-cursor', 'ImageCursor', displayOpts());
 
   document.querySelectorAll<HTMLElement>('#imgcursor-presets .preset-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll<HTMLElement>('#imgcursor-presets .preset-btn').forEach(b => b.classList.remove('on'));
       btn.classList.add('on');
       activePreset = btn.dataset['preset']!;
+      refresh();
+    });
+  });
+
+  document.querySelectorAll<HTMLElement>('#imgcursor-hover-presets .preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll<HTMLElement>('#imgcursor-hover-presets .preset-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      activeHover = btn.dataset['hover']!;
       refresh();
     });
   });
@@ -598,6 +639,9 @@ function setCardActive(buttonId: string, cardId: string, active: boolean): void 
     refresh();
   });
 
+  getInput('imgcursor-override').addEventListener('change', () => refresh());
+  getInput('imgcursor-active').addEventListener('change', () => refresh());
+
   getElement('btn-image-cursor').addEventListener('click', () => {
     if (instance) {
       instance.destroy();
@@ -607,5 +651,18 @@ function setCardActive(buttonId: string, cardId: string, active: boolean): void 
       instance = new ImageCursor(getOpts());
       setCardActive('btn-image-cursor', 'card-image-cursor', true);
     }
+  });
+}
+
+// ─── Copy install command ──────────────────────────────────────────────────────
+
+{
+  const btn = getElement<HTMLButtonElement>('copy-install');
+  btn.addEventListener('click', () => {
+    navigator.clipboard.writeText('npm install mouse-animations').then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
   });
 }
