@@ -1,6 +1,6 @@
 import jQuery from "jquery";
-import { Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax, Tilt, Spotlight, ImageCursor } from "./index";
-import type { TrailOptions, RippleOptions, CustomCursorOptions, MagneticOptions, ParticlesOptions, ParallaxOptions, TiltOptions, SpotlightOptions, ImageCursorOptions } from "./core/types";
+import { Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax, Tilt, Spotlight, Invert, Image } from "./index";
+import type { TrailOptions, RippleOptions, CustomCursorOptions, MagneticOptions, ParticlesOptions, ParallaxOptions, TiltOptions, SpotlightOptions, InvertOptions, ImageOptions } from "./core/types";
 
 type AnimInstance = { enable(): void; disable(): void; destroy(): void };
 type Method = "enable" | "disable" | "destroy";
@@ -16,7 +16,8 @@ declare global {
     parallax(opts?: SelectorOpts<ParallaxOptions> | Method): this;
     tilt(opts?: SelectorOpts<TiltOptions> | Method): this;
     spotlight(opts?: SelectorOpts<SpotlightOptions> | Method): this;
-    imageCursor(opts: ImageCursorOptions | Method): this;
+    invert(opts?: InvertOptions | Method): this;
+    image(opts: ImageOptions | Method): this;
   }
 }
 
@@ -77,7 +78,8 @@ function makeSelectorPlugin<T extends { selector: string }>(
   };
 }
 
-jQuery.fn.imageCursor = makePlugin<ImageCursorOptions>("ma.imageCursor", ImageCursor);
+jQuery.fn.invert = makePlugin<InvertOptions>("ma.invert", Invert);
+jQuery.fn.image = makePlugin<ImageOptions>("ma.image", Image);
 
 jQuery.fn.magnetic = makeSelectorPlugin<MagneticOptions>("ma.magnetic", Magnetic);
 jQuery.fn.spotlight = makeSelectorPlugin<SpotlightOptions>("ma.spotlight", Spotlight);

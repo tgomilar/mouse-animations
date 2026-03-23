@@ -87,6 +87,17 @@ export interface TiltOptions {
   glare?: boolean;
 }
 
+export interface InvertOptions {
+  /** Cursor circle size in px. Default: 40 */
+  size?: number;
+  /** Circle color. Use any opaque CSS color — the inversion is driven by mix-blend-mode: difference. Default: '#ffffff' */
+  color?: string;
+  /** Lerp smoothness factor (0–1). 1 = instant snap, lower = lag. Default: 1 */
+  smoothness?: number;
+  /** Hide the native cursor. Default: true */
+  hideDefault?: boolean;
+}
+
 export interface SpotlightOptions {
   /** CSS selector for elements to apply the spotlight to */
   selector: string;
@@ -96,7 +107,7 @@ export interface SpotlightOptions {
   size?: number;
 }
 
-export interface ImageCursorOptions {
+export interface ImageOptions {
   /** Image URL or inline SVG string (starting with '<svg') to use as cursor */
   src: string;
   /** Cursor element width in px. Default: 32 */

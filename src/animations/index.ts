@@ -6,4 +6,5 @@ export { Particles } from './particles';
 export { Parallax } from './parallax';
 export { Tilt } from './tilt';
 export { Spotlight } from './spotlight';
-export { ImageCursor } from './image-cursor';
+export { Invert } from './invert';
+export { Image } from './image';
