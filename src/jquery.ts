@@ -15,7 +15,7 @@ declare global {
     particles(opts?: ParticlesOptions | Method): this;
     parallax(opts?: SelectorOpts<ParallaxOptions> | Method): this;
     tilt(opts?: SelectorOpts<TiltOptions> | Method): this;
-    imageCursor(opts?: ImageCursorOptions | Method): this;
+    imageCursor(opts: ImageCursorOptions | Method): this;
   }
 }
 
