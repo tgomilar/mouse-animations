@@ -740,6 +740,7 @@
           <a href="#card-particles">Particles</a>
           <a href="#card-parallax">Parallax</a>
           <a href="#card-tilt">Tilt</a>
+          <a href="#card-spotlight">Spotlight</a>
           <a href="#card-image-cursor">Image Cursor</a>
           <a href="#card-jquery">jQuery</a>
         </nav>
@@ -1165,6 +1166,54 @@
             <div class="code-wrap">
               <div class="code-label">Usage</div>
               <pre><code id="code-tilt"></code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── SPOTLIGHT ── -->
+        <section class="card" id="card-spotlight">
+          <div class="card-head">
+            <div>
+              <h2>Spotlight</h2>
+              <p>A radial gradient glow that follows the cursor inside each matched element.</p>
+            </div>
+            <button class="toggle" id="btn-spotlight">Enable</button>
+          </div>
+          <div class="demo-zone" style="min-height: 160px; gap: 20px; flex-wrap: wrap">
+            <div class="spotlight-target" style="width: 160px; height: 96px; background: var(--surface2); border: 1px solid var(--border-hi); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;">
+              <div style="font-size: 15px; font-weight: 600; color: var(--text)">Card A</div>
+              <div style="font-size: 12px; color: var(--muted)">Hover to see spotlight</div>
+            </div>
+            <div class="spotlight-target" style="width: 160px; height: 96px; background: rgba(167,139,250,0.07); border: 1px solid rgba(167,139,250,0.3); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;">
+              <div style="font-size: 15px; font-weight: 600; color: var(--accent)">Card B</div>
+              <div style="font-size: 12px; color: var(--muted)">Hover to see spotlight</div>
+            </div>
+            <div class="spotlight-target" style="width: 160px; height: 96px; background: rgba(96,165,250,0.07); border: 1px solid rgba(96,165,250,0.3); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;">
+              <div style="font-size: 15px; font-weight: 600; color: var(--accent2)">Card C</div>
+              <div style="font-size: 12px; color: var(--muted)">Hover to see spotlight</div>
+            </div>
+          </div>
+          <div class="card-foot">
+            <div class="controls">
+              <div class="ctrl">
+                <label>Color</label>
+                <div class="color-row">
+                  <input type="color" id="spotlight-color" value="#ffffff" />
+                  <span class="color-hex" id="spotlight-color-hex">#ffffff</span>
+                </div>
+              </div>
+              <div class="ctrl">
+                <label>Opacity <output id="spotlight-opacity-val">0.12</output></label>
+                <input type="range" id="spotlight-opacity" min="2" max="60" value="12" />
+              </div>
+              <div class="ctrl">
+                <label>Size <output id="spotlight-size-val">200</output> px</label>
+                <input type="range" id="spotlight-size" min="50" max="500" step="10" value="200" />
+              </div>
+            </div>
+            <div class="code-wrap">
+              <div class="code-label">Usage</div>
+              <pre><code id="code-spotlight"></code></pre>
             </div>
           </div>
         </section>

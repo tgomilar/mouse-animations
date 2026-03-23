@@ -87,6 +87,15 @@ export interface TiltOptions {
   glare?: boolean;
 }
 
+export interface SpotlightOptions {
+  /** CSS selector for elements to apply the spotlight to */
+  selector: string;
+  /** Spotlight glow color. Default: 'rgba(255,255,255,0.12)' */
+  color?: string;
+  /** Spotlight radius in px. Default: 200 */
+  size?: number;
+}
+
 export interface ImageCursorOptions {
   /** Image URL or inline SVG string (starting with '<svg') to use as cursor */
   src: string;

@@ -1,4 +1,4 @@
-import { Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax, Tilt, ImageCursor } from 'mouse-animations';
+import { Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax, Tilt, Spotlight, ImageCursor } from 'mouse-animations';
 
 // ─── Utils ────────────────────────────────────────────────────────────────────
 
@@ -540,6 +540,61 @@ function setCardActive(buttonId: string, cardId: string, active: boolean): void 
     } else {
       instance = new Tilt(getOpts());
       setCardActive('btn-tilt', 'card-tilt', true);
+    }
+  });
+}
+
+// ─── Spotlight ────────────────────────────────────────────────────────────────
+
+{
+  let instance: Spotlight | null = null;
+
+  function getOpts() {
+    const hex     = getInput('spotlight-color').value;
+    const opacity = +getInput('spotlight-opacity').value / 100;
+    const n       = parseInt(hex.replace('#', ''), 16);
+    const color   = `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${opacity.toFixed(2)})`;
+    return {
+      selector: '.spotlight-target',
+      color,
+      size: +getInput('spotlight-size').value,
+    };
+  }
+
+  function refresh(): void {
+    const opts = getOpts();
+    renderCode('code-spotlight', 'Spotlight', opts);
+    if (instance) { instance.destroy(); instance = new Spotlight(opts); }
+  }
+
+  renderCode('code-spotlight', 'Spotlight', getOpts());
+
+  getInput('spotlight-color').addEventListener('input', event => {
+    const color = (event.target as HTMLInputElement).value;
+    getElement('spotlight-color-hex').textContent = color;
+    refresh();
+  });
+
+  getInput('spotlight-opacity').addEventListener('input', event => {
+    const value = +(event.target as HTMLInputElement).value;
+    getOutput('spotlight-opacity-val').value = (value / 100).toFixed(2);
+    refresh();
+  });
+
+  getInput('spotlight-size').addEventListener('input', event => {
+    const value = +(event.target as HTMLInputElement).value;
+    getOutput('spotlight-size-val').value = String(value);
+    refresh();
+  });
+
+  getElement('btn-spotlight').addEventListener('click', () => {
+    if (instance) {
+      instance.destroy();
+      instance = null;
+      setCardActive('btn-spotlight', 'card-spotlight', false);
+    } else {
+      instance = new Spotlight(getOpts());
+      setCardActive('btn-spotlight', 'card-spotlight', true);
     }
   });
 }
