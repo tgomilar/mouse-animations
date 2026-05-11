@@ -64,6 +64,7 @@ export class Invert implements MouseAnimationsBase {
       this.curY = this.mouseY;
       this.updatePosition();
       this.el.hidden = false;
+      if (this.opts.hideDefault) document.body.classList.add('__ma-invert-hide');
     }
     if (this.opts.smoothness >= 1) {
       this.curX = this.mouseX;
@@ -84,7 +85,6 @@ export class Invert implements MouseAnimationsBase {
     if (this.active) return;
     this.active = true;
     this.firstMove = true;
-    if (this.opts.hideDefault) document.body.classList.add('__ma-invert-hide');
     document.addEventListener('mousemove', this.onMouseMove);
     if (this.opts.smoothness < 1) this.rafId = requestAnimationFrame(this.loop);
   }
