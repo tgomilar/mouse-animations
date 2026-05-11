@@ -14,6 +14,7 @@ export class CustomCursor implements MouseAnimationsBase {
   private outerY = 0;
   private rafId: number | null = null;
   private active = false;
+  private firstMove = true;
 
   constructor(options: CustomCursorOptions = {}) {
     this.opts = {
@@ -71,6 +72,12 @@ export class CustomCursor implements MouseAnimationsBase {
     this.mouseY = e.clientY;
     this.inner.style.left = `${e.clientX}px`;
     this.inner.style.top = `${e.clientY}px`;
+    if (this.firstMove) {
+      this.firstMove = false;
+      if (this.opts.hideDefault) document.body.classList.add('__ma-hide-cursor');
+      this.inner.hidden = false;
+      this.outer.hidden = false;
+    }
   };
 
   private loop = (): void => {
@@ -86,10 +93,8 @@ export class CustomCursor implements MouseAnimationsBase {
   enable(): void {
     if (this.active) return;
     this.active = true;
-    if (this.opts.hideDefault) document.body.classList.add('__ma-hide-cursor');
+    this.firstMove = true;
     document.addEventListener('mousemove', this.onMouseMove);
-    this.inner.hidden = false;
-    this.outer.hidden = false;
     this.rafId = requestAnimationFrame(this.loop);
   }
 

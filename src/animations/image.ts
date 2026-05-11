@@ -3,9 +3,48 @@ import type { MouseAnimationsBase, ImageOptions } from '../core/types';
 /** Elements that trigger the built-in 'hover' state. */
 const INTERACTIVE = 'a, button, [role="button"], input, select, textarea, label, summary, [tabindex]:not([tabindex="-1"])';
 
-/**
- * Replaces the native cursor with a custom image or inline SVG element.
- */
+let sharedStyle: HTMLStyleElement | null = null;
+let styleRefs = 0;
+
+function acquireSharedStyle(): void {
+  if (!sharedStyle) {
+    sharedStyle = document.createElement('style');
+    sharedStyle.textContent = `
+      .__ma-img {
+        position: fixed; top: 0; left: 0;
+        pointer-events: none; z-index: 1000000;
+        will-change: transform; user-select: none;
+      }
+      .__ma-hide, .__ma-hide * { cursor: none !important; }
+    `;
+    document.head.appendChild(sharedStyle);
+  }
+  styleRefs++;
+}
+
+function releaseSharedStyle(): void {
+  if (--styleRefs <= 0) {
+    sharedStyle?.remove();
+    sharedStyle = null;
+    styleRefs = 0;
+  }
+}
+
+// Ref-counted __ma-hide class — prevents one instance's disable() from
+// uncovering the cursor while another instance is still active.
+let hideCount: number = 0;
+
+function acquireHideClass(): void {
+  if (++hideCount === 1) document.body.classList.add('__ma-hide');
+}
+
+function releaseHideClass(): void {
+  if (--hideCount <= 0) {
+    hideCount = 0;
+    document.body.classList.remove('__ma-hide');
+  }
+}
+
 export class Image implements MouseAnimationsBase {
   private src: string;
   private readonly states: Record<string, string>;
@@ -17,17 +56,19 @@ export class Image implements MouseAnimationsBase {
     overrideAll: boolean;
   };
   private readonly el: HTMLElement;
-  private readonly style: HTMLStyleElement;
+  // Pre-rendered element per state — switching states is O(1) DOM toggle, no re-parse.
+  private readonly stateEls: Map<string, HTMLElement> = new Map();
   private overrideStyle: HTMLStyleElement | null = null;
-  private mouseX = 0;
-  private mouseY = 0;
-  private curX = 0;
-  private curY = 0;
+  private hidingCursor: boolean = false;
+  private mouseX: number = 0;
+  private mouseY: number = 0;
+  private curX: number = 0;
+  private curY: number = 0;
   private rafId: number | null = null;
-  private active = false;
-  private firstMove = true;
-  private currentState = 'normal';
-  private isMouseDown = false;
+  private active: boolean  = false;
+  private firstMove: boolean  = true;
+  private currentState: string  = 'normal';
+  private isMouseDown: boolean  = false;
 
   constructor(options: ImageOptions) {
     const { src, states = {}, overrideAll = false, hideDefault = true,
@@ -35,20 +76,37 @@ export class Image implements MouseAnimationsBase {
     this.src = src;
     this.states = { ...states };
     this.opts = { width, height, offsetX, offsetY, smoothness, hideDefault, overrideAll };
-    this.style = this.injectStyles();
-    this.el = this.buildElement(src);
+    acquireSharedStyle();
+    this.el = this.buildContainer();
     document.body.appendChild(this.el);
     this.enable();
   }
 
   // ─── DOM helpers ────────────────────────────────────────────────────────────
 
-  private buildElement(src: string): HTMLElement {
+  private buildContainer(): HTMLElement {
     const el = document.createElement('div');
     el.className = '__ma-img';
     el.hidden = true;
-    this.renderContent(el, src);
+
+    const normalEl = this.createStateEl(this.src);
+    this.stateEls.set('normal', normalEl);
+    el.appendChild(normalEl);
+
+    for (const [key, src] of Object.entries(this.states)) {
+      const stateEl = this.createStateEl(src);
+      stateEl.hidden = true;
+      this.stateEls.set(key, stateEl);
+      el.appendChild(stateEl);
+    }
+
     return el;
+  }
+
+  private createStateEl(src: string): HTMLElement {
+    const wrapper = document.createElement('div');
+    this.renderContent(wrapper, src);
+    return wrapper;
   }
 
   private renderContent(container: HTMLElement, src: string): void {
@@ -66,25 +124,27 @@ export class Image implements MouseAnimationsBase {
     }
   }
 
-  private injectStyles(): HTMLStyleElement {
-    const s = document.createElement('style');
-    s.textContent = `
-      .__ma-img {
-        position: fixed; top: 0; left: 0;
-        pointer-events: none; z-index: 1000000;
-        will-change: transform; user-select: none;
-      }
-      .__ma-hide, .__ma-hide * { cursor: none !important; }
-    `;
-    document.head.appendChild(s);
-    return s;
-  }
-
   // ─── Position ───────────────────────────────────────────────────────────────
 
   private updatePosition(): void {
-    const { offsetX, offsetY } = this.opts;
-    this.el.style.transform = `translate(${this.curX + offsetX}px, ${this.curY + offsetY}px)`;
+    const { offsetX, offsetY, width, height } = this.opts;
+    this.el.style.transform = `translate(${this.curX + offsetX - width / 2}px, ${this.curY + offsetY - height / 2}px)`;
+  }
+
+  private applyCursorHiding(): void {
+    if (this.opts.overrideAll) {
+      this.overrideStyle = document.createElement('style');
+      this.overrideStyle.textContent = '* { cursor: none !important; }';
+      document.head.appendChild(this.overrideStyle);
+    } else if (this.opts.hideDefault) {
+      acquireHideClass();
+      this.hidingCursor = true;
+    }
+  }
+
+  private removeCursorHiding(): void {
+    if (this.overrideStyle) { this.overrideStyle.remove(); this.overrideStyle = null; }
+    if (this.hidingCursor) { releaseHideClass(); this.hidingCursor = false; }
   }
 
   private onMouseMove = (e: MouseEvent): void => {
@@ -96,9 +156,13 @@ export class Image implements MouseAnimationsBase {
       this.curY = this.mouseY;
       this.updatePosition();
       this.el.hidden = false;
+      this.applyCursorHiding();
+      if (this.opts.smoothness < 1) this.rafId = requestAnimationFrame(this.loop);
+      return;
     }
     if (this.opts.smoothness >= 1) {
-      this.curX = this.mouseX; this.curY = this.mouseY;
+      this.curX = this.mouseX;
+      this.curY = this.mouseY;
       this.updatePosition();
     }
   };
@@ -131,8 +195,11 @@ export class Image implements MouseAnimationsBase {
 
   private switchState(state: string): void {
     if (state === this.currentState) return;
+    const prevEl: HTMLElement | undefined = this.stateEls.get(this.currentState);
+    if (prevEl) prevEl.hidden = true;
+    const nextEl: HTMLElement = this.stateEls.get(state) ?? this.stateEls.get('normal')!;
+    nextEl.hidden = false;
     this.currentState = state;
-    this.renderContent(this.el, state === 'normal' ? this.src : (this.states[state] ?? this.src));
   }
 
   private onMouseOver = (e: MouseEvent): void => {
@@ -148,10 +215,6 @@ export class Image implements MouseAnimationsBase {
     this.switchState(this.resolveState(document.elementFromPoint(this.mouseX, this.mouseY)));
   };
 
-  private get hasStates(): boolean {
-    return Object.keys(this.states).length > 0;
-  }
-
   // ─── Public API ─────────────────────────────────────────────────────────────
 
   /**
@@ -162,42 +225,34 @@ export class Image implements MouseAnimationsBase {
    * - Any other string is treated as a CSS selector
    */
   setSource(state: 'normal' | 'hover' | 'active' | string, src: string): void {
-    if (state === 'normal') {
-      this.src = src;
-      if (this.currentState === 'normal') this.renderContent(this.el, src);
+    if (state === 'normal') this.src = src;
+    else this.states[state] = src;
+
+    const existing: HTMLElement | undefined = this.stateEls.get(state);
+    if (existing) {
+      this.renderContent(existing, src);
     } else {
-      this.states[state] = src;
-      if (this.currentState === state) this.renderContent(this.el, src);
+      const stateEl: HTMLElement = this.createStateEl(src);
+      stateEl.hidden = this.currentState !== state;
+      this.stateEls.set(state, stateEl);
+      this.el.appendChild(stateEl);
     }
   }
 
   enable(): void {
     if (this.active) return;
     this.active = true;
-
-    if (this.opts.overrideAll) {
-      this.overrideStyle = document.createElement('style');
-      this.overrideStyle.textContent = '* { cursor: none !important; }';
-      document.head.appendChild(this.overrideStyle);
-    } else if (this.opts.hideDefault) {
-      document.body.classList.add('__ma-hide');
-    }
-
     this.firstMove = true;
     document.addEventListener('mousemove', this.onMouseMove);
-    if (this.hasStates) {
-      document.addEventListener('mouseover', this.onMouseOver);
-      document.addEventListener('mousedown', this.onMouseDown);
-      document.addEventListener('mouseup', this.onMouseUp);
-    }
-    if (this.opts.smoothness < 1) this.rafId = requestAnimationFrame(this.loop);
+    document.addEventListener('mouseover', this.onMouseOver);
+    document.addEventListener('mousedown', this.onMouseDown);
+    document.addEventListener('mouseup', this.onMouseUp);
   }
 
   disable(): void {
     if (!this.active) return;
     this.active = false;
-    document.body.classList.remove('__ma-hide');
-    if (this.overrideStyle) { this.overrideStyle.remove(); this.overrideStyle = null; }
+    this.removeCursorHiding();
     document.removeEventListener('mousemove', this.onMouseMove);
     document.removeEventListener('mouseover', this.onMouseOver);
     document.removeEventListener('mousedown', this.onMouseDown);
@@ -209,6 +264,6 @@ export class Image implements MouseAnimationsBase {
   destroy(): void {
     this.disable();
     this.el.remove();
-    this.style.remove();
+    releaseSharedStyle();
   }
 }
