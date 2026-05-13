@@ -62,7 +62,7 @@
         --text: #e2e8f0;
         --muted: #64748b;
         --emerald: #86efac;
-        --radius: 14px;
+        --radius: 16px;
         --font: "Inter", system-ui, sans-serif;
         --mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
       }
@@ -78,44 +78,53 @@
       }
 
       .page {
-        max-width: 1020px;
+        max-width: 1280px;
         margin: 0 auto;
-        padding: 64px 24px 120px;
+        padding: 80px 32px 120px;
         position: relative;
         z-index: 1;
+      }
+
+      @media (max-width: 768px) {
+        .page { padding: 48px 16px 80px; }
       }
 
       /* ── Background mouse deco ── */
       .bg-mouse {
         position: fixed;
-        right: 20px;
-        top: 70%;
-        transform: translateY(-50%) rotate(12deg);
-        width: 320px;
+        right: -40px;
+        top: 65%;
+        transform: translateY(-50%) rotate(16deg);
+        width: 400px;
         color: var(--emerald);
-        opacity: 0.15;
+        opacity: 0.08;
         pointer-events: none;
         z-index: 0;
         user-select: none;
       }
 
+      @media (max-width: 900px) {
+        .bg-mouse { display: none; }
+      }
+
       /* ── Header ── */
       header {
         text-align: center;
-        margin-bottom: 64px;
+        margin-bottom: 80px;
       }
 
       header h1 {
         position: relative;
-        font-size: clamp(40px, 5vw, 58px);
-        font-weight: 700;
-        letter-spacing: -0.04em;
-        background: linear-gradient(140deg, #e2e8f0 0%, #c4b5fd 30%, #a78bfa 60%, #818cf8 100%);
+        font-size: clamp(48px, 6vw, 76px);
+        font-weight: 750;
+        letter-spacing: -0.045em;
+        line-height: 1.1;
+        background: linear-gradient(135deg, #e2e8f0 0%, #c4b5fd 35%, #a78bfa 60%, #818cf8 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        margin-bottom: 16px;
-        filter: drop-shadow(0 0 32px rgba(167, 139, 250, 0.25));
+        margin-bottom: 20px;
+        filter: drop-shadow(0 0 48px rgba(167, 139, 250, 0.3));
       }
 
       #logo-canvas {
@@ -126,10 +135,14 @@
 
       .header-sub {
         color: var(--muted);
-        font-size: 17px;
-        max-width: 540px;
-        margin: 0 auto 20px;
-        line-height: 1.6;
+        font-size: 20px;
+        max-width: 660px;
+        margin: 0 auto 28px;
+        line-height: 1.65;
+      }
+
+      @media (max-width: 600px) {
+        .header-sub { font-size: 17px; }
       }
 
       /* ── Badges ── */
@@ -137,16 +150,16 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 8px;
-        margin-bottom: 24px;
+        gap: 10px;
+        margin-bottom: 32px;
       }
 
       .badge {
         display: inline-flex;
         align-items: center;
-        padding: 4px 12px;
+        padding: 6px 16px;
         border-radius: 999px;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 500;
         letter-spacing: 0.03em;
         white-space: nowrap;
@@ -179,29 +192,35 @@
       .install-wrap {
         display: flex;
         justify-content: center;
-        margin-bottom: 28px;
+        margin-bottom: 36px;
       }
 
       .install-block {
         display: inline-flex;
         align-items: stretch;
         border: 1px solid var(--border-hi);
-        border-radius: 10px;
+        border-radius: 12px;
         overflow: hidden;
-        background: rgba(0, 0, 0, 0.3);
+        background: rgba(0, 0, 0, 0.35);
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+
+      .install-block:hover {
+        border-color: rgba(134, 239, 172, 0.5);
+        box-shadow: 0 0 24px rgba(134, 239, 172, 0.06);
       }
 
       .install-cmd {
         font-family: var(--mono);
-        font-size: 14px;
+        font-size: 15px;
         color: var(--emerald);
-        padding: 10px 18px;
+        padding: 12px 24px;
         letter-spacing: 0.02em;
         user-select: all;
       }
 
       .copy-btn {
-        padding: 10px 16px;
+        padding: 12px 20px;
         background: transparent;
         border: none;
         border-left: 1px solid var(--border-hi);
@@ -233,14 +252,15 @@
 
       .effect-nav a {
         display: inline-block;
-        padding: 5px 14px;
+        padding: 7px 18px;
         border-radius: 999px;
         border: 1px solid var(--border-hi);
         background: var(--surface);
         color: #94a3b8;
-        font-size: 13px;
+        font-size: 14px;
+        font-weight: 450;
         text-decoration: none;
-        transition: border-color 0.2s, color 0.2s, background 0.2s;
+        transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.15s;
         white-space: nowrap;
       }
 
@@ -248,6 +268,7 @@
         border-color: var(--accent);
         color: var(--accent);
         background: rgba(167, 139, 250, 0.08);
+        transform: translateY(-1px);
       }
 
 
@@ -255,7 +276,7 @@
       .cards {
         display: flex;
         flex-direction: column;
-        gap: 28px;
+        gap: 32px;
       }
 
       .card {
@@ -266,14 +287,14 @@
         transition:
           border-color 0.3s,
           box-shadow 0.3s;
-        font-size: 15px;
+        font-size: 16px;
       }
 
       .card.active {
         border-color: rgba(167, 139, 250, 0.45);
         box-shadow:
           0 0 0 1px rgba(167, 139, 250, 0.08),
-          0 8px 40px rgba(167, 139, 250, 0.07);
+          0 8px 48px rgba(167, 139, 250, 0.08);
       }
 
       /* ── Card head ── */
@@ -282,28 +303,28 @@
         align-items: flex-start;
         justify-content: space-between;
         gap: 16px;
-        padding: 24px 24px 20px;
+        padding: 28px 28px 24px;
       }
 
       .card-head h2 {
-        font-size: 17px;
-        font-weight: 600;
+        font-size: 21px;
+        font-weight: 650;
         color: var(--accent);
         letter-spacing: 0.01em;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
       }
 
       .card-head p {
         color: #94a3b8;
-        font-size: 15px;
-        max-width: 440px;
-        line-height: 1.5;
+        font-size: 16px;
+        max-width: 520px;
+        line-height: 1.55;
       }
 
       .card-hint {
-        font-size: 12px;
+        font-size: 13px;
         color: var(--muted);
-        margin-top: 6px;
+        margin-top: 8px;
       }
 
       /* ── Toggle ── */
@@ -311,13 +332,13 @@
         flex-shrink: 0;
         display: inline-flex;
         align-items: center;
-        gap: 7px;
-        padding: 7px 16px;
+        gap: 8px;
+        padding: 9px 20px;
         border-radius: 999px;
         border: 1px solid var(--border-hi);
         background: transparent;
         color: var(--muted);
-        font-size: 14px;
+        font-size: 15px;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s;
@@ -326,12 +347,12 @@
 
       .toggle::before {
         content: "";
-        width: 6px;
-        height: 6px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
         background: currentColor;
         flex-shrink: 0;
-        transition: background 0.2s,box-shadow 0.2s;
+        transition: background 0.2s, box-shadow 0.2s;
       }
 
       .toggle:hover {
@@ -346,20 +367,20 @@
       }
 
       .toggle.on::before {
-        box-shadow: 0 0 6px var(--accent);
+        box-shadow: 0 0 8px var(--accent);
       }
 
       /* ── Demo zone ── */
       .demo-zone {
-        margin: 0 24px;
+        margin: 0 28px;
         border: 1px dashed var(--border);
-        border-radius: 10px;
-        min-height: 110px;
+        border-radius: 12px;
+        min-height: 120px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--muted);
-        font-size: 14px;
+        font-size: 15px;
         transition: border-color 0.3s;
       }
 
@@ -374,14 +395,14 @@
 
       /* ── Magnetic demo ── */
       .mag-grid {
-        margin: 0 24px;
+        margin: 0 28px;
         display: flex;
         flex-wrap: wrap;
-        gap: 12px;
-        padding: 24px;
+        gap: 14px;
+        padding: 28px;
         justify-content: center;
         border: 1px dashed var(--border);
-        border-radius: 10px;
+        border-radius: 12px;
         transition: border-color 0.3s;
       }
 
@@ -390,13 +411,13 @@
       }
 
       .mag-btn {
-        padding: 11px 22px;
+        padding: 13px 26px;
         background: rgba(167, 139, 250, 0.08);
         border: 1px solid rgba(167, 139, 250, 0.25);
-        border-radius: 10px;
+        border-radius: 12px;
         color: var(--accent);
         font-weight: 600;
-        font-size: 16px;
+        font-size: 17px;
         cursor: pointer;
         will-change: transform;
         transition: background 0.2s;
@@ -411,11 +432,11 @@
       .card-foot {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        margin-top: 20px;
+        margin-top: 24px;
         border-top: 1px solid var(--border-hi);
       }
 
-      @media (max-width: 620px) {
+      @media (max-width: 720px) {
         .card-foot {
           grid-template-columns: 1fr;
         }
@@ -423,14 +444,14 @@
 
       /* ── Controls ── */
       .controls {
-        padding: 20px 24px;
+        padding: 24px 28px;
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 18px;
         border-right: 1px solid var(--border);
       }
 
-      @media (max-width: 620px) {
+      @media (max-width: 720px) {
         .controls {
           border-right: none;
           border-bottom: 1px solid var(--border);
@@ -440,20 +461,20 @@
       .ctrl {
         display: flex;
         flex-direction: column;
-        gap: 7px;
+        gap: 8px;
       }
 
       .ctrl label {
         display: flex;
         justify-content: space-between;
-        font-size: 13px;
+        font-size: 14px;
         color: #94a3b8;
       }
 
       .ctrl label output {
         color: var(--text);
         font-family: var(--mono);
-        font-size: 13px;
+        font-size: 14px;
         font-variant-numeric: tabular-nums;
       }
 
@@ -461,7 +482,7 @@
         -webkit-appearance: none;
         appearance: none;
         width: 100%;
-        height: 3px;
+        height: 4px;
         background: var(--border);
         border-radius: 2px;
         outline: none;
@@ -470,8 +491,8 @@
 
       input[type="range"]::-webkit-slider-thumb {
         -webkit-appearance: none;
-        width: 13px;
-        height: 13px;
+        width: 15px;
+        height: 15px;
         border-radius: 50%;
         background: var(--accent);
         cursor: pointer;
@@ -482,12 +503,12 @@
 
       input[type="range"]::-webkit-slider-thumb:hover {
         transform: scale(1.25);
-        box-shadow: 0 0 8px rgba(167, 139, 250, 0.7);
+        box-shadow: 0 0 10px rgba(167, 139, 250, 0.7);
       }
 
       input[type="range"]::-moz-range-thumb {
-        width: 13px;
-        height: 13px;
+        width: 15px;
+        height: 15px;
         border-radius: 50%;
         background: var(--accent);
         cursor: pointer;
@@ -502,10 +523,10 @@
 
       input[type="color"] {
         -webkit-appearance: none;
-        width: 28px;
-        height: 28px;
+        width: 32px;
+        height: 32px;
         border: 1px solid var(--border-hi);
-        border-radius: 6px;
+        border-radius: 8px;
         cursor: pointer;
         padding: 2px;
         background: var(--surface2);
@@ -518,13 +539,31 @@
 
       input[type="color"]::-webkit-color-swatch {
         border: none;
-        border-radius: 3px;
+        border-radius: 4px;
       }
 
       .color-hex {
-        font-size: 13px;
+        font-size: 14px;
         font-family: var(--mono);
         color: var(--text);
+      }
+
+      select {
+        padding: 8px 12px;
+        border: 1px solid var(--border-hi);
+        border-radius: 8px;
+        background: var(--surface2);
+        color: var(--text);
+        font-size: 14px;
+        font-family: var(--font);
+        cursor: pointer;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      select:hover,
+      select:focus {
+        border-color: var(--accent);
       }
 
       /* Palette swatches */
@@ -535,9 +574,9 @@
       }
 
       .swatch {
-        width: 20px;
-        height: 20px;
-        border-radius: 4px;
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
         cursor: pointer;
         border: 2px solid transparent;
         transition:
@@ -555,11 +594,11 @@
 
       /* ── Code block ── */
       .code-wrap {
-        font-size: 14px;
-        padding: 20px 24px;
+        font-size: 15px;
+        padding: 24px 28px;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
       }
 
       .code-label {
@@ -572,8 +611,8 @@
       pre {
         background: rgba(0, 0, 0, 0.35);
         border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 14px 16px;
+        border-radius: 10px;
+        padding: 16px 20px;
         overflow-x: auto;
         flex: 1;
       }
@@ -586,29 +625,12 @@
       }
 
       /* Syntax tokens */
-      .tok-kw {
-        color: #60a5fa;
-      }
-
-      .tok-cls {
-        color: #a78bfa;
-      }
-
-      .tok-key {
-        color: #7dd3fc;
-      }
-
-      .tok-str {
-        color: var(--emerald);
-      }
-
-      .tok-num {
-        color: #fdba74;
-      }
-
-      .tok-pun {
-        color: #475569;
-      }
+      .tok-kw { color: #60a5fa; }
+      .tok-cls { color: #a78bfa; }
+      .tok-key { color: #7dd3fc; }
+      .tok-str { color: var(--emerald); }
+      .tok-num { color: #fdba74; }
+      .tok-pun { color: #475569; }
 
       /* ── Preset buttons (image-cursor) ── */
       .preset-row {
@@ -618,13 +640,13 @@
       }
 
       .preset-btn {
-        width: 38px;
-        height: 38px;
-        border-radius: 8px;
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
         border: 2px solid var(--border-hi);
         background: var(--surface2);
         color: var(--text);
-        font-size: 20px;
+        font-size: 22px;
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -649,21 +671,30 @@
         transform: scale(1.1);
       }
 
+      /* ── Checkbox style ── */
+      input[type="checkbox"] {
+        accent-color: var(--accent);
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
+
       /* ── Footer ── */
       footer {
-        margin-top: 80px;
+        margin-top: 96px;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 12px;
+        gap: 14px;
         color: var(--muted);
-        font-size: 14px;
+        font-size: 15px;
+        flex-wrap: wrap;
       }
 
       .footer-mouse {
-        width: 18px;
+        width: 20px;
         color: var(--muted);
-        opacity: 0.5;
+        opacity: 0.4;
         flex-shrink: 0;
       }
 
@@ -680,7 +711,7 @@
       .floating-nav {
         position: fixed;
         top: 20px;
-        right: 20px;
+        right: 24px;
         display: flex;
         gap: 8px;
         z-index: 9999;
@@ -689,15 +720,15 @@
       .floating-btn {
         display: inline-flex;
         align-items: center;
-        gap: 7px;
-        padding: 8px 16px;
+        gap: 8px;
+        padding: 10px 20px;
         border-radius: 999px;
         border: 1px solid var(--border-hi);
-        background: rgba(17, 17, 24, 0.9);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
+        background: rgba(17, 17, 24, 0.85);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         color: var(--muted);
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 500;
         font-family: var(--font), system-ui, sans-serif;
         text-decoration: none;
@@ -713,7 +744,7 @@
         color: var(--text);
         box-shadow:
           0 0 0 1px rgba(167, 139, 250, 0.12),
-          0 4px 20px rgba(0, 0, 0, 0.4);
+          0 4px 24px rgba(0, 0, 0, 0.5);
       }
 
       .floating-btn svg {
@@ -780,6 +811,7 @@
           <a href="#card-parallax">Parallax</a>
           <a href="#card-tilt">Tilt</a>
           <a href="#card-spotlight">Spotlight</a>
+          <a href="#card-flashlight">Flashlight</a>
           <a href="#card-image">Image</a>
           <a href="#card-jquery">jQuery</a>
         </nav>
@@ -797,7 +829,7 @@
             <button class="toggle" id="btn-invert">Enable</button>
           </div>
           <div class="demo-zone" style="min-height: 110px; gap: 24px">
-            <span style="font-size: 28px; font-weight: 700; color: var(--text); pointer-events: none; user-select: none">Hover over this text</span>
+            <span style="font-size: 32px; font-weight: 700; color: var(--text); pointer-events: none; user-select: none">Hover over this text</span>
           </div>
           <div class="card-foot">
             <div class="controls">
@@ -1122,7 +1154,7 @@
             <div
               class="parallax-target"
               style="width: 72px; height: 24px; background: rgba(52, 211, 153, 0.35); border: 2px solid rgba(52, 211, 153, 0.8); border-radius: 6px"></div>
-            <span class="demo-hint" style="position: absolute">Move your mouse across the page</span>
+            <span class="demo-hint" style="position: absolute; font-size: 15px">Move your mouse across the page</span>
           </div>
           <div class="card-foot">
             <div class="controls">
@@ -1161,51 +1193,54 @@
           <div class="demo-zone" style="min-height: 160px; gap: 20px; flex-wrap: wrap">
             <div
               class="tilt-target"
-              style="
-                width: 120px;
-                height: 80px;
-                background: rgba(255, 255, 255, 0.07);
-                border: 2px solid rgba(255, 255, 255, 0.35);
-                border-radius: 12px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 14px;
-                color: var(--text);
-              ">
-              Card A
-            </div>
-            <div
-              class="tilt-target"
-              style="
-                width: 120px;
-                height: 80px;
-                background: rgba(167, 139, 250, 0.25);
-                border: 2px solid rgba(167, 139, 250, 0.75);
-                border-radius: 12px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 14px;
-                color: var(--accent);
-              ">
-              Card B
-            </div>
-            <div
-              class="tilt-target"
-              style="
-                width: 120px;
-                height: 80px;
-                background: rgba(96, 165, 250, 0.25);
-                border: 2px solid rgba(96, 165, 250, 0.75);
-                border-radius: 12px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 14px;
-                color: var(--accent2);
-              ">
-              Card C
+                style="
+                  width: 140px;
+                  height: 96px;
+                  background: rgba(255, 255, 255, 0.07);
+                  border: 2px solid rgba(255, 255, 255, 0.35);
+                  border-radius: 14px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 16px;
+                  font-weight: 600;
+                  color: var(--text);
+                ">
+                Card A
+              </div>
+              <div
+                class="tilt-target"
+                style="
+                  width: 140px;
+                  height: 96px;
+                  background: rgba(167, 139, 250, 0.25);
+                  border: 2px solid rgba(167, 139, 250, 0.75);
+                  border-radius: 14px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 16px;
+                  font-weight: 600;
+                  color: var(--accent);
+                ">
+                Card B
+              </div>
+              <div
+                class="tilt-target"
+                style="
+                  width: 140px;
+                  height: 96px;
+                  background: rgba(96, 165, 250, 0.25);
+                  border: 2px solid rgba(96, 165, 250, 0.75);
+                  border-radius: 14px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 16px;
+                  font-weight: 600;
+                  color: var(--accent2);
+                ">
+                Card C
             </div>
           </div>
           <div class="card-foot">
@@ -1234,8 +1269,8 @@
                 <input type="range" id="tilt-ease" min="2" max="40" value="10" />
               </div>
               <div class="ctrl" style="flex-direction: row; align-items: center; gap: 10px">
-                <label style="justify-content: flex-start; gap: 8px">
-                  <input type="checkbox" id="tilt-glare" style="accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer" />
+                <label style="justify-content: flex-start; gap: 8px; cursor: pointer">
+                  <input type="checkbox" id="tilt-glare" />
                   Glare overlay
                 </label>
               </div>
@@ -1252,24 +1287,27 @@
           <div class="card-head">
             <div>
               <h2>Spotlight</h2>
-              <p>A radial gradient glow that follows the cursor inside each matched element.</p>
+              <p>A radial gradient glow that follows the cursor inside each matched element. Works best on dark cards and panels.</p>
+              <p class="card-hint">Hover over the cards below</p>
             </div>
             <button class="toggle" id="btn-spotlight">Enable</button>
           </div>
-          <div class="demo-zone" style="min-height: 160px; gap: 20px; flex-wrap: wrap">
-            <div class="spotlight-target" style="width: 160px; height: 96px; background: var(--surface2); border: 1px solid var(--border-hi); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;">
-              <div style="font-size: 15px; font-weight: 600; color: var(--text)">Card A</div>
-              <div style="font-size: 12px; color: var(--muted)">Hover to see spotlight</div>
+
+          <div class="demo-zone" style="min-height: 180px; gap: 24px; flex-wrap: wrap">
+            <div class="spotlight-target" style="width: 180px; height: 110px; background: var(--surface2); border: 1px solid var(--border-hi); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;">
+              <div style="font-size: 17px; font-weight: 600; color: var(--text)">Card A</div>
+              <div style="font-size: 13px; color: var(--muted)">Hover to see spotlight</div>
             </div>
-            <div class="spotlight-target" style="width: 160px; height: 96px; background: rgba(167,139,250,0.07); border: 1px solid rgba(167,139,250,0.3); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;">
-              <div style="font-size: 15px; font-weight: 600; color: var(--accent)">Card B</div>
-              <div style="font-size: 12px; color: var(--muted)">Hover to see spotlight</div>
+            <div class="spotlight-target" style="width: 180px; height: 110px; background: rgba(167,139,250,0.07); border: 1px solid rgba(167,139,250,0.3); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;">
+              <div style="font-size: 17px; font-weight: 600; color: var(--accent)">Card B</div>
+              <div style="font-size: 13px; color: var(--muted)">Hover to see spotlight</div>
             </div>
-            <div class="spotlight-target" style="width: 160px; height: 96px; background: rgba(96,165,250,0.07); border: 1px solid rgba(96,165,250,0.3); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;">
-              <div style="font-size: 15px; font-weight: 600; color: var(--accent2)">Card C</div>
-              <div style="font-size: 12px; color: var(--muted)">Hover to see spotlight</div>
+            <div class="spotlight-target" style="width: 180px; height: 110px; background: rgba(96,165,250,0.07); border: 1px solid rgba(96,165,250,0.3); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;">
+              <div style="font-size: 17px; font-weight: 600; color: var(--accent2)">Card C</div>
+              <div style="font-size: 13px; color: var(--muted)">Hover to see spotlight</div>
             </div>
           </div>
+
           <div class="card-foot">
             <div class="controls">
               <div class="ctrl">
@@ -1281,7 +1319,7 @@
               </div>
               <div class="ctrl">
                 <label>Opacity <output id="spotlight-opacity-val">0.12</output></label>
-                <input type="range" id="spotlight-opacity" min="2" max="60" value="12" />
+                <input type="range" id="spotlight-opacity" min="2" max="100" value="12" />
               </div>
               <div class="ctrl">
                 <label>Size <output id="spotlight-size-val">200</output> px</label>
@@ -1291,6 +1329,55 @@
             <div class="code-wrap">
               <div class="code-label">Usage</div>
               <pre><code id="code-spotlight"></code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── FLASHLIGHT ── -->
+        <section class="card" id="card-flashlight">
+          <div class="card-head">
+            <div>
+              <h2>Flashlight</h2>
+              <p>A full-page dark overlay with a transparent circle that follows the cursor, revealing the content beneath like a flashlight.</p>
+              <p class="card-hint">Move your mouse anywhere on the page</p>
+            </div>
+            <button class="toggle" id="btn-flashlight">Enable</button>
+          </div>
+
+          <div class="demo-zone" style="min-height: 80px; align-items: center; justify-content: center;">
+            <div style="font-size: 16px; color: var(--muted); text-align: center;">
+              The flashlight overlay is <strong>active</strong> — move your cursor to reveal the page beneath.
+            </div>
+          </div>
+
+          <div class="card-foot">
+            <div class="controls">
+              <div class="ctrl">
+                <label>Backdrop opacity</label>
+                <div class="color-row">
+                  <span style="font-size: 13px; color: var(--muted)">—</span>
+                </div>
+              </div>
+              <div class="ctrl">
+                <label>Opacity <output id="fl-opacity-val">0.85</output></label>
+                <input type="range" id="fl-opacity" min="10" max="100" value="85" />
+              </div>
+              <div class="ctrl">
+                <label>Size <output id="fl-size-val">200</output> px</label>
+                <input type="range" id="fl-size" min="50" max="500" step="10" value="200" />
+              </div>
+              <div class="ctrl">
+                <label>Blur <output id="fl-blur-val">0</output> px</label>
+                <input type="range" id="fl-blur" min="0" max="30" value="0" />
+              </div>
+              <div class="ctrl">
+                <label>Smoothness <output id="fl-smooth-val">1.00</output></label>
+                <input type="range" id="fl-smooth" min="5" max="100" value="100" />
+              </div>
+            </div>
+            <div class="code-wrap">
+              <div class="code-label">Usage</div>
+              <pre><code id="code-flashlight"></code></pre>
             </div>
           </div>
         </section>
@@ -1329,8 +1416,8 @@
                 <input type="range" id="imgcursor-smooth" min="5" max="100" value="100" />
               </div>
               <div class="ctrl" style="flex-direction: row; align-items: center; gap: 10px">
-                <label style="justify-content: flex-start; gap: 8px">
-                  <input type="checkbox" id="imgcursor-override" style="accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer" />
+                <label style="justify-content: flex-start; gap: 8px; cursor: pointer">
+                  <input type="checkbox" id="imgcursor-override" />
                   Override all cursors
                 </label>
               </div>
@@ -1344,8 +1431,8 @@
                 </div>
               </div>
               <div class="ctrl" style="flex-direction: row; align-items: center; gap: 10px">
-                <label style="justify-content: flex-start; gap: 8px">
-                  <input type="checkbox" id="imgcursor-active" style="accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer" />
+                <label style="justify-content: flex-start; gap: 8px; cursor: pointer">
+                  <input type="checkbox" id="imgcursor-active" />
                   Active (click) state
                 </label>
               </div>

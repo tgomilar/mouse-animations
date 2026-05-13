@@ -1,10 +1,10 @@
 import jQuery from "jquery";
-import { Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax, Tilt, Spotlight, Invert, Image } from "./index";
-import type { TrailOptions, RippleOptions, CustomCursorOptions, MagneticOptions, ParticlesOptions, ParallaxOptions, TiltOptions, SpotlightOptions, InvertOptions, ImageOptions } from "./core/types";
+import { Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax, Tilt, Spotlight, Flashlight, Invert, Image } from "./index";
+import type { TrailOptions, RippleOptions, CustomCursorOptions, MagneticOptions, ParticlesOptions, ParallaxOptions, TiltOptions, SpotlightOptions, FlashlightOptions, InvertOptions, ImageOptions } from "./core/types";
 
 type AnimInstance = { enable(): void; disable(): void; destroy(): void };
 type Method = "enable" | "disable" | "destroy";
-type SelectorOpts<T extends { selector: string }> = Omit<T, "selector"> & { selector?: string };
+type SelectorOpts<T extends { selector?: string }> = Omit<T, "selector"> & { selector?: string };
 
 declare global {
   interface JQuery {
@@ -16,6 +16,7 @@ declare global {
     parallax(opts?: SelectorOpts<ParallaxOptions> | Method): this;
     tilt(opts?: SelectorOpts<TiltOptions> | Method): this;
     spotlight(opts?: SelectorOpts<SpotlightOptions> | Method): this;
+    flashlight(opts?: FlashlightOptions | Method): this;
     invert(opts?: InvertOptions | Method): this;
     image(opts: ImageOptions | Method): this;
   }
@@ -49,7 +50,7 @@ jQuery.fn.particles = makePlugin<ParticlesOptions>("ma.particles", Particles);
 // covers all matched elements. Auto-generate a unique class when no selector is given.
 let _selectorCounter = 0;
 
-function makeSelectorPlugin<T extends { selector: string }>(
+function makeSelectorPlugin<T extends { selector?: string }>(
   key: string,
   AnimConstructor: new (opts: T) => AnimInstance,
 ) {
@@ -78,6 +79,7 @@ function makeSelectorPlugin<T extends { selector: string }>(
   };
 }
 
+jQuery.fn.flashlight = makePlugin<FlashlightOptions>("ma.flashlight", Flashlight);
 jQuery.fn.invert = makePlugin<InvertOptions>("ma.invert", Invert);
 jQuery.fn.image = makePlugin<ImageOptions>("ma.image", Image);
 

@@ -6,5 +6,6 @@ export { Particles } from './particles';
 export { Parallax } from './parallax';
 export { Tilt } from './tilt';
 export { Spotlight } from './spotlight';
+export { Flashlight } from './flashlight';
 export { Invert } from './invert';
 export { Image } from './image';

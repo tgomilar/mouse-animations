@@ -21,6 +21,7 @@ A lightweight, framework-agnostic library for cursor and mouse effects. Zero dep
 | **Parallax**     | Elements shift subtly as the mouse moves across the viewport      |
 | **Tilt**         | 3D perspective tilt that follows the cursor within each element   |
 | **Spotlight**    | Radial gradient glow that follows the cursor inside each element  |
+| **Flashlight**   | Full-page dark overlay with a transparent circle following the cursor |
 | **Invert**       | Colored circle that inverts content beneath it via mix-blend-mode |
 | **Image**        | Replaces the native cursor with a custom image or inline SVG      |
 
@@ -74,7 +75,7 @@ All option types are exported for use in TypeScript projects:
 import type {
   TrailOptions, RippleOptions, CustomCursorOptions,
   MagneticOptions, ParticlesOptions, ParallaxOptions,
-  TiltOptions, SpotlightOptions, InvertOptions, ImageOptions,
+  TiltOptions, SpotlightOptions, FlashlightOptions, InvertOptions, ImageOptions,
 } from "mouse-animations";
 ```
 
@@ -211,10 +212,27 @@ Renders a radial gradient glow that follows the cursor inside each matched eleme
 ```ts
 import { Spotlight } from "mouse-animations";
 
-const spotlight = new Spotlight({
-  selector: ".card", // CSS selector for elements (required)
-  color: "rgba(255,255,255,0.12)", // spotlight glow color
-  size: 200, // spotlight radius in px
+const glow = new Spotlight({
+  selector: ".card",
+  color: "rgba(255,255,255,0.12)",
+  size: 200,
+});
+```
+
+---
+
+### Flashlight
+
+Creates a full-page dark overlay with a transparent circle that follows the cursor, revealing the content beneath like a beam of light in the dark.
+
+```ts
+import { Flashlight } from "mouse-animations";
+
+const flashlight = new Flashlight({
+  backdrop: "rgba(0,0,0,0.85)", // overlay tint
+  size: 200,                     // light radius
+  blur: 0,                       // blur outside the light
+  smoothness: 0.15,              // lerp smoothness (0–1)
 });
 ```
 
@@ -320,6 +338,7 @@ $("body").customCursor({ innerColor: "#a78bfa", smoothness: 0.12 });
 $("body").particles({ count: 24 });
 $("body").invert({ size: 40, color: "#ffffff" });
 $("body").image({ src: "<svg .../>", overrideAll: true, states: { hover: "<svg .../>" } });
+$("body").flashlight({ backdrop: "rgba(0,0,0,0.85)", size: 200 });
 
 // Selector-based effects — one instance covers all matched elements.
 // The selector option is optional: if omitted, a unique class is stamped
@@ -342,7 +361,7 @@ $("body").trail("destroy");
 All effects are independent and can run simultaneously:
 
 ```ts
-import { Trail, Ripple, Particles, CustomCursor, Magnetic, Parallax, Tilt, Spotlight, Invert, Image } from "mouse-animations";
+import { Trail, Ripple, Particles, CustomCursor, Magnetic, Parallax, Tilt, Spotlight, Flashlight, Invert, Image } from "mouse-animations";
 
 const trail     = new Trail({ color: "#a78bfa" });
 const ripple    = new Ripple({ color: "rgba(167,139,250,0.35)" });
@@ -352,11 +371,12 @@ const magnetic  = new Magnetic({ selector: ".magnetic-btn" });
 const parallax  = new Parallax({ selector: ".layer" });
 const tilt      = new Tilt({ selector: ".card", glare: true });
 const spotlight = new Spotlight({ selector: ".card" });
+const flashlight = new Flashlight({ backdrop: "rgba(0,0,0,0.85)", size: 200 });
 const invert    = new Invert({ size: 40 });
 const image     = new Image({ src: starSvg, overrideAll: true });
 
 // Clean up all at once
-[trail, ripple, particles, cursor, magnetic, parallax, tilt, spotlight, invert, image].forEach((e) => e.destroy());
+[trail, ripple, particles, cursor, magnetic, parallax, tilt, spotlight, flashlight, invert, image].forEach((e) => e.destroy());
 ```
 
 ---
