@@ -1,3 +1,4 @@
+import { CanvasOverlay } from '../core/canvas-overlay';
 import type { MouseAnimationsBase, ParticlesOptions } from '../core/types';
 
 interface Particle {
@@ -14,8 +15,7 @@ const DEFAULT_COLORS = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#c77dff', '
 
 export class Particles implements MouseAnimationsBase {
   private readonly options: Required<ParticlesOptions>;
-  private readonly canvasElement: HTMLCanvasElement;
-  private readonly context: CanvasRenderingContext2D;
+  private readonly overlay: CanvasOverlay;
   private pool: Particle[] = [];
   private rafId: number | null = null;
   private active = false;
@@ -29,26 +29,9 @@ export class Particles implements MouseAnimationsBase {
       spread: 8,
       ...options,
     };
-    this.canvasElement = this.createCanvas();
-    this.context = this.canvasElement.getContext('2d')!;
+    this.overlay = new CanvasOverlay({ zIndex: 999997 });
     this.enable();
   }
-
-  private createCanvas(): HTMLCanvasElement {
-    const canvasElement = document.createElement('canvas');
-    canvasElement.style.cssText =
-      'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999997;';
-    canvasElement.width = window.innerWidth;
-    canvasElement.height = window.innerHeight;
-    document.body.appendChild(canvasElement);
-    window.addEventListener('resize', this.onResize);
-    return canvasElement;
-  }
-
-  private onResize = (): void => {
-    this.canvasElement.width = window.innerWidth;
-    this.canvasElement.height = window.innerHeight;
-  };
 
   private onClick = (e: MouseEvent): void => {
     const { count, colors, size, spread } = this.options;
@@ -69,8 +52,8 @@ export class Particles implements MouseAnimationsBase {
 
   private loop = (): void => {
     if (!this.active) return;
-    const context = this.context;
-    context.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+    const context = this.overlay.ctx;
+    context.clearRect(0, 0, this.overlay.canvas.width, this.overlay.canvas.height);
 
     this.pool = this.pool.filter((particle) => particle.alpha > 0);
     for (const particle of this.pool) {
@@ -103,12 +86,11 @@ export class Particles implements MouseAnimationsBase {
     this.active = false;
     document.removeEventListener('click', this.onClick);
     if (this.rafId !== null) { cancelAnimationFrame(this.rafId); this.rafId = null; }
-    this.context.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+    this.overlay.ctx.clearRect(0, 0, this.overlay.canvas.width, this.overlay.canvas.height);
   }
 
   destroy(): void {
     this.disable();
-    window.removeEventListener('resize', this.onResize);
-    this.canvasElement.remove();
+    this.overlay.destroy();
   }
 }

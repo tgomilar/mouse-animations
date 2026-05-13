@@ -1,4 +1,5 @@
 import { MouseTracker } from '../core/mouse-tracker';
+import { CanvasOverlay } from '../core/canvas-overlay';
 import type { MouseAnimationsBase, TrailOptions } from '../core/types';
 
 interface TrailPoint {
@@ -10,8 +11,7 @@ interface TrailPoint {
 export class Trail implements MouseAnimationsBase {
   private readonly options: Required<TrailOptions>;
   private readonly tracker: MouseTracker;
-  private readonly canvasElement: HTMLCanvasElement;
-  private readonly context: CanvasRenderingContext2D;
+  private readonly overlay: CanvasOverlay;
   private points: TrailPoint[] = [];
   private rafId: number | null = null;
   private active: boolean = false;
@@ -26,26 +26,9 @@ export class Trail implements MouseAnimationsBase {
       ...options,
     };
     this.tracker = MouseTracker.getInstance();
-    this.canvasElement = this.createCanvas();
-    this.context = this.canvasElement.getContext('2d')!;
+    this.overlay = new CanvasOverlay({ zIndex: 999999 });
     this.enable();
   }
-
-  private createCanvas(): HTMLCanvasElement {
-    const canvasElement = document.createElement('canvas');
-    canvasElement.style.cssText =
-      'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999999;';
-    canvasElement.width = window.innerWidth;
-    canvasElement.height = window.innerHeight;
-    document.body.appendChild(canvasElement);
-    window.addEventListener('resize', this.onResize);
-    return canvasElement;
-  }
-
-  private onResize = (): void => {
-    this.canvasElement.width = window.innerWidth;
-    this.canvasElement.height = window.innerHeight;
-  };
 
   private onMove = (): void => {
     this.points.push({ x: this.tracker.x, y: this.tracker.y, alpha: 1 });
@@ -54,8 +37,8 @@ export class Trail implements MouseAnimationsBase {
 
   private loop = (): void => {
     if (!this.active) return;
-    const context = this.context;
-    context.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+    const context = this.overlay.ctx;
+    context.clearRect(0, 0, this.overlay.canvas.width, this.overlay.canvas.height);
 
     const pointCount = this.points.length;
     for (let i = 0; i < pointCount; i++) {
@@ -92,12 +75,11 @@ export class Trail implements MouseAnimationsBase {
       cancelAnimationFrame(this.rafId);
       this.rafId = null;
     }
-    this.context.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+    this.overlay.ctx.clearRect(0, 0, this.overlay.canvas.width, this.overlay.canvas.height);
   }
 
   destroy(): void {
     this.disable();
-    window.removeEventListener('resize', this.onResize);
-    this.canvasElement.remove();
+    this.overlay.destroy();
   }
 }
