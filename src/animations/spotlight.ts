@@ -1,22 +1,23 @@
 import type { MouseAnimationsBase, SpotlightOptions } from '../core/types';
 
-interface SpotlightEntry {
+interface GlowEntry {
   el: HTMLElement;
   onMove: (e: MouseEvent) => void;
   onLeave: () => void;
 }
 
-/**
- * Renders a radial gradient spotlight that follows the cursor inside each matched element.
- */
 export class Spotlight implements MouseAnimationsBase {
   private readonly opts: Required<SpotlightOptions>;
   private readonly style: HTMLStyleElement;
-  private entries: SpotlightEntry[] = [];
-  private active = false;
+  private entries: GlowEntry[] = [];
 
-  constructor(options: SpotlightOptions) {
-    this.opts = { color: 'rgba(255,255,255,0.12)', size: 200, ...options };
+  constructor(options: SpotlightOptions = {}) {
+    this.opts = {
+      selector: '',
+      color: 'rgba(255,255,255,0.12)',
+      size: 200,
+      ...options,
+    };
     this.style = this.injectStyles();
     this.enable();
   }
@@ -42,6 +43,7 @@ export class Spotlight implements MouseAnimationsBase {
   }
 
   private bind(): void {
+    if (!this.opts.selector) return;
     document.querySelectorAll<HTMLElement>(this.opts.selector).forEach(el => {
       el.style.setProperty('--ma-spot-r', `${this.opts.size}px`);
       el.style.setProperty('--ma-spot-color', this.opts.color);
@@ -78,14 +80,10 @@ export class Spotlight implements MouseAnimationsBase {
   }
 
   enable(): void {
-    if (this.active) return;
-    this.active = true;
     this.bind();
   }
 
   disable(): void {
-    if (!this.active) return;
-    this.active = false;
     this.unbind();
   }
 

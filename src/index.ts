@@ -8,6 +8,7 @@ export type {
   ParallaxOptions,
   TiltOptions,
   SpotlightOptions,
+  FlashlightOptions,
   InvertOptions,
   ImageOptions,
 } from './core/types';
@@ -20,5 +21,6 @@ export { Particles } from './animations/particles';
 export { Parallax } from './animations/parallax';
 export { Tilt } from './animations/tilt';
 export { Spotlight } from './animations/spotlight';
+export { Flashlight } from './animations/flashlight';
 export { Invert } from './animations/invert';
 export { Image } from './animations/image';

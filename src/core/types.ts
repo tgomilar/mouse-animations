@@ -100,11 +100,22 @@ export interface InvertOptions {
 
 export interface SpotlightOptions {
   /** CSS selector for elements to apply the spotlight to */
-  selector: string;
+  selector?: string;
   /** Spotlight glow color. Default: 'rgba(255,255,255,0.12)' */
   color?: string;
   /** Spotlight radius in px. Default: 200 */
   size?: number;
+}
+
+export interface FlashlightOptions {
+  /** Background color/opacity for the dark overlay outside the circle. Default: 'rgba(0,0,0,0.85)' */
+  backdrop?: string;
+  /** Circle radius in px. Default: 200 */
+  size?: number;
+  /** Blur radius in px applied outside the circle. 0 = no blur. Default: 0 */
+  blur?: number;
+  /** Lerp smoothness factor (0–1). 1 = instant snap, lower = lag/smoothing. Default: 1 */
+  smoothness?: number;
 }
 
 export interface ImageOptions {

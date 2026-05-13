@@ -1,4 +1,4 @@
-import { Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax, Tilt, Spotlight, Invert, Image } from 'mouse-animations';
+import { Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax, Tilt, Spotlight, Flashlight, Invert, Image } from 'mouse-animations';
 
 // ─── Utils ────────────────────────────────────────────────────────────────────
 
@@ -550,11 +550,9 @@ function setCardActive(buttonId: string, cardId: string, active: boolean): void 
   function getOpts() {
     const hex     = getInput('spotlight-color').value;
     const opacity = +getInput('spotlight-opacity').value / 100;
-    const n       = parseInt(hex.replace('#', ''), 16);
-    const color   = `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${opacity.toFixed(2)})`;
     return {
       selector: '.spotlight-target',
-      color,
+      color: hexToRgba(hex, opacity),
       size: +getInput('spotlight-size').value,
     };
   }
@@ -593,6 +591,64 @@ function setCardActive(buttonId: string, cardId: string, active: boolean): void 
     } else {
       instance = new Spotlight(getOpts());
       setCardActive('btn-spotlight', 'card-spotlight', true);
+    }
+  });
+}
+
+// ─── Flashlight ────────────────────────────────────────────────────────────────
+
+{
+  let instance: Flashlight | null = null;
+
+  function getOpts() {
+    return {
+      backdrop: `rgba(0,0,0,${(+getInput('fl-opacity').value / 100).toFixed(2)})`,
+      size: +getInput('fl-size').value,
+      blur: +getInput('fl-blur').value,
+      smoothness: +(+getInput('fl-smooth').value / 100).toFixed(2),
+    };
+  }
+
+  function refresh(): void {
+    const opts = getOpts();
+    renderCode('code-flashlight', 'Flashlight', opts);
+    if (instance) { instance.destroy(); instance = new Flashlight(opts); }
+  }
+
+  renderCode('code-flashlight', 'Flashlight', getOpts());
+
+  getInput('fl-opacity').addEventListener('input', event => {
+    const value = +(event.target as HTMLInputElement).value;
+    getOutput('fl-opacity-val').value = (value / 100).toFixed(2);
+    refresh();
+  });
+
+  getInput('fl-size').addEventListener('input', event => {
+    const value = +(event.target as HTMLInputElement).value;
+    getOutput('fl-size-val').value = String(value);
+    refresh();
+  });
+
+  getInput('fl-blur').addEventListener('input', event => {
+    const value = +(event.target as HTMLInputElement).value;
+    getOutput('fl-blur-val').value = String(value);
+    refresh();
+  });
+
+  getInput('fl-smooth').addEventListener('input', event => {
+    const value = +(event.target as HTMLInputElement).value;
+    getOutput('fl-smooth-val').value = (value / 100).toFixed(2);
+    refresh();
+  });
+
+  getElement('btn-flashlight').addEventListener('click', () => {
+    if (instance) {
+      instance.destroy();
+      instance = null;
+      setCardActive('btn-flashlight', 'card-flashlight', false);
+    } else {
+      instance = new Flashlight(getOpts());
+      setCardActive('btn-flashlight', 'card-flashlight', true);
     }
   });
 }
