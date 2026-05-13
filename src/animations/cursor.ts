@@ -1,23 +1,16 @@
+import { MouseFollower } from '../core/mouse-follower';
 import type { MouseAnimationsBase, CustomCursorOptions } from '../core/types';
 
-/**
- * Replaces the native cursor with a dot + lagging ring.
- */
 export class CustomCursor implements MouseAnimationsBase {
-  private readonly opts: Required<CustomCursorOptions>;
-  private readonly inner: HTMLElement;
-  private readonly outer: HTMLElement;
-  private readonly style: HTMLStyleElement;
-  private mouseX = 0;
-  private mouseY = 0;
-  private outerX = 0;
-  private outerY = 0;
-  private rafId: number | null = null;
+  private readonly options: Required<CustomCursorOptions>;
+  private readonly innerDot: HTMLElement;
+  private readonly outerRing: HTMLElement;
+  private readonly styleElement: HTMLStyleElement;
+  private readonly follower: MouseFollower;
   private active = false;
-  private firstMove = true;
 
   constructor(options: CustomCursorOptions = {}) {
-    this.opts = {
+    this.options = {
       innerSize: 8,
       outerSize: 36,
       innerColor: '#ffffff',
@@ -26,23 +19,39 @@ export class CustomCursor implements MouseAnimationsBase {
       hideDefault: true,
       ...options,
     };
-    this.style = this.injectStyles();
-    this.inner = this.createElement('__ma-cursor-dot');
-    this.outer = this.createElement('__ma-cursor-ring');
-    document.body.append(this.inner, this.outer);
+    this.styleElement = this.injectStyles();
+    this.innerDot = this.createElement('__ma-cursor-dot');
+    this.outerRing = this.createElement('__ma-cursor-ring');
+    document.body.append(this.innerDot, this.outerRing);
+    this.follower = new MouseFollower({
+      smoothness: this.options.smoothness,
+      onRawMove: (x, y) => {
+        this.innerDot.style.left = `${x}px`;
+        this.innerDot.style.top = `${y}px`;
+      },
+      onFrame: (x, y) => {
+        this.outerRing.style.left = `${x}px`;
+        this.outerRing.style.top = `${y}px`;
+      },
+      onFirstMove: () => {
+        if (this.options.hideDefault) document.body.classList.add('__ma-hide-cursor');
+        this.innerDot.hidden = false;
+        this.outerRing.hidden = false;
+      },
+    });
     this.enable();
   }
 
-  private createElement(cls: string): HTMLElement {
-    const el = document.createElement('div');
-    el.className = cls;
-    return el;
+  private createElement(className: string): HTMLElement {
+    const element = document.createElement('div');
+    element.className = className;
+    return element;
   }
 
   private injectStyles(): HTMLStyleElement {
-    const { innerSize, outerSize, innerColor, outerColor } = this.opts;
-    const s = document.createElement('style');
-    s.textContent = `
+    const { innerSize, outerSize, innerColor, outerColor } = this.options;
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
       .__ma-cursor-dot,.__ma-cursor-ring {
         position: fixed;
         top: 0; left: 0;
@@ -63,55 +72,30 @@ export class CustomCursor implements MouseAnimationsBase {
       }
       .__ma-hide-cursor, .__ma-hide-cursor * { cursor: none !important; }
     `;
-    document.head.appendChild(s);
-    return s;
+    document.head.appendChild(styleElement);
+    return styleElement;
   }
-
-  private onMouseMove = (e: MouseEvent): void => {
-    this.mouseX = e.clientX;
-    this.mouseY = e.clientY;
-    this.inner.style.left = `${e.clientX}px`;
-    this.inner.style.top = `${e.clientY}px`;
-    if (this.firstMove) {
-      this.firstMove = false;
-      if (this.opts.hideDefault) document.body.classList.add('__ma-hide-cursor');
-      this.inner.hidden = false;
-      this.outer.hidden = false;
-    }
-  };
-
-  private loop = (): void => {
-    if (!this.active) return;
-    const ease = this.opts.smoothness;
-    this.outerX += (this.mouseX - this.outerX) * ease;
-    this.outerY += (this.mouseY - this.outerY) * ease;
-    this.outer.style.left = `${this.outerX}px`;
-    this.outer.style.top = `${this.outerY}px`;
-    this.rafId = requestAnimationFrame(this.loop);
-  };
 
   enable(): void {
     if (this.active) return;
     this.active = true;
-    this.firstMove = true;
-    document.addEventListener('mousemove', this.onMouseMove);
-    this.rafId = requestAnimationFrame(this.loop);
+    this.follower.start();
   }
 
   disable(): void {
     if (!this.active) return;
     this.active = false;
     document.body.classList.remove('__ma-hide-cursor');
-    document.removeEventListener('mousemove', this.onMouseMove);
-    if (this.rafId !== null) { cancelAnimationFrame(this.rafId); this.rafId = null; }
-    this.inner.hidden = true;
-    this.outer.hidden = true;
+    this.follower.stop();
+    this.innerDot.hidden = true;
+    this.outerRing.hidden = true;
   }
 
   destroy(): void {
     this.disable();
-    this.inner.remove();
-    this.outer.remove();
-    this.style.remove();
+    this.follower.destroy();
+    this.innerDot.remove();
+    this.outerRing.remove();
+    this.styleElement.remove();
   }
 }

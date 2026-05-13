@@ -7,20 +7,17 @@ interface TrailPoint {
   alpha: number;
 }
 
-/**
- * Renders a fading dot trail that follows the cursor on a canvas overlay.
- */
 export class Trail implements MouseAnimationsBase {
-  private readonly opts: Required<TrailOptions>;
+  private readonly options: Required<TrailOptions>;
   private readonly tracker: MouseTracker;
-  private readonly canvas: HTMLCanvasElement;
-  private readonly ctx: CanvasRenderingContext2D;
+  private readonly canvasElement: HTMLCanvasElement;
+  private readonly context: CanvasRenderingContext2D;
   private points: TrailPoint[] = [];
   private rafId: number | null = null;
   private active: boolean = false;
 
   constructor(options: TrailOptions = {}) {
-    this.opts = {
+    this.options = {
       color: '#ffffff',
       size: 6,
       length: 20,
@@ -29,53 +26,53 @@ export class Trail implements MouseAnimationsBase {
       ...options,
     };
     this.tracker = MouseTracker.getInstance();
-    this.canvas = this.createCanvas();
-    this.ctx = this.canvas.getContext('2d')!;
+    this.canvasElement = this.createCanvas();
+    this.context = this.canvasElement.getContext('2d')!;
     this.enable();
   }
 
   private createCanvas(): HTMLCanvasElement {
-    const c: HTMLCanvasElement = document.createElement('canvas');
-    c.style.cssText =
+    const canvasElement = document.createElement('canvas');
+    canvasElement.style.cssText =
       'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999999;';
-    c.width = window.innerWidth;
-    c.height = window.innerHeight;
-    document.body.appendChild(c);
+    canvasElement.width = window.innerWidth;
+    canvasElement.height = window.innerHeight;
+    document.body.appendChild(canvasElement);
     window.addEventListener('resize', this.onResize);
-    return c;
+    return canvasElement;
   }
 
   private onResize = (): void => {
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
+    this.canvasElement.width = window.innerWidth;
+    this.canvasElement.height = window.innerHeight;
   };
 
   private onMove = (): void => {
     this.points.push({ x: this.tracker.x, y: this.tracker.y, alpha: 1 });
-    if (this.points.length > this.opts.length) this.points.shift();
+    if (this.points.length > this.options.length) this.points.shift();
   };
 
   private loop = (): void => {
     if (!this.active) return;
-    const { ctx: ctx, canvas: cv, opts: o } = this;
-    ctx.clearRect(0, 0, cv.width, cv.height);
+    const context = this.context;
+    context.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
 
-    const len: number = this.points.length;
-    for (let i = 0; i < len; i++) {
-      const p: TrailPoint = this.points[i];
-      const ratio: number = (i + 1) / len;
-      ctx.globalAlpha = p.alpha * ratio;
-      if (o.blur > 0) ctx.filter = `blur(${o.blur}px)`;
-      ctx.fillStyle = o.color;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, Math.max(o.size * ratio, 0.5), 0, Math.PI * 2);
-      ctx.fill();
-      p.alpha = Math.max(0, p.alpha - o.decay);
+    const pointCount = this.points.length;
+    for (let i = 0; i < pointCount; i++) {
+      const point = this.points[i];
+      const ratio = (i + 1) / pointCount;
+      context.globalAlpha = point.alpha * ratio;
+      if (this.options.blur > 0) context.filter = `blur(${this.options.blur}px)`;
+      context.fillStyle = this.options.color;
+      context.beginPath();
+      context.arc(point.x, point.y, Math.max(this.options.size * ratio, 0.5), 0, Math.PI * 2);
+      context.fill();
+      point.alpha = Math.max(0, point.alpha - this.options.decay);
     }
 
-    this.points = this.points.filter((p) => p.alpha > 0);
-    ctx.globalAlpha = 1;
-    if (o.blur > 0) ctx.filter = 'none';
+    this.points = this.points.filter((point) => point.alpha > 0);
+    context.globalAlpha = 1;
+    if (this.options.blur > 0) context.filter = 'none';
     this.rafId = requestAnimationFrame(this.loop);
   };
 
@@ -95,12 +92,12 @@ export class Trail implements MouseAnimationsBase {
       cancelAnimationFrame(this.rafId);
       this.rafId = null;
     }
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
   }
 
   destroy(): void {
     this.disable();
     window.removeEventListener('resize', this.onResize);
-    this.canvas.remove();
+    this.canvasElement.remove();
   }
 }

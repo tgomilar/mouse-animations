@@ -1,27 +1,24 @@
 import type { MouseAnimationsBase, MagneticOptions } from '../core/types';
 
-interface MagEntry {
-  el: HTMLElement;
+interface MagneticEntry {
+  element: HTMLElement;
   savedTransform: string;
   rafId: number | null;
   targetX: number;
   targetY: number;
   currentX: number;
   currentY: number;
-  onMove: (e: MouseEvent) => void;
-  onLeave: () => void;
+  handleMove: (e: MouseEvent) => void;
+  handleLeave: () => void;
 }
 
-/**
- * Applies a magnetic pull to matching elements as the cursor approaches them.
- */
 export class Magnetic implements MouseAnimationsBase {
-  private readonly opts: Required<MagneticOptions>;
-  private entries: MagEntry[] = [];
+  private readonly options: Required<MagneticOptions>;
+  private entries: MagneticEntry[] = [];
   private active = false;
 
   constructor(options: MagneticOptions) {
-    this.opts = {
+    this.options = {
       strength: 0.3,
       radius: 100,
       ease: 0.15,
@@ -30,44 +27,44 @@ export class Magnetic implements MouseAnimationsBase {
     this.enable();
   }
 
-  private setupEntry(el: HTMLElement): MagEntry {
-    const entry: MagEntry = {
-      el,
-      savedTransform: el.style.transform ?? '',
+  private setupEntry(element: HTMLElement): MagneticEntry {
+    const entry: MagneticEntry = {
+      element,
+      savedTransform: element.style.transform ?? '',
       rafId: null,
       targetX: 0,
       targetY: 0,
       currentX: 0,
       currentY: 0,
-      onMove: () => {},
-      onLeave: () => {},
+      handleMove: () => {},
+      handleLeave: () => {},
     };
 
-    entry.onMove = (e: MouseEvent) => {
-      const r = el.getBoundingClientRect();
-      const cx = r.left + r.width / 2;
-      const cy = r.top + r.height / 2;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      if (Math.hypot(dx, dy) < this.opts.radius) {
-        entry.targetX = dx * this.opts.strength;
-        entry.targetY = dy * this.opts.strength;
+    entry.handleMove = (e: MouseEvent) => {
+      const rect = element.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const deltaX = e.clientX - centerX;
+      const deltaY = e.clientY - centerY;
+      if (Math.hypot(deltaX, deltaY) < this.options.radius) {
+        entry.targetX = deltaX * this.options.strength;
+        entry.targetY = deltaY * this.options.strength;
       }
     };
 
-    entry.onLeave = () => {
+    entry.handleLeave = () => {
       entry.targetX = 0;
       entry.targetY = 0;
     };
 
-    el.addEventListener('mousemove', entry.onMove);
-    el.addEventListener('mouseleave', entry.onLeave);
+    element.addEventListener('mousemove', entry.handleMove);
+    element.addEventListener('mouseleave', entry.handleLeave);
 
     const tick = () => {
       if (!this.active) return;
-      entry.currentX += (entry.targetX - entry.currentX) * this.opts.ease;
-      entry.currentY += (entry.targetY - entry.currentY) * this.opts.ease;
-      el.style.transform = `translate(${entry.currentX}px,${entry.currentY}px)`;
+      entry.currentX += (entry.targetX - entry.currentX) * this.options.ease;
+      entry.currentY += (entry.targetY - entry.currentY) * this.options.ease;
+      element.style.transform = `translate(${entry.currentX}px,${entry.currentY}px)`;
       entry.rafId = requestAnimationFrame(tick);
     };
     entry.rafId = requestAnimationFrame(tick);
@@ -75,25 +72,25 @@ export class Magnetic implements MouseAnimationsBase {
     return entry;
   }
 
-  private teardownEntry(entry: MagEntry): void {
-    entry.el.removeEventListener('mousemove', entry.onMove);
-    entry.el.removeEventListener('mouseleave', entry.onLeave);
+  private teardownEntry(entry: MagneticEntry): void {
+    entry.element.removeEventListener('mousemove', entry.handleMove);
+    entry.element.removeEventListener('mouseleave', entry.handleLeave);
     if (entry.rafId !== null) cancelAnimationFrame(entry.rafId);
-    entry.el.style.transform = entry.savedTransform;
+    entry.element.style.transform = entry.savedTransform;
   }
 
   enable(): void {
     if (this.active) return;
     this.active = true;
-    document.querySelectorAll<HTMLElement>(this.opts.selector).forEach((el) => {
-      this.entries.push(this.setupEntry(el));
+    document.querySelectorAll<HTMLElement>(this.options.selector).forEach((element) => {
+      this.entries.push(this.setupEntry(element));
     });
   }
 
   disable(): void {
     if (!this.active) return;
     this.active = false;
-    this.entries.forEach((e) => this.teardownEntry(e));
+    this.entries.forEach((entry) => this.teardownEntry(entry));
     this.entries = [];
   }
 
