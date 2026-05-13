@@ -1,15 +1,15 @@
+import { MouseFollower } from '../core/mouse-follower';
 import type { MouseAnimationsBase, ImageOptions } from '../core/types';
 
-/** Elements that trigger the built-in 'hover' state. */
-const INTERACTIVE = 'a, button, [role="button"], input, select, textarea, label, summary, [tabindex]:not([tabindex="-1"])';
+const INTERACTIVE_SELECTOR = 'a, button, [role="button"], input, select, textarea, label, summary, [tabindex]:not([tabindex="-1"])';
 
-let sharedStyle: HTMLStyleElement | null = null;
-let styleRefs = 0;
+let sharedStyleElement: HTMLStyleElement | null = null;
+let sharedStyleReferenceCount = 0;
 
 function acquireSharedStyle(): void {
-  if (!sharedStyle) {
-    sharedStyle = document.createElement('style');
-    sharedStyle.textContent = `
+  if (!sharedStyleElement) {
+    sharedStyleElement = document.createElement('style');
+    sharedStyleElement.textContent = `
       .__ma-img {
         position: fixed; top: 0; left: 0;
         pointer-events: none; z-index: 1000000;
@@ -17,93 +17,102 @@ function acquireSharedStyle(): void {
       }
       .__ma-hide, .__ma-hide * { cursor: none !important; }
     `;
-    document.head.appendChild(sharedStyle);
+    document.head.appendChild(sharedStyleElement);
   }
-  styleRefs++;
+  sharedStyleReferenceCount++;
 }
 
 function releaseSharedStyle(): void {
-  if (--styleRefs <= 0) {
-    sharedStyle?.remove();
-    sharedStyle = null;
-    styleRefs = 0;
+  if (--sharedStyleReferenceCount <= 0) {
+    sharedStyleElement?.remove();
+    sharedStyleElement = null;
+    sharedStyleReferenceCount = 0;
   }
 }
 
-// Ref-counted __ma-hide class — prevents one instance's disable() from
-// uncovering the cursor while another instance is still active.
-let hideCount: number = 0;
+let hideClassCount = 0;
 
 function acquireHideClass(): void {
-  if (++hideCount === 1) document.body.classList.add('__ma-hide');
+  if (++hideClassCount === 1) document.body.classList.add('__ma-hide');
 }
 
 function releaseHideClass(): void {
-  if (--hideCount <= 0) {
-    hideCount = 0;
+  if (--hideClassCount <= 0) {
+    hideClassCount = 0;
     document.body.classList.remove('__ma-hide');
   }
 }
 
 export class Image implements MouseAnimationsBase {
-  private src: string;
-  private readonly states: Record<string, string>;
-  private readonly opts: {
+  private imageSource: string;
+  private readonly stateSources: Record<string, string>;
+  private readonly options: {
     width: number; height: number;
     offsetX: number; offsetY: number;
     smoothness: number;
     hideDefault: boolean;
     overrideAll: boolean;
   };
-  private readonly el: HTMLElement;
-  // Pre-rendered element per state — switching states is O(1) DOM toggle, no re-parse.
-  private readonly stateEls: Map<string, HTMLElement> = new Map();
+  private readonly imageElement: HTMLElement;
+  private readonly stateElements: Map<string, HTMLElement> = new Map();
   private overrideStyle: HTMLStyleElement | null = null;
-  private hidingCursor: boolean = false;
-  private mouseX: number = 0;
-  private mouseY: number = 0;
-  private curX: number = 0;
-  private curY: number = 0;
-  private rafId: number | null = null;
-  private active: boolean  = false;
-  private firstMove: boolean  = true;
-  private currentState: string  = 'normal';
-  private isMouseDown: boolean  = false;
+  private isHidingCursor: boolean = false;
+  private lastKnownX: number = 0;
+  private lastKnownY: number = 0;
+  private readonly follower: MouseFollower;
+  private active: boolean = false;
+  private currentState: string = 'normal';
+  private isMouseDown: boolean = false;
 
   constructor(options: ImageOptions) {
     const { src, states = {}, overrideAll = false, hideDefault = true,
             width = 32, height = 32, offsetX = 0, offsetY = 0, smoothness = 1 } = options;
-    this.src = src;
-    this.states = { ...states };
-    this.opts = { width, height, offsetX, offsetY, smoothness, hideDefault, overrideAll };
+    this.imageSource = src;
+    this.stateSources = { ...states };
+    this.options = { width, height, offsetX, offsetY, smoothness, hideDefault, overrideAll };
     acquireSharedStyle();
-    this.el = this.buildContainer();
-    document.body.appendChild(this.el);
+    this.imageElement = this.buildContainer();
+    document.body.appendChild(this.imageElement);
+    this.follower = new MouseFollower({
+      smoothness: this.options.smoothness,
+      onRawMove: (x, y) => {
+        this.lastKnownX = x;
+        this.lastKnownY = y;
+      },
+      onFrame: (x, y) => {
+        this.applyPosition(x, y);
+      },
+      onFirstMove: (x, y) => {
+        this.applyPosition(x, y);
+        this.imageElement.hidden = false;
+        this.applyCursorHiding();
+      },
+    });
     this.enable();
   }
 
   // ─── DOM helpers ────────────────────────────────────────────────────────────
 
   private buildContainer(): HTMLElement {
-    const el = document.createElement('div');
-    el.className = '__ma-img';
-    el.hidden = true;
+    const container = document.createElement('div');
+    container.className = '__ma-img';
+    container.hidden = true;
 
-    const normalEl = this.createStateEl(this.src);
-    this.stateEls.set('normal', normalEl);
-    el.appendChild(normalEl);
+    const normalElement = this.createStateElement(this.imageSource);
+    this.stateElements.set('normal', normalElement);
+    container.appendChild(normalElement);
 
-    for (const [key, src] of Object.entries(this.states)) {
-      const stateEl = this.createStateEl(src);
-      stateEl.hidden = true;
-      this.stateEls.set(key, stateEl);
-      el.appendChild(stateEl);
+    for (const [key, src] of Object.entries(this.stateSources)) {
+      const stateElement = this.createStateElement(src);
+      stateElement.hidden = true;
+      this.stateElements.set(key, stateElement);
+      container.appendChild(stateElement);
     }
 
-    return el;
+    return container;
   }
 
-  private createStateEl(src: string): HTMLElement {
+  private createStateElement(src: string): HTMLElement {
     const wrapper = document.createElement('div');
     this.renderContent(wrapper, src);
     return wrapper;
@@ -111,94 +120,65 @@ export class Image implements MouseAnimationsBase {
 
   private renderContent(container: HTMLElement, src: string): void {
     container.innerHTML = '';
-    const { width, height } = this.opts;
+    const { width, height } = this.options;
     if (src.trimStart().startsWith('<svg')) {
       container.innerHTML = src;
       const svg = container.querySelector('svg');
       if (svg) { svg.style.width = `${width}px`; svg.style.height = `${height}px`; svg.style.display = 'block'; }
     } else {
-      const img = document.createElement('img');
-      img.src = src; img.width = width; img.height = height;
-      img.draggable = false; img.style.display = 'block';
-      container.appendChild(img);
+      const image = document.createElement('img');
+      image.src = src; image.width = width; image.height = height;
+      image.draggable = false; image.style.display = 'block';
+      container.appendChild(image);
     }
   }
 
   // ─── Position ───────────────────────────────────────────────────────────────
 
-  private updatePosition(): void {
-    const { offsetX, offsetY, width, height } = this.opts;
-    this.el.style.transform = `translate(${this.curX + offsetX - width / 2}px, ${this.curY + offsetY - height / 2}px)`;
+  private applyPosition(x: number, y: number): void {
+    const { offsetX, offsetY, width, height } = this.options;
+    this.imageElement.style.transform = `translate(${x + offsetX - width / 2}px, ${y + offsetY - height / 2}px)`;
   }
 
   private applyCursorHiding(): void {
-    if (this.opts.overrideAll) {
+    if (this.options.overrideAll) {
       this.overrideStyle = document.createElement('style');
       this.overrideStyle.textContent = '* { cursor: none !important; }';
       document.head.appendChild(this.overrideStyle);
-    } else if (this.opts.hideDefault) {
+    } else if (this.options.hideDefault) {
       acquireHideClass();
-      this.hidingCursor = true;
+      this.isHidingCursor = true;
     }
   }
 
   private removeCursorHiding(): void {
     if (this.overrideStyle) { this.overrideStyle.remove(); this.overrideStyle = null; }
-    if (this.hidingCursor) { releaseHideClass(); this.hidingCursor = false; }
+    if (this.isHidingCursor) { releaseHideClass(); this.isHidingCursor = false; }
   }
-
-  private onMouseMove = (e: MouseEvent): void => {
-    this.mouseX = e.clientX;
-    this.mouseY = e.clientY;
-    if (this.firstMove) {
-      this.firstMove = false;
-      this.curX = this.mouseX;
-      this.curY = this.mouseY;
-      this.updatePosition();
-      this.el.hidden = false;
-      this.applyCursorHiding();
-      if (this.opts.smoothness < 1) this.rafId = requestAnimationFrame(this.loop);
-      return;
-    }
-    if (this.opts.smoothness >= 1) {
-      this.curX = this.mouseX;
-      this.curY = this.mouseY;
-      this.updatePosition();
-    }
-  };
-
-  private loop = (): void => {
-    if (!this.active) return;
-    this.curX += (this.mouseX - this.curX) * this.opts.smoothness;
-    this.curY += (this.mouseY - this.curY) * this.opts.smoothness;
-    this.updatePosition();
-    this.rafId = requestAnimationFrame(this.loop);
-  };
 
   // ─── State machine ──────────────────────────────────────────────────────────
 
   private resolveState(target: EventTarget | null): string {
-    const el = target as Element | null;
-    if (!el || typeof el.closest !== 'function') return 'normal';
+    const element = target as Element | null;
+    if (!element || typeof element.closest !== 'function') return 'normal';
 
-    // Custom selector states take priority (checked in insertion order)
-    for (const key of Object.keys(this.states)) {
+    for (const key of Object.keys(this.stateSources)) {
       if (key !== 'hover' && key !== 'active') {
-        try { if (el.closest(key)) return key; } catch { /* invalid selector */ }
+        try { if (element.closest(key)) return key; } catch { /* invalid selector */ }
       }
     }
 
-    if ('hover' in this.states && el.closest(INTERACTIVE)) return 'hover';
+    if ('hover' in this.stateSources && element.closest(INTERACTIVE_SELECTOR)) return 'hover';
 
     return 'normal';
   }
 
   private switchState(state: string): void {
     if (state === this.currentState) return;
-    const prevEl: HTMLElement | undefined = this.stateEls.get(this.currentState);
-    if (prevEl) prevEl.hidden = true;
-    const nextEl: HTMLElement = this.stateEls.get(state) ?? this.stateEls.get('normal')!;
-    nextEl.hidden = false;
+    const previousElement = this.stateElements.get(this.currentState);
+    if (previousElement) previousElement.hidden = true;
+    const nextElement = this.stateElements.get(state) ?? this.stateElements.get('normal')!;
+    nextElement.hidden = false;
     this.currentState = state;
   }
 
@@ -207,43 +187,35 @@ export class Image implements MouseAnimationsBase {
   };
 
   private onMouseDown = (): void => {
-    if ('active' in this.states) { this.isMouseDown = true; this.switchState('active'); }
+    if ('active' in this.stateSources) { this.isMouseDown = true; this.switchState('active'); }
   };
 
   private onMouseUp = (): void => {
     this.isMouseDown = false;
-    this.switchState(this.resolveState(document.elementFromPoint(this.mouseX, this.mouseY)));
+    this.switchState(this.resolveState(document.elementFromPoint(this.lastKnownX, this.lastKnownY)));
   };
 
   // ─── Public API ─────────────────────────────────────────────────────────────
 
-  /**
-   * Update the cursor image for a given state at runtime.
-   * - `'normal'` — default cursor
-   * - `'hover'`  — shown over interactive elements (a, button, input…)
-   * - `'active'` — shown while mouse button is held down
-   * - Any other string is treated as a CSS selector
-   */
   setSource(state: 'normal' | 'hover' | 'active' | string, src: string): void {
-    if (state === 'normal') this.src = src;
-    else this.states[state] = src;
+    if (state === 'normal') this.imageSource = src;
+    else this.stateSources[state] = src;
 
-    const existing: HTMLElement | undefined = this.stateEls.get(state);
-    if (existing) {
-      this.renderContent(existing, src);
+    const existingElement = this.stateElements.get(state);
+    if (existingElement) {
+      this.renderContent(existingElement, src);
     } else {
-      const stateEl: HTMLElement = this.createStateEl(src);
-      stateEl.hidden = this.currentState !== state;
-      this.stateEls.set(state, stateEl);
-      this.el.appendChild(stateEl);
+      const stateElement = this.createStateElement(src);
+      stateElement.hidden = this.currentState !== state;
+      this.stateElements.set(state, stateElement);
+      this.imageElement.appendChild(stateElement);
     }
   }
 
   enable(): void {
     if (this.active) return;
     this.active = true;
-    this.firstMove = true;
-    document.addEventListener('mousemove', this.onMouseMove);
+    this.follower.start();
     document.addEventListener('mouseover', this.onMouseOver);
     document.addEventListener('mousedown', this.onMouseDown);
     document.addEventListener('mouseup', this.onMouseUp);
@@ -253,17 +225,17 @@ export class Image implements MouseAnimationsBase {
     if (!this.active) return;
     this.active = false;
     this.removeCursorHiding();
-    document.removeEventListener('mousemove', this.onMouseMove);
+    this.follower.stop();
     document.removeEventListener('mouseover', this.onMouseOver);
     document.removeEventListener('mousedown', this.onMouseDown);
     document.removeEventListener('mouseup', this.onMouseUp);
-    if (this.rafId !== null) { cancelAnimationFrame(this.rafId); this.rafId = null; }
-    this.el.hidden = true;
+    this.imageElement.hidden = true;
   }
 
   destroy(): void {
     this.disable();
-    this.el.remove();
+    this.follower.destroy();
+    this.imageElement.remove();
     releaseSharedStyle();
   }
 }

@@ -1,12 +1,8 @@
 import { MouseTracker } from '../core/mouse-tracker';
 import type { MouseAnimationsBase, ParallaxOptions } from '../core/types';
 
-/**
- * Shifts elements along X/Y based on normalised mouse position across the viewport,
- * creating a floating depth/parallax effect.
- */
 export class Parallax implements MouseAnimationsBase {
-  private readonly opts: Required<ParallaxOptions>;
+  private readonly options: Required<ParallaxOptions>;
   private readonly tracker: MouseTracker;
   private elements: HTMLElement[] = [];
   private savedTransforms: string[] = [];
@@ -16,7 +12,7 @@ export class Parallax implements MouseAnimationsBase {
   private currentY = 0;
 
   constructor(options: ParallaxOptions) {
-    this.opts = { depth: 20, ease: 0.1, ...options };
+    this.options = { depth: 20, ease: 0.1, ...options };
     this.tracker = MouseTracker.getInstance();
     this.enable();
   }
@@ -24,18 +20,17 @@ export class Parallax implements MouseAnimationsBase {
   private loop = (): void => {
     if (!this.active) return;
 
-    // Normalise to -1 … +1 relative to viewport centre
-    const targetX = (this.tracker.x / window.innerWidth  - 0.5) * 2;
+    const targetX = (this.tracker.x / window.innerWidth - 0.5) * 2;
     const targetY = (this.tracker.y / window.innerHeight - 0.5) * 2;
 
-    this.currentX += (targetX - this.currentX) * this.opts.ease;
-    this.currentY += (targetY - this.currentY) * this.opts.ease;
+    this.currentX += (targetX - this.currentX) * this.options.ease;
+    this.currentY += (targetY - this.currentY) * this.options.ease;
 
-    const tx = this.currentX * this.opts.depth;
-    const ty = this.currentY * this.opts.depth;
+    const offsetX = this.currentX * this.options.depth;
+    const offsetY = this.currentY * this.options.depth;
 
-    this.elements.forEach((el) => {
-      el.style.transform = `translate(${tx}px, ${ty}px)`;
+    this.elements.forEach((element) => {
+      element.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
     });
 
     this.rafId = requestAnimationFrame(this.loop);
@@ -45,9 +40,9 @@ export class Parallax implements MouseAnimationsBase {
     if (this.active) return;
     this.active = true;
     this.elements = Array.from(
-      document.querySelectorAll<HTMLElement>(this.opts.selector),
+      document.querySelectorAll<HTMLElement>(this.options.selector),
     );
-    this.savedTransforms = this.elements.map((el) => el.style.transform);
+    this.savedTransforms = this.elements.map((element) => element.style.transform);
     this.tracker.bind();
     this.rafId = requestAnimationFrame(this.loop);
   }
@@ -59,8 +54,8 @@ export class Parallax implements MouseAnimationsBase {
       cancelAnimationFrame(this.rafId);
       this.rafId = null;
     }
-    this.elements.forEach((el, i) => {
-      el.style.transform = this.savedTransforms[i] ?? '';
+    this.elements.forEach((element, index) => {
+      element.style.transform = this.savedTransforms[index] ?? '';
     });
   }
 
