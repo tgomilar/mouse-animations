@@ -1,6 +1,10 @@
+/** Shared lifecycle interface for all mouse animation effects. */
 export interface MouseAnimationsBase {
+  /** Start or resume the effect. */
   enable(): void;
+  /** Pause the effect and reset any visible state. */
   disable(): void;
+  /** Disable and remove all DOM side effects. */
   destroy(): void;
 }
 

@@ -1,26 +1,34 @@
 export interface ElementAnimatorOptions {
+  /** Lerp ease factor (0–1) for smoothing toward the target position. */
   ease: number;
+  /**
+   * Called on mousemove over a tracked element.
+   * Return an object with targetX/Y to update the animation target,
+   * or return void to keep the current target.
+   */
   onMove: (
     element: HTMLElement,
     event: MouseEvent,
     rect: DOMRect,
   ) => { targetX: number; targetY: number } | void;
+  /** Called each rAF tick with the smoothed current position. */
   onFrame: (element: HTMLElement, x: number, y: number) => void;
+  /** Called on mouseleave (fires before target resets to 0). */
   onLeave?: (element: HTMLElement) => void;
+  /** Called after an entry is set up and listeners are attached. */
   onSetup?: (element: HTMLElement) => void;
+  /** Called before an entry is torn down (element transform is restored afterwards). */
   onTeardown?: (element: HTMLElement) => void;
 }
 
-interface AnimationEntry {
-  element: HTMLElement;
-  savedTransform: string;
-  rafId: number;
-  targetX: number;
-  targetY: number;
-  currentX: number;
-  currentY: number;
-}
-
+/**
+ * Drives a per-element hover animation lifecycle.
+ *
+ * For each element matching a selector, ElementAnimator attaches
+ * mousemove/mouseleave listeners and runs a rAF loop that lerps
+ * targetX/Y toward the values computed by onMove and applies them
+ * via onFrame. enable/disable/destroy manage the full lifecycle.
+ */
 export class ElementAnimator {
   private readonly options: ElementAnimatorOptions;
   private entries: AnimationEntry[] = [];
@@ -30,6 +38,7 @@ export class ElementAnimator {
     this.options = options;
   }
 
+  /** Query the DOM for the given selector and set up an entry per element. */
   enable(selector: string): void {
     if (this.active) return;
     this.active = true;
@@ -38,6 +47,7 @@ export class ElementAnimator {
     });
   }
 
+  /** Tear down all entries and restore original transforms. */
   disable(): void {
     if (!this.active) return;
     this.active = false;
@@ -45,6 +55,7 @@ export class ElementAnimator {
     this.entries = [];
   }
 
+  /** Alias for disable(). */
   destroy(): void {
     this.disable();
   }
@@ -97,4 +108,14 @@ export class ElementAnimator {
     this.options.onTeardown?.(entry.element);
     entry.element.style.transform = entry.savedTransform;
   }
+}
+
+interface AnimationEntry {
+  element: HTMLElement;
+  savedTransform: string;
+  rafId: number;
+  targetX: number;
+  targetY: number;
+  currentX: number;
+  currentY: number;
 }
