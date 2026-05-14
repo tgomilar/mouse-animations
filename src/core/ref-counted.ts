@@ -23,9 +23,9 @@ export class RefCounted {
 
   /** Decrement the ref count. Calls onLast when transitioning from 1 to 0. */
   release(onLast: () => void): void {
+    if (this.count === 0) return;
     this.count--;
-    if (this.count <= 0) {
-      this.count = 0;
+    if (this.count === 0) {
       onLast();
     }
   }
