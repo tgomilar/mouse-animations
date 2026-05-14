@@ -1,49 +1,14 @@
 import { MouseFollower } from '../core/mouse-follower';
+import { RefCounted } from '../core/ref-counted';
 import type { MouseAnimationsBase, ImageOptions } from '../core/types';
 
-const INTERACTIVE_SELECTOR = 'a, button, [role="button"], input, select, textarea, label, summary, [tabindex]:not([tabindex="-1"])';
-
-let sharedStyleElement: HTMLStyleElement | null = null;
-let sharedStyleReferenceCount = 0;
-
-function acquireSharedStyle(): void {
-  if (!sharedStyleElement) {
-    sharedStyleElement = document.createElement('style');
-    sharedStyleElement.textContent = `
-      .__ma-img {
-        position: fixed; top: 0; left: 0;
-        pointer-events: none; z-index: 1000000;
-        will-change: transform; user-select: none;
-      }
-      .__ma-hide, .__ma-hide * { cursor: none !important; }
-    `;
-    document.head.appendChild(sharedStyleElement);
-  }
-  sharedStyleReferenceCount++;
-}
-
-function releaseSharedStyle(): void {
-  if (--sharedStyleReferenceCount <= 0) {
-    sharedStyleElement?.remove();
-    sharedStyleElement = null;
-    sharedStyleReferenceCount = 0;
-  }
-}
-
-let hideClassCount = 0;
-
-function acquireHideClass(): void {
-  if (++hideClassCount === 1) document.body.classList.add('__ma-hide');
-}
-
-function releaseHideClass(): void {
-  if (--hideClassCount <= 0) {
-    hideClassCount = 0;
-    document.body.classList.remove('__ma-hide');
-  }
-}
+const INTERACTIVE_SELECTOR: string = 'a, button, [role="button"], input, select, textarea, label, summary, [tabindex]:not([tabindex="-1"])';
 
 export class Image implements MouseAnimationsBase {
+  private static sharedStyle: HTMLStyleElement | null = null;
+  private static styleCounter = new RefCounted();
+  private static hideCounter = new RefCounted();
+
   private imageSource: string;
   private readonly stateSources: Record<string, string>;
   private readonly options: {
@@ -70,7 +35,18 @@ export class Image implements MouseAnimationsBase {
     this.imageSource = src;
     this.stateSources = { ...states };
     this.options = { width, height, offsetX, offsetY, smoothness, hideDefault, overrideAll };
-    acquireSharedStyle();
+    Image.styleCounter.acquire(() => {
+      Image.sharedStyle = document.createElement('style');
+      Image.sharedStyle.textContent = `
+        .__ma-img {
+          position: fixed; top: 0; left: 0;
+          pointer-events: none; z-index: 1000000;
+          will-change: transform; user-select: none;
+        }
+        .__ma-hide, .__ma-hide * { cursor: none !important; }
+      `;
+      document.head.appendChild(Image.sharedStyle);
+    });
     this.imageElement = this.buildContainer();
     document.body.appendChild(this.imageElement);
     this.follower = new MouseFollower({
@@ -94,11 +70,11 @@ export class Image implements MouseAnimationsBase {
   // ─── DOM helpers ────────────────────────────────────────────────────────────
 
   private buildContainer(): HTMLElement {
-    const container = document.createElement('div');
+    const container: HTMLDivElement = document.createElement('div');
     container.className = '__ma-img';
     container.hidden = true;
 
-    const normalElement = this.createStateElement(this.imageSource);
+    const normalElement: HTMLElement = this.createStateElement(this.imageSource);
     this.stateElements.set('normal', normalElement);
     container.appendChild(normalElement);
 
@@ -146,14 +122,17 @@ export class Image implements MouseAnimationsBase {
       this.overrideStyle.textContent = '* { cursor: none !important; }';
       document.head.appendChild(this.overrideStyle);
     } else if (this.options.hideDefault) {
-      acquireHideClass();
+      Image.hideCounter.acquire(() => document.body.classList.add('__ma-hide'));
       this.isHidingCursor = true;
     }
   }
 
   private removeCursorHiding(): void {
     if (this.overrideStyle) { this.overrideStyle.remove(); this.overrideStyle = null; }
-    if (this.isHidingCursor) { releaseHideClass(); this.isHidingCursor = false; }
+    if (this.isHidingCursor) {
+      Image.hideCounter.release(() => document.body.classList.remove('__ma-hide'));
+      this.isHidingCursor = false;
+    }
   }
 
   // ─── State machine ──────────────────────────────────────────────────────────
@@ -175,9 +154,9 @@ export class Image implements MouseAnimationsBase {
 
   private switchState(state: string): void {
     if (state === this.currentState) return;
-    const previousElement = this.stateElements.get(this.currentState);
+    const previousElement: HTMLElement | undefined = this.stateElements.get(this.currentState);
     if (previousElement) previousElement.hidden = true;
-    const nextElement = this.stateElements.get(state) ?? this.stateElements.get('normal')!;
+    const nextElement: HTMLElement = this.stateElements.get(state) ?? this.stateElements.get('normal')!;
     nextElement.hidden = false;
     this.currentState = state;
   }
@@ -236,6 +215,11 @@ export class Image implements MouseAnimationsBase {
     this.disable();
     this.follower.destroy();
     this.imageElement.remove();
-    releaseSharedStyle();
+    Image.styleCounter.release(() => {
+      if (Image.sharedStyle) {
+        Image.sharedStyle.remove();
+        Image.sharedStyle = null;
+      }
+    });
   }
 }
