@@ -62,7 +62,6 @@ export class Trail implements MouseAnimationsBase {
   enable(): void {
     if (this.active) return;
     this.active = true;
-    this.tracker.bind();
     this.tracker.subscribe(this.onMove);
     this.rafId = requestAnimationFrame(this.loop);
   }

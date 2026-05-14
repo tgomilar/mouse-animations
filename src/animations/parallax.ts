@@ -1,15 +1,17 @@
 import { MouseTracker } from '../core/mouse-tracker';
 import type { MouseAnimationsBase, ParallaxOptions } from '../core/types';
 
+const NO_OP = (): void => {};
+
 export class Parallax implements MouseAnimationsBase {
   private readonly options: Required<ParallaxOptions>;
   private readonly tracker: MouseTracker;
   private elements: HTMLElement[] = [];
   private savedTransforms: string[] = [];
   private rafId: number | null = null;
-  private active = false;
-  private currentX = 0;
-  private currentY = 0;
+  private active: boolean = false;
+  private currentX: number = 0;
+  private currentY: number = 0;
 
   constructor(options: ParallaxOptions) {
     this.options = { depth: 20, ease: 0.1, ...options };
@@ -43,13 +45,14 @@ export class Parallax implements MouseAnimationsBase {
       document.querySelectorAll<HTMLElement>(this.options.selector),
     );
     this.savedTransforms = this.elements.map((element) => element.style.transform);
-    this.tracker.bind();
+    this.tracker.subscribe(NO_OP);
     this.rafId = requestAnimationFrame(this.loop);
   }
 
   disable(): void {
     if (!this.active) return;
     this.active = false;
+    this.tracker.unsubscribe(NO_OP);
     if (this.rafId !== null) {
       cancelAnimationFrame(this.rafId);
       this.rafId = null;
