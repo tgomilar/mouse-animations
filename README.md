@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/mouse-animations)](https://www.npmjs.com/package/mouse-animations)
 [![gzip size](https://img.shields.io/bundlephobia/minzip/mouse-animations)](https://bundlephobia.com/package/mouse-animations)
 
-A lightweight, framework-agnostic library for cursor and mouse effects. Zero dependencies, under 5 kB gzipped, fully typed. Optional jQuery plugin included.
+Cursor and mouse effects for the web: trails, ripples, magnetic pulls, particles, parallax layers, 3D tilts, spotlights, and more. Drop it into any stack — vanilla JS, React, Vue, Svelte, or jQuery. Zero dependencies, under 5 kB gzipped, fully typed.
 
 **[Live Playground →](https://tgomilar.github.io/mouse-animations/)**
 
@@ -39,7 +39,8 @@ npm install mouse-animations
 
 ```html
 <script type="module">
-  import { Trail } from "https://cdn.jsdelivr.net/npm/mouse-animations/+esm";
+  import { Trail } from "https://esm.sh/mouse-animations";
+  // or: https://cdn.jsdelivr.net/npm/mouse-animations/+esm
 </script>
 ```
 
@@ -54,7 +55,7 @@ import { Trail } from "mouse-animations";
 
 const trail = new Trail({ color: "#a78bfa", size: 8 });
 
-trail.disable(); // pause — keeps DOM elements intact
+trail.disable(); // pause and clear visible state (DOM elements remain)
 trail.enable(); // resume
 trail.destroy(); // stop and remove all DOM elements
 ```
@@ -64,12 +65,12 @@ All classes share the same interface:
 ```ts
 interface MouseAnimationsBase {
   enable(): void; // start or resume the effect
-  disable(): void; // pause without removing DOM elements
+  disable(): void; // pause and clear visible state (DOM elements remain)
   destroy(): void; // stop and remove all DOM elements
 }
 ```
 
-All option types are exported for use in TypeScript projects:
+All option types are exported and included — no `@types/` package needed:
 
 ```ts
 import type {
@@ -209,11 +210,13 @@ const tilt = new Tilt({
 
 Renders a radial gradient glow that follows the cursor inside each matched element. Works best on dark cards and panels.
 
+> Unlike `Magnetic`, `Parallax`, and `Tilt`, the `selector` option is optional here. If omitted, no elements are targeted until you pass one.
+
 ```ts
 import { Spotlight } from "mouse-animations";
 
 const glow = new Spotlight({
-  selector: ".card",
+  selector: ".card", // optional — omit to skip targeting
   color: "rgba(255,255,255,0.12)",
   size: 200,
 });
