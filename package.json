@@ -1,7 +1,8 @@
 {
   "name": "mouse-animations",
-  "version": "0.4.0",
-  "description": "Cursor & mouse effects library for TypeScript & JavaScript — trail, ripple, custom cursor, magnetic, particles, parallax, tilt, image cursor. Zero dependencies, under 5 kB gzipped, optional jQuery plugin.",
+  "version": "1.0.0",
+  "description": "Cursor & mouse effects library for TypeScript & JavaScript — trail, ripple, custom cursor, magnetic, particles, parallax, tilt, spotlight, flashlight, invert, image cursor. Zero dependencies, under 5 kB gzipped, optional jQuery plugin.",
+  "author": "Tanja Gomilar",
   "type": "module",
   "main": "./dist/mouse-animations.cjs",
   "module": "./dist/mouse-animations.js",
@@ -9,14 +10,14 @@
   "sideEffects": false,
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/mouse-animations.js",
-      "require": "./dist/mouse-animations.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/mouse-animations.cjs"
     },
     "./jquery": {
+      "types": "./dist/jquery.d.ts",
       "import": "./dist/mouse-animations.jquery.js",
-      "require": "./dist/mouse-animations.jquery.cjs",
-      "types": "./dist/jquery.d.ts"
+      "require": "./dist/mouse-animations.jquery.cjs"
     }
   },
   "files": [
@@ -55,6 +56,9 @@
     "magnetic",
     "parallax",
     "tilt",
+    "spotlight",
+    "flashlight",
+    "invert",
     "animation",
     "effects",
     "typescript",
@@ -64,9 +68,12 @@
     "library"
   ],
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tgomilar/mouse-animations"
+    "url": "git+https://github.com/tgomilar/mouse-animations.git"
   },
   "homepage": "https://tgomilar.github.io/mouse-animations/",
   "bugs": {
