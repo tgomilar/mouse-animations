@@ -3,1564 +3,1140 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mouse Animations — Cursor &amp; Mouse Effects Library</title>
+    <title>Mouse Animations — Live Playground</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🖱️</text></svg>" />
     <link rel="canonical" href="https://tgomilar.github.io/mouse-animations/" />
-
-    <!-- Primary SEO -->
-    <meta
-      name="description"
-      content="Zero-dependency TypeScript library for cursor &amp; mouse effects: trail, ripple, custom cursor, magnetic, particles, parallax, tilt, spotlight, invert cursor, image cursor. Under 5 kB. Live playground." />
-    <meta
-      name="keywords"
-      content="cursor effects, mouse effects, typescript, javascript, custom cursor, trail, ripple, magnetic, particles, parallax, tilt, spotlight, invert cursor, image cursor, animation, zero dependency, jquery plugin" />
+    <meta name="description" content="Zero-dependency TypeScript library for cursor &amp; mouse effects: trail, ripple, custom cursor, magnetic, particles, parallax, tilt, spotlight, invert cursor, image cursor. Under 5 kB. Live playground." />
+    <meta name="keywords" content="cursor effects, mouse effects, typescript, javascript, custom cursor, trail, ripple, magnetic, particles, parallax, tilt, spotlight, invert cursor, image cursor, animation, zero dependency, jquery plugin" />
     <meta name="author" content="Tanja Gomilar" />
     <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#09090e" />
-
-    <!-- Open Graph -->
+    <meta name="theme-color" content="#0a0a0f" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Mouse Animations" />
     <meta property="og:url" content="https://tgomilar.github.io/mouse-animations/" />
-    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content="Mouse Animations — Cursor &amp; Mouse Effects Library" />
-    <meta
-      property="og:description"
-      content="Lightweight, zero-dependency TypeScript library for cursor &amp; mouse effects — trail, ripple, custom cursor, magnetic, particles, parallax, tilt, spotlight, invert cursor, image cursor. Framework-agnostic, under 5 kB, jQuery-ready. Try them all in the live playground." />
+    <meta property="og:description" content="Lightweight, zero-dependency TypeScript library for cursor &amp; mouse effects. Framework-agnostic, under 5 kB, jQuery-ready. Try them all in the live playground." />
     <meta property="og:image" content="https://tgomilar.github.io/mouse-animations/og-image.png" />
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Mouse Animations — interactive playground for cursor and mouse effects" />
-
-    <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Mouse Animations — Cursor &amp; Mouse Effects Library" />
-    <meta
-      name="twitter:description"
-      content="Cursor &amp; mouse effects in one tiny TypeScript library — trail, ripple, magnetic, particles, parallax, tilt, spotlight, invert cursor, image cursor &amp; more. Zero dependencies, under 5 kB, jQuery-ready." />
+    <meta name="twitter:description" content="Cursor &amp; mouse effects in one tiny TypeScript library — trail, ripple, magnetic, particles, parallax, tilt, spotlight, invert cursor, image cursor &amp; more." />
     <meta name="twitter:image" content="https://tgomilar.github.io/mouse-animations/og-image.png" />
-    <meta name="twitter:image:alt" content="Mouse Animations — interactive playground for cursor and mouse effects" />
     <meta name="google-site-verification" content="TWTDG5sHkQOekIFUa5uWVmi7yO3pJTU7AGMaIPajIHc" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
     <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
       :root {
-        --bg: #09090e;
-        --surface: #111118;
-        --surface2: #1a1a24;
-        --border: #26263a;
-        --border-hi: #3d3d5c;
-        --accent: #a78bfa;
-        --accent2: #60a5fa;
-        --text: #e2e8f0;
-        --muted: #64748b;
-        --emerald: #86efac;
-        --radius: 16px;
-        --font: "Inter", system-ui, sans-serif;
-        --mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+        --bg: #0a0a0f;
+        --surface: #12121a;
+        --border: #1e1e2e;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --mono: "DM Mono", monospace;
+        --sans: "Syne", sans-serif;
+        --accent: #c084fc;
       }
 
-      html,
-      body {
-        min-height: 100vh;
+      html, body {
+        height: 100%;
         background: var(--bg);
         color: var(--text);
-        font-family: var(--font);
-        font-size: 18px;
-        line-height: 1.6;
+        font-family: var(--mono);
+        overflow: hidden;
       }
 
-      .page {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 80px 32px 120px;
-        position: relative;
+      body.cursor-none { cursor: none; }
+
+
+      /* ── Top nav ──────────────────────────────────────────── */
+      .effect-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 200;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.2rem;
+        padding: 0.9rem 1.5rem 1.4rem;
+        background: linear-gradient(to bottom, rgba(10,10,15,0.92) 60%, transparent);
+      }
+
+      .nav-btn {
+        background: none;
+        border: 1px solid transparent;
+        color: var(--muted);
+        font-family: var(--sans);
+        font-size: 0.72rem;
+        letter-spacing: 0.05em;
+        padding: 0.3rem 0.8rem;
+        border-radius: 100px;
+        cursor: pointer;
+        transition: color 0.2s, border-color 0.2s, background 0.2s;
+        white-space: nowrap;
+      }
+
+      .nav-btn:hover { color: var(--text); border-color: var(--border); }
+
+      .nav-btn.active {
+        color: var(--accent);
+        border-color: var(--accent);
+        background: rgba(255,255,255,0.04);
+      }
+
+      /* ── Slider ───────────────────────────────────────────── */
+      .slider-wrapper {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
         z-index: 1;
       }
 
-      @media (max-width: 768px) {
-        .page { padding: 48px 16px 80px; }
+      .slider-track {
+        display: flex;
+        height: 100%;
+        width: calc(11 * 100vw);
+        transform: translateX(0);
+        transition: transform 0.65s cubic-bezier(0.77, 0, 0.175, 1);
+        will-change: transform;
       }
 
-      /* ── Background mouse deco ── */
-      .bg-mouse {
-        position: fixed;
-        right: -40px;
-        top: 65%;
-        transform: translateY(-50%) rotate(16deg);
-        width: 400px;
-        color: var(--emerald);
-        opacity: 0.08;
-        pointer-events: none;
-        z-index: 0;
-        user-select: none;
-      }
-
-      @media (max-width: 900px) {
-        .bg-mouse { display: none; }
-      }
-
-      /* ── Header ── */
-      header {
-        text-align: center;
-        margin-bottom: 80px;
-      }
-
-      header h1 {
+      .slide {
+        flex: 0 0 100vw;
+        width: 100vw;
+        height: 100vh;
         position: relative;
-        font-size: clamp(48px, 6vw, 76px);
-        font-weight: 750;
-        letter-spacing: -0.045em;
-        line-height: 1.1;
-        background: linear-gradient(135deg, #e2e8f0 0%, #c4b5fd 35%, #a78bfa 60%, #818cf8 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 20px;
-        filter: drop-shadow(0 0 48px rgba(167, 139, 250, 0.3));
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
-      #logo-canvas {
+      /* per-slide accent color */
+      .slide[data-effect="trail"]      { --accent: #c084fc; }
+      .slide[data-effect="ripple"]     { --accent: #60a5fa; }
+      .slide[data-effect="cursor"]     { --accent: #34d399; }
+      .slide[data-effect="magnetic"]   { --accent: #f472b6; }
+      .slide[data-effect="particles"]  { --accent: #fbbf24; }
+      .slide[data-effect="parallax"]   { --accent: #a78bfa; }
+      .slide[data-effect="tilt"]       { --accent: #38bdf8; }
+      .slide[data-effect="spotlight"]  { --accent: #fb923c; }
+      .slide[data-effect="flashlight"] { --accent: #94a3b8; }
+      .slide[data-effect="invert"]     { --accent: #f43f5e; }
+      .slide[data-effect="image"]      { --accent: #4ade80; }
+      .slide[data-effect="jquery"]     { --accent: #eab308; }
+
+      .slide-glow {
         position: absolute;
         inset: 0;
         pointer-events: none;
+        background: radial-gradient(
+          ellipse 60% 50% at 50% 50%,
+          rgba(255,255,255,0.055) 0%,
+          transparent 70%
+        );
+        /* tinted via JS filter or box-shadow trick — accent handled with a colored overlay */
       }
 
-      .header-sub {
-        color: var(--muted);
-        font-size: 20px;
-        max-width: 660px;
-        margin: 0 auto 28px;
-        line-height: 1.65;
+      .slide-glow::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse 55% 45% at 50% 50%,
+          color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+          transparent 65%
+        );
       }
 
-      @media (max-width: 600px) {
-        .header-sub { font-size: 17px; }
-      }
-
-      /* ── Badges ── */
-      .badge-row {
+      /* ── Panel ────────────────────────────────────────────── */
+      .panel {
+        position: relative;
+        z-index: 10;
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-        margin-bottom: 32px;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.4rem;
+        text-align: center;
+        max-width: 520px;
+        width: 100%;
+        padding: 2rem;
       }
 
       .badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 6px 16px;
-        border-radius: 999px;
-        font-size: 13px;
-        font-weight: 500;
-        letter-spacing: 0.03em;
-        white-space: nowrap;
-      }
-
-      .badge-green {
-        border: 1px solid rgba(134, 239, 172, 0.35);
-        background: rgba(134, 239, 172, 0.07);
-        color: #86efac;
-      }
-
-      .badge-blue {
-        border: 1px solid rgba(96, 165, 250, 0.35);
-        background: rgba(96, 165, 250, 0.07);
-        color: var(--accent2);
-      }
-
-      .badge-purple {
-        border: 1px solid rgba(167, 139, 250, 0.35);
-        background: rgba(167, 139, 250, 0.07);
+        font-size: 0.72rem;
+        letter-spacing: 0.18em;
         color: var(--accent);
+        border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+        padding: 0.35rem 1rem;
+        border-radius: 100px;
       }
 
-      .badge-muted {
-        border: 1px solid var(--border-hi);
-        background: var(--surface);
+      h1 {
+        font-family: var(--sans);
+        font-size: clamp(3.2rem, 7vw, 5.5rem);
+        font-weight: 800;
+        line-height: 1;
+        background: linear-gradient(135deg, #fff 25%, var(--accent) 80%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
-      /* ── Install block ── */
-      .install-wrap {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 36px;
-      }
-
-      .install-block {
-        display: inline-flex;
-        align-items: stretch;
-        border: 1px solid var(--border-hi);
-        border-radius: 12px;
-        overflow: hidden;
-        background: rgba(0, 0, 0, 0.35);
-        transition: border-color 0.2s, box-shadow 0.2s;
-      }
-
-      .install-block:hover {
-        border-color: rgba(134, 239, 172, 0.5);
-        box-shadow: 0 0 24px rgba(134, 239, 172, 0.06);
-      }
-
-      .install-cmd {
-        font-family: var(--mono);
-        font-size: 15px;
-        color: var(--emerald);
-        padding: 12px 24px;
-        letter-spacing: 0.02em;
-        user-select: all;
-      }
-
-      .copy-btn {
-        padding: 12px 20px;
-        background: transparent;
-        border: none;
-        border-left: 1px solid var(--border-hi);
+      .subtitle {
         color: var(--muted);
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-        font-family: var(--font);
-        transition: color 0.2s, background 0.2s;
-        white-space: nowrap;
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        font-style: italic;
+        margin-top: -0.5rem;
       }
 
-      .copy-btn:hover {
-        color: var(--text);
-        background: rgba(255, 255, 255, 0.04);
-      }
-
-      .copy-btn.copied {
-        color: var(--emerald);
-      }
-
-      /* ── Effect navigation pills ── */
-      .effect-nav {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 8px;
-      }
-
-      .effect-nav a {
-        display: inline-block;
-        padding: 7px 18px;
-        border-radius: 999px;
-        border: 1px solid var(--border-hi);
-        background: var(--surface);
-        color: #94a3b8;
-        font-size: 14px;
-        font-weight: 450;
-        text-decoration: none;
-        transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.15s;
-        white-space: nowrap;
-      }
-
-      .effect-nav a:hover {
-        border-color: var(--accent);
-        color: var(--accent);
-        background: rgba(167, 139, 250, 0.08);
-        transform: translateY(-1px);
-      }
-
-
-      /* ── Cards ── */
-      .cards {
-        display: flex;
-        flex-direction: column;
-        gap: 32px;
-      }
-
-      .card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        overflow: hidden;
-        transition:
-          border-color 0.3s,
-          box-shadow 0.3s;
-        font-size: 16px;
-      }
-
-      .card.active {
-        border-color: rgba(167, 139, 250, 0.45);
-        box-shadow:
-          0 0 0 1px rgba(167, 139, 250, 0.08),
-          0 8px 48px rgba(167, 139, 250, 0.08);
-      }
-
-      /* ── Card head ── */
-      .card-head {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 16px;
-        padding: 28px 28px 24px;
-      }
-
-      .card-head h2 {
-        font-size: 21px;
-        font-weight: 650;
-        color: var(--accent);
-        letter-spacing: 0.01em;
-        margin-bottom: 8px;
-      }
-
-      .card-head p {
-        color: #94a3b8;
-        font-size: 16px;
-        max-width: 520px;
-        line-height: 1.55;
-      }
-
-      .card-hint {
-        font-size: 13px;
-        color: var(--muted);
-        margin-top: 8px;
-      }
-
-      /* ── Toggle ── */
-      .toggle {
-        flex-shrink: 0;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 9px 20px;
-        border-radius: 999px;
-        border: 1px solid var(--border-hi);
-        background: transparent;
-        color: var(--muted);
-        font-size: 15px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s;
-        font-family: var(--font);
-      }
-
-      .toggle::before {
-        content: "";
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: currentColor;
-        flex-shrink: 0;
-        transition: background 0.2s, box-shadow 0.2s;
-      }
-
-      .toggle:hover {
-        border-color: var(--accent);
-        color: var(--text);
-      }
-
-      .toggle.on {
-        background: rgba(167, 139, 250, 0.12);
-        border-color: var(--accent);
-        color: var(--accent);
-      }
-
-      .toggle.on::before {
-        box-shadow: 0 0 8px var(--accent);
-      }
-
-      /* ── Demo zone ── */
+      /* ── Demo zone (element-based effects) ───────────────── */
       .demo-zone {
-        margin: 0 28px;
-        border: 1px dashed var(--border);
-        border-radius: 12px;
-        min-height: 120px;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--muted);
-        font-size: 15px;
-        transition: border-color 0.3s;
-      }
-
-      .card.active .demo-zone {
-        border-color: var(--border-hi);
-      }
-
-      .demo-hint {
-        pointer-events: none;
-        user-select: none;
-      }
-
-      /* ── Magnetic demo ── */
-      .mag-grid {
-        margin: 0 28px;
-        display: flex;
+        gap: 1rem;
         flex-wrap: wrap;
-        gap: 14px;
-        padding: 28px;
         justify-content: center;
-        border: 1px dashed var(--border);
-        border-radius: 12px;
-        transition: border-color 0.3s;
       }
 
-      .card.active .mag-grid {
-        border-color: var(--border-hi);
+      .demo-card {
+        background: rgba(18,18,26,0.8);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.1rem 1.6rem;
+        font-size: 0.9rem;
+        color: var(--text);
+        min-width: 110px;
+        transition: border-color 0.25s, transform 0.25s;
+        cursor: default;
+      }
+
+      .demo-card:hover {
+        border-color: color-mix(in srgb, var(--accent) 40%, transparent);
       }
 
       .mag-btn {
-        padding: 13px 26px;
-        background: rgba(167, 139, 250, 0.08);
-        border: 1px solid rgba(167, 139, 250, 0.25);
-        border-radius: 12px;
-        color: var(--accent);
-        font-weight: 600;
-        font-size: 17px;
+        background: rgba(18,18,26,0.8);
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        padding: 0.6rem 1.4rem;
         cursor: pointer;
-        will-change: transform;
-        transition: background 0.2s;
-        font-family: var(--font);
+        transition: border-color 0.2s, background 0.2s;
       }
 
       .mag-btn:hover {
-        background: rgba(167, 139, 250, 0.18);
+        border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+        background: rgba(255,255,255,0.03);
       }
 
-      /* ── Card foot ── */
-      .card-foot {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        margin-top: 24px;
-        border-top: 1px solid var(--border-hi);
-      }
-
-      @media (max-width: 720px) {
-        .card-foot {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      /* ── Controls ── */
-      .controls {
-        padding: 24px 28px;
+      /* ── Code block ───────────────────────────────────────── */
+      .code-wrap {
+        width: 100%;
+        text-align: left;
         display: flex;
         flex-direction: column;
-        gap: 18px;
-        border-right: 1px solid var(--border);
       }
 
-      @media (max-width: 720px) {
-        .controls {
-          border-right: none;
-          border-bottom: 1px solid var(--border);
-        }
+      .code-block {
+        background: rgba(8,8,14,0.85);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem 1.5rem;
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        line-height: 1.85;
+        overflow-x: auto;
+        white-space: pre;
+        backdrop-filter: blur(8px);
+        min-height: 21rem;
       }
 
-      .ctrl {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
+      .tok-kw  { color: #a78bfa; }
+      .tok-cls { color: #60a5fa; }
+      .tok-key { color: #e2e8f0; }
+      .tok-str { color: #86efac; }
+      .tok-num { color: #fbbf24; }
+      .tok-pun { color: #64748b; }
+      .tok-bool { color: #f472b6; }
 
-      .ctrl label {
-        display: flex;
-        justify-content: space-between;
-        font-size: 14px;
-        color: #94a3b8;
-      }
-
-      .ctrl label output {
+      /* ── Customize button ─────────────────────────────────── */
+      .customize-btn {
+        margin-top: 0.8rem;
+        background: color-mix(in srgb, var(--accent) 10%, rgba(18,18,26,0.8));
+        border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
         color: var(--text);
         font-family: var(--mono);
-        font-size: 14px;
-        font-variant-numeric: tabular-nums;
+        font-size: 0.85rem;
+        letter-spacing: 0.08em;
+        padding: 0.55rem 1.4rem;
+        border-radius: 100px;
+        width: 100%;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s, color 0.2s;
       }
 
-      input[type="range"] {
+      .customize-btn:hover, .customize-btn.open {
+        background: color-mix(in srgb, var(--accent) 18%, rgba(18,18,26,0.9));
+        border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+        color: #fff;
+      }
+
+      /* ── Controls drawer ──────────────────────────────────── */
+      .ctrl-drawer {
+        width: 100%;
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.35s ease, opacity 0.3s ease;
+        opacity: 0;
+      }
+
+      .ctrl-drawer.open { max-height: 360px; opacity: 1; }
+
+      .ctrl-inner {
+        margin-top: 1rem;
+        padding: 1.2rem 1.4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+        background: color-mix(in srgb, var(--accent) 7%, rgba(10,10,15,0.92));
+        border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+        border-radius: 12px;
+        backdrop-filter: blur(8px);
+      }
+
+      .ctrl-row {
+        display: grid;
+        grid-template-columns: 6rem 1fr 3.5rem;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .ctrl-row label {
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
+        color: var(--text);
+        text-align: right;
+      }
+
+      .ctrl-row input[type="range"] {
         -webkit-appearance: none;
         appearance: none;
         width: 100%;
-        height: 4px;
+        height: 3px;
         background: var(--border);
         border-radius: 2px;
         outline: none;
         cursor: pointer;
       }
 
-      input[type="range"]::-webkit-slider-thumb {
+      .ctrl-row input[type="range"]::-webkit-slider-thumb {
         -webkit-appearance: none;
-        width: 15px;
-        height: 15px;
+        width: 13px;
+        height: 13px;
         border-radius: 50%;
         background: var(--accent);
         cursor: pointer;
-        transition:
-          transform 0.15s,
-          box-shadow 0.15s;
+        transition: transform 0.15s;
       }
 
-      input[type="range"]::-webkit-slider-thumb:hover {
-        transform: scale(1.25);
-        box-shadow: 0 0 10px rgba(167, 139, 250, 0.7);
+      .ctrl-row input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.3); }
+
+      .ctrl-row output {
+        font-size: 0.82rem;
+        color: var(--accent);
+        text-align: right;
+        font-variant-numeric: tabular-nums;
       }
 
-      input[type="range"]::-moz-range-thumb {
-        width: 15px;
-        height: 15px;
-        border-radius: 50%;
-        background: var(--accent);
-        cursor: pointer;
-        border: none;
-      }
-
-      .color-row {
+      .ctrl-row-color {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 0.75rem;
+        font-size: 0.82rem;
+        color: var(--text);
+        letter-spacing: 0.04em;
       }
 
-      input[type="color"] {
+      .ctrl-row-color label { min-width: 6rem; text-align: right; }
+
+      .ctrl-row-color input[type="color"] {
         -webkit-appearance: none;
-        width: 32px;
-        height: 32px;
-        border: 1px solid var(--border-hi);
-        border-radius: 8px;
+        width: 26px;
+        height: 26px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: none;
         cursor: pointer;
         padding: 2px;
-        background: var(--surface2);
-        flex-shrink: 0;
       }
 
-      input[type="color"]::-webkit-color-swatch-wrapper {
-        padding: 0;
-      }
+      .ctrl-row-color span { color: var(--accent); font-size: 0.82rem; }
 
-      input[type="color"]::-webkit-color-swatch {
-        border: none;
-        border-radius: 4px;
-      }
-
-      .color-hex {
-        font-size: 14px;
-        font-family: var(--mono);
-        color: var(--text);
-      }
-
-      select {
-        padding: 8px 12px;
-        border: 1px solid var(--border-hi);
-        border-radius: 8px;
-        background: var(--surface2);
-        color: var(--text);
-        font-size: 14px;
-        font-family: var(--font);
-        cursor: pointer;
-        outline: none;
-        transition: border-color 0.2s;
-      }
-
-      select:hover,
-      select:focus {
-        border-color: var(--accent);
-      }
-
-      /* Palette swatches */
-      .palette {
+      .ctrl-row-check {
         display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.82rem;
+        color: var(--text);
+        letter-spacing: 0.04em;
+        padding-left: 6.75rem;
       }
 
-      .swatch {
-        width: 24px;
-        height: 24px;
-        border-radius: 6px;
+      .ctrl-row-check input[type="checkbox"] {
+        accent-color: var(--accent);
+        width: 13px;
+        height: 13px;
         cursor: pointer;
-        border: 2px solid transparent;
-        transition:
-          border-color 0.15s,
-          transform 0.15s,
-          opacity 0.15s;
-        opacity: 0.45;
       }
 
-      .swatch.on {
-        border-color: rgba(255, 255, 255, 0.7);
-        transform: scale(1.15);
-        opacity: 1;
+      /* ── Parallax scene ───────────────────────────────────── */
+      .parallax-scene {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 2;
       }
 
-      /* ── Code block ── */
-      .code-wrap {
-        font-size: 15px;
-        padding: 24px 28px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
+      .p-shape {
+        position: absolute;
+        border-radius: 50%;
+        background: color-mix(in srgb, var(--accent) 18%, transparent);
+        border: 1.5px solid color-mix(in srgb, var(--accent) 45%, transparent);
+        box-shadow: 0 0 40px color-mix(in srgb, var(--accent) 15%, transparent);
       }
 
-      .code-label {
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.12em;
-        color: var(--muted);
-      }
-
-      pre {
-        background: rgba(0, 0, 0, 0.35);
+      /* ── Arrows ───────────────────────────────────────────── */
+      .arrow {
+        position: fixed;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 200;
+        background: rgba(18,18,26,0.55);
         border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 16px 20px;
-        overflow-x: auto;
-        flex: 1;
-      }
-
-      code {
-        font-family: var(--mono);
-        font-size: 14px;
-        line-height: 1.75;
-        white-space: pre;
-      }
-
-      /* Syntax tokens */
-      .tok-kw { color: #60a5fa; }
-      .tok-cls { color: #a78bfa; }
-      .tok-key { color: #7dd3fc; }
-      .tok-str { color: var(--emerald); }
-      .tok-num { color: #fdba74; }
-      .tok-pun { color: #475569; }
-
-      /* ── Preset buttons (image-cursor) ── */
-      .preset-row {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-
-      .preset-btn {
+        color: var(--muted);
         width: 42px;
         height: 42px;
-        border-radius: 10px;
-        border: 2px solid var(--border-hi);
-        background: var(--surface2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: color 0.2s, border-color 0.2s, transform 0.2s;
+        backdrop-filter: blur(8px);
+      }
+
+      .arrow:hover {
         color: var(--text);
-        font-size: 22px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition:
-          border-color 0.15s,
-          background 0.15s,
-          transform 0.15s;
-        padding: 0;
-        line-height: 1;
-        font-family: var(--font);
-      }
-
-      .preset-btn:hover {
         border-color: var(--accent);
-        background: rgba(167, 139, 250, 0.08);
+        transform: translateY(-50%) scale(1.1);
       }
 
-      .preset-btn.on {
-        border-color: var(--accent);
-        background: rgba(167, 139, 250, 0.15);
-        transform: scale(1.1);
+      .arrow:disabled {
+        opacity: 0.15;
+        pointer-events: none;
       }
 
-      /* ── Checkbox style ── */
-      input[type="checkbox"] {
-        accent-color: var(--accent);
-        width: 16px;
-        height: 16px;
-        cursor: pointer;
-      }
+      .arrow-prev { left: 1.25rem; }
+      .arrow-next { right: 1.25rem; }
 
-      /* ── Footer ── */
-      footer {
-        margin-top: 96px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 14px;
-        color: var(--muted);
-        font-size: 15px;
-        flex-wrap: wrap;
-      }
-
-      .footer-mouse {
-        width: 20px;
-        color: var(--muted);
-        opacity: 0.4;
-        flex-shrink: 0;
-      }
-
-      footer a {
-        color: var(--accent);
-        text-decoration: none;
-      }
-
-      footer a:hover {
-        text-decoration: underline;
-      }
-
-      /* ── Floating buttons ── */
-      .floating-nav {
+      /* ── Footer fixed elements ────────────────────────────── */
+      .footer-links {
         position: fixed;
-        top: 20px;
-        right: 24px;
+        bottom: 1.4rem;
+        left: 2rem;
+        z-index: 200;
         display: flex;
-        gap: 8px;
-        z-index: 9999;
+        align-items: center;
+        gap: 1.5rem;
       }
 
-      .floating-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        border-radius: 999px;
-        border: 1px solid var(--border-hi);
-        background: rgba(17, 17, 24, 0.85);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
+      .footer-links a {
+        font-size: 0.88rem;
+        letter-spacing: 0.06em;
         color: var(--muted);
-        font-size: 14px;
-        font-weight: 500;
-        font-family: var(--font), system-ui, sans-serif;
         text-decoration: none;
-        transition:
-          border-color 0.2s,
-          color 0.2s,
-          box-shadow 0.2s;
+        transition: color 0.2s;
         white-space: nowrap;
       }
 
-      .floating-btn:hover {
-        border-color: var(--accent);
-        color: var(--text);
-        box-shadow:
-          0 0 0 1px rgba(167, 139, 250, 0.12),
-          0 4px 24px rgba(0, 0, 0, 0.5);
+      .footer-links a:hover { color: var(--text); }
+
+      .footer-links a.primary {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
 
-      .floating-btn svg {
+      .footer-links a.primary::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
         flex-shrink: 0;
-        opacity: 0.6;
-        transition: opacity 0.2s;
+        animation: pulse 1.5s infinite;
       }
 
-      .floating-btn:hover svg {
-        opacity: 1;
+      .footer-links .divider {
+        width: 1px;
+        height: 0.9rem;
+        background: var(--border);
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50%       { opacity: 0.35; transform: scale(0.55); }
+      }
+
+      .slide-counter {
+        position: fixed;
+        bottom: 1.4rem;
+        right: 2rem;
+        z-index: 200;
+        font-size: 0.88rem;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+      }
+
+      /* ── JS / jQuery mode toggle ─────────────────────────── */
+      .mode-toggle {
+        display: inline-flex;
+        gap: 0.2rem;
+        background: rgba(10,10,15,0.75);
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        padding: 0.3rem;
+        align-self: center;
+        margin-bottom: 1rem;
+      }
+
+      .toggle-btn {
+        font-family: var(--sans);
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        padding: 0.4rem 1.3rem;
+        border-radius: 100px;
+        border: none;
+        background: none;
+        color: var(--muted);
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+      }
+
+      .toggle-btn.active {
+        background: var(--accent);
+        color: #fff;
+      }
+
+      /* ── Image cursor preset buttons ──────────────────────── */
+      .preset-btn {
+        cursor: pointer;
+        font-size: 1.5rem;
+        line-height: 1;
+        transition: border-color 0.2s, transform 0.2s;
+        padding: 0.9rem 1.2rem;
+        user-select: none;
+      }
+
+      .preset-btn.active {
+        border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+        background: color-mix(in srgb, var(--accent) 6%, rgba(18,18,26,0.8));
+      }
+
+      .preset-btn:hover { transform: scale(1.08); }
+
+      /* ── Responsive ───────────────────────────────────────── */
+      @media (max-width: 768px) {
+        /* Nav scrolls horizontally instead of wrapping */
+        .effect-nav {
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          justify-content: flex-start;
+          padding: 0.7rem 1rem 1rem;
+          gap: 0.15rem;
+          scrollbar-width: none;
+        }
+        .effect-nav::-webkit-scrollbar { display: none; }
+
+        /* Smaller heading */
+        h1 { font-size: clamp(2rem, 9vw, 3.5rem); }
+
+        /* Tighter panel */
+        .panel { padding: 1.25rem 1rem; gap: 1rem; }
+
+        /* Smaller code block */
+        .code-block {
+          font-size: 0.7rem;
+          padding: 1rem 1.1rem;
+          min-height: 17rem;
+        }
+
+        /* Smaller arrows, hug the edges */
+        .arrow { width: 36px; height: 36px; }
+        .arrow-prev { left: 0.4rem; }
+        .arrow-next { right: 0.4rem; }
+
+        /* Footer: stack links, hide long github URL */
+        .footer-links {
+          left: 50%;
+          transform: translateX(-50%);
+          gap: 0.75rem;
+          flex-wrap: wrap;
+          justify-content: center;
+          bottom: 1rem;
+        }
+        .footer-links a.primary { display: none; }
+        .footer-links .divider:first-of-type { display: none; }
+        .slide-counter { display: none; }
+
+        /* Smaller demo cards on mobile */
+        .demo-card { padding: 0.85rem 1.1rem; font-size: 0.8rem; min-width: 90px; }
+        .mag-btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
+
+        /* Controls grid tighter */
+        .ctrl-row { grid-template-columns: 5rem 1fr 3rem; }
+        .ctrl-row label { font-size: 0.7rem; }
+        .ctrl-row output { font-size: 0.7rem; }
+        .ctrl-row-color { font-size: 0.7rem; }
+        .ctrl-row-color label { min-width: 5rem; }
+
+        /* Smaller customize button */
+        .customize-btn { font-size: 0.78rem; padding: 0.45rem 1rem; }
+
+        /* Smaller badge */
+        .badge { font-size: 0.62rem; }
+
+        /* Subtitle */
+        .subtitle { font-size: 0.8rem; }
+      }
+
+      @media (max-width: 480px) {
+        h1 { font-size: clamp(1.7rem, 10vw, 2.5rem); }
+        .panel { padding: 1rem 0.75rem; }
+        .code-block { font-size: 0.65rem; min-height: 15rem; }
+        .demo-zone { gap: 0.6rem; }
       }
     </style>
   </head>
   <body>
-    <!-- ── Background decoration ── -->
-    <div class="bg-mouse" aria-hidden="true">
-      <svg viewBox="0 -150 200 570" xmlns="http://www.w3.org/2000/svg">
-        <!-- Cable tail: exits top of mouse, curves up and right in an S-arc -->
-        <path d="M100 48 C100 18, 130 4, 145 -28 C160 -60, 148 -98, 170 -132"
-              stroke="var(--emerald)" stroke-width="8" stroke-linecap="round" fill="none"/>
-        <!-- Mouse body: pill / rounded-rect -->
-        <rect x="8" y="48" width="184" height="274" rx="92"
-              fill="var(--accent)" fill-opacity="0.92" stroke="var(--emerald)" stroke-width="8"/>
-        <!-- Horizontal divider: buttons vs palm rest -->
-        <line x1="8" y1="168" x2="192" y2="168" stroke="var(--emerald)" stroke-width="4"/>
-        <!-- Vertical divider: left vs right button -->
-        <line x1="100" y1="48" x2="100" y2="168" stroke="var(--emerald)" stroke-width="4"/>
-      </svg>
-    </div>
 
-    <nav class="floating-nav" aria-label="External links">
-      <a class="floating-btn" href="https://github.com/tgomilar/mouse-animations" target="_blank" rel="noopener" aria-label="View on GitHub">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path
-            d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.341-3.369-1.341-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
-        </svg>
-        GitHub
-      </a>
+    <!-- ── Navigation ─────────────────────────────────────────── -->
+    <nav class="effect-nav" id="effect-nav">
+      <button class="nav-btn active" data-idx="0">Invert</button>
+      <button class="nav-btn" data-idx="1">Trail</button>
+      <button class="nav-btn" data-idx="2">Ripple</button>
+      <button class="nav-btn" data-idx="3">Cursor</button>
+      <button class="nav-btn" data-idx="4">Magnetic</button>
+      <button class="nav-btn" data-idx="5">Particles</button>
+      <button class="nav-btn" data-idx="6">Parallax</button>
+      <button class="nav-btn" data-idx="7">Tilt</button>
+      <button class="nav-btn" data-idx="8">Spotlight</button>
+      <button class="nav-btn" data-idx="9">Flashlight</button>
+      <button class="nav-btn" data-idx="10">Image</button>
     </nav>
 
-    <div class="page">
-      <header>
-        <h1>Mouse Animation<span class="logo-anim">s</span><canvas id="logo-canvas" aria-hidden="true"></canvas></h1>
-        <p class="header-sub">A lightweight, framework-agnostic library for cursor &amp; mouse effects — TypeScript-first, zero dependencies, jQuery-ready.</p>
-        <div class="badge-row">
-          <span class="badge badge-green">Zero dependencies</span>
-          <span class="badge badge-blue">Under 5 kB gzipped</span>
-          <span class="badge badge-purple">TypeScript</span>
-          <span class="badge badge-muted">jQuery plugin</span>
-        </div>
-        <div class="install-wrap">
-          <div class="install-block">
-            <code class="install-cmd">npm install mouse-animations</code>
-            <button class="copy-btn" id="copy-install">Copy</button>
-          </div>
-        </div>
-        <nav class="effect-nav" aria-label="Effects">
-          <a href="#card-invert">Invert</a>
-          <a href="#card-trail">Trail</a>
-          <a href="#card-ripple">Ripple</a>
-          <a href="#card-cursor">Custom Cursor</a>
-          <a href="#card-magnetic">Magnetic</a>
-          <a href="#card-particles">Particles</a>
-          <a href="#card-parallax">Parallax</a>
-          <a href="#card-tilt">Tilt</a>
-          <a href="#card-spotlight">Spotlight</a>
-          <a href="#card-flashlight">Flashlight</a>
-          <a href="#card-image">Image</a>
-          <a href="#card-jquery">jQuery</a>
-        </nav>
-      </header>
+    <!-- ── Slider ─────────────────────────────────────────────── -->
+    <div class="slider-wrapper">
+      <div class="slider-track" id="slider-track">
 
-      <div class="cards">
-        <!-- ── INVERT CURSOR ── -->
-        <section class="card" id="card-invert">
-          <div class="card-head">
-            <div>
-              <h2>Invert</h2>
-              <p>An opaque circle that inverts the colors of any text or element it passes over.</p>
-              <p class="card-hint">Move your mouse anywhere on the page</p>
-            </div>
-            <button class="toggle" id="btn-invert">Enable</button>
-          </div>
-          <div class="demo-zone" style="min-height: 110px; gap: 24px">
-            <span style="font-size: 32px; font-weight: 700; color: var(--text); pointer-events: none; user-select: none">Hover over this text</span>
-          </div>
-          <div class="card-foot">
-            <div class="controls">
-              <div class="ctrl">
-                <label>Color</label>
-                <div class="color-row">
-                  <input type="color" id="invert-color" value="#ffffff" />
-                  <span class="color-hex" id="invert-color-hex">#ffffff</span>
-                </div>
-              </div>
-              <div class="ctrl">
-                <label>Size <output id="invert-size-val">40</output> px</label>
-                <input type="range" id="invert-size" min="10" max="120" value="40" />
-              </div>
-              <div class="ctrl">
-                <label>Smoothness <output id="invert-smooth-val">1.00</output></label>
-                <input type="range" id="invert-smooth" min="5" max="100" value="100" />
-              </div>
-            </div>
+        <!-- ── 0: Invert ────────────────────────────────────── -->
+        <div class="slide" data-effect="invert">
+          <div class="slide-glow"></div>
+          <div class="panel">
+            <span class="badge">npm i mouse-animations</span>
+            <h1>Invert</h1>
+            <p class="subtitle">// colors flip under your cursor</p>
             <div class="code-wrap">
-              <div class="code-label">Usage</div>
-              <pre><code id="code-invert"></code></pre>
+              <div class="mode-toggle" id="toggle-invert">
+              <button class="toggle-btn active" data-mode="js">JS</button>
+              <button class="toggle-btn" data-mode="jquery">jQuery</button>
             </div>
-          </div>
-        </section>
-
-        <!-- ── TRAIL ── -->
-        <section class="card" id="card-trail">
-          <div class="card-head">
-            <div>
-              <h2>Trail</h2>
-              <p>Fading dots that follow the cursor on a full-page canvas overlay.</p>
-              <p class="card-hint">Move your mouse anywhere on the page</p>
+            <pre class="code-block"><code id="code-invert"></code></pre>
+              <button class="customize-btn" data-ctrl="ctrl-invert">⚙ Customize</button>
             </div>
-            <button class="toggle" id="btn-trail">Enable</button>
-          </div>
-          <div class="card-foot">
-            <div class="controls">
-              <div class="ctrl">
-                <label>Color</label>
-                <div class="color-row">
-                  <input type="color" id="trail-color" value="#a78bfa" />
-                  <span class="color-hex" id="trail-color-hex">#a78bfa</span>
+            <div class="ctrl-drawer" id="ctrl-invert">
+              <div class="ctrl-inner">
+                <div class="ctrl-row">
+                  <label>size</label>
+                  <input type="range" id="invert-size" min="20" max="150" value="50" step="2" />
+                  <output id="invert-size-val">50</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>smoothness</label>
+                  <input type="range" id="invert-smooth" min="1" max="50" value="12" step="1" />
+                  <output id="invert-smooth-val">0.12</output>
                 </div>
               </div>
-              <div class="ctrl">
-                <label
-                  >Size
-                  <output id="trail-size-val">8</output>
-                </label>
-                <input type="range" id="trail-size" min="1" max="20" value="8" />
-              </div>
-              <div class="ctrl">
-                <label
-                  >Length
-                  <output id="trail-length-val">30</output>
-                </label>
-                <input type="range" id="trail-length" min="5" max="60" value="30" />
-              </div>
-              <div class="ctrl">
-                <label
-                  >Decay
-                  <output id="trail-decay-val">0.04</output>
-                </label>
-                <input type="range" id="trail-decay" min="1" max="15" value="4" />
-              </div>
-              <div class="ctrl">
-                <label
-                  >Blur
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 1: Trail ─────────────────────────────────────── -->
+        <div class="slide" data-effect="trail">
+          <div class="slide-glow"></div>
+          <div class="panel">
+            <span class="badge">npm i mouse-animations</span>
+            <h1>Trail</h1>
+            <p class="subtitle">// move your mouse around</p>
+            <div class="code-wrap">
+              <div class="mode-toggle" id="toggle-trail">
+              <button class="toggle-btn active" data-mode="js">JS</button>
+              <button class="toggle-btn" data-mode="jquery">jQuery</button>
+            </div>
+            <pre class="code-block"><code id="code-trail"></code></pre>
+              <button class="customize-btn" data-ctrl="ctrl-trail">⚙ Customize</button>
+            </div>
+            <div class="ctrl-drawer" id="ctrl-trail">
+              <div class="ctrl-inner">
+                <div class="ctrl-row-color">
+                  <label>color</label>
+                  <input type="color" id="trail-color" value="#c084fc" />
+                  <span id="trail-color-hex">#c084fc</span>
+                </div>
+                <div class="ctrl-row">
+                  <label>size</label>
+                  <input type="range" id="trail-size" min="2" max="20" value="5" step="1" />
+                  <output id="trail-size-val">5</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>length</label>
+                  <input type="range" id="trail-length" min="5" max="80" value="20" step="1" />
+                  <output id="trail-length-val">20</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>decay</label>
+                  <input type="range" id="trail-decay" min="1" max="99" value="5" step="1" />
+                  <output id="trail-decay-val">0.05</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>blur</label>
+                  <input type="range" id="trail-blur" min="0" max="20" value="0" step="1" />
                   <output id="trail-blur-val">0</output>
-                  px</label
-                >
-                <input type="range" id="trail-blur" min="0" max="10" value="0" />
+                </div>
               </div>
             </div>
-            <div class="code-wrap">
-              <div class="code-label">Usage</div>
-              <pre><code id="code-trail"></code></pre>
-            </div>
           </div>
-        </section>
+        </div>
 
-        <!-- ── RIPPLE ── -->
-        <section class="card" id="card-ripple">
-          <div class="card-head">
-            <div>
-              <h2>Ripple</h2>
-              <p>Expanding circle animation at each click position.</p>
-              <p class="card-hint">Click anywhere to trigger</p>
-            </div>
-            <button class="toggle" id="btn-ripple">Enable</button>
-          </div>
-          <div class="card-foot">
-            <div class="controls">
-              <div class="ctrl">
-                <label>Color</label>
-                <div class="color-row">
-                  <input type="color" id="ripple-color" value="#a78bfa" />
-                  <span class="color-hex" id="ripple-color-hex">#a78bfa</span>
-                </div>
-              </div>
-              <div class="ctrl">
-                <label
-                  >Opacity
-                  <output id="ripple-opacity-val">0.35</output>
-                </label>
-                <input type="range" id="ripple-opacity" min="5" max="90" value="35" />
-              </div>
-              <div class="ctrl">
-                <label
-                  >Duration
-                  <output id="ripple-duration-val">700</output>
-                  ms</label
-                >
-                <input type="range" id="ripple-duration" min="100" max="1500" step="50" value="700" />
-              </div>
-              <div class="ctrl">
-                <label
-                  >Max size
-                  <output id="ripple-size-val">120</output>
-                  px</label
-                >
-                <input type="range" id="ripple-size" min="40" max="300" value="120" />
-              </div>
-            </div>
+        <!-- ── 1: Ripple ────────────────────────────────────── -->
+        <div class="slide" data-effect="ripple">
+          <div class="slide-glow"></div>
+          <div class="panel">
+            <span class="badge">npm i mouse-animations</span>
+            <h1>Ripple</h1>
+            <p class="subtitle">// click anywhere</p>
             <div class="code-wrap">
-              <div class="code-label">Usage</div>
-              <pre><code id="code-ripple"></code></pre>
+              <div class="mode-toggle" id="toggle-ripple">
+              <button class="toggle-btn active" data-mode="js">JS</button>
+              <button class="toggle-btn" data-mode="jquery">jQuery</button>
+            </div>
+            <pre class="code-block"><code id="code-ripple"></code></pre>
+              <button class="customize-btn" data-ctrl="ctrl-ripple">⚙ Customize</button>
+            </div>
+            <div class="ctrl-drawer" id="ctrl-ripple">
+              <div class="ctrl-inner">
+                <div class="ctrl-row-color">
+                  <label>color</label>
+                  <input type="color" id="ripple-color" value="#60a5fa" />
+                  <span id="ripple-color-hex">#60a5fa</span>
+                </div>
+                <div class="ctrl-row">
+                  <label>opacity</label>
+                  <input type="range" id="ripple-opacity" min="5" max="100" value="60" step="5" />
+                  <output id="ripple-opacity-val">0.60</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>duration</label>
+                  <input type="range" id="ripple-duration" min="200" max="1500" value="600" step="50" />
+                  <output id="ripple-duration-val">600</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>max size</label>
+                  <input type="range" id="ripple-size" min="50" max="400" value="150" step="10" />
+                  <output id="ripple-size-val">150</output>
+                </div>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
 
-        <!-- ── CUSTOM CURSOR ── -->
-        <section class="card" id="card-cursor">
-          <div class="card-head">
-            <div>
-              <h2>Custom Cursor</h2>
-              <p>Replaces the native cursor with a dot and a smoothly lagging outer ring.</p>
-              <p class="card-hint">Move your mouse — cursor applies to the whole page</p>
+        <!-- ── 2: Custom Cursor ──────────────────────────────── -->
+        <div class="slide" data-effect="cursor">
+          <div class="slide-glow"></div>
+          <div class="panel">
+            <span class="badge">npm i mouse-animations</span>
+            <h1>Custom Cursor</h1>
+            <p class="subtitle">// dot + ring following your cursor</p>
+            <div class="code-wrap">
+              <div class="mode-toggle" id="toggle-cursor">
+              <button class="toggle-btn active" data-mode="js">JS</button>
+              <button class="toggle-btn" data-mode="jquery">jQuery</button>
             </div>
-            <button class="toggle" id="btn-cursor">Enable</button>
-          </div>
-          <div class="card-foot">
-            <div class="controls">
-              <div class="ctrl">
-                <label>Inner color</label>
-                <div class="color-row">
-                  <input type="color" id="cursor-inner-color" value="#a78bfa" />
-                  <span class="color-hex" id="cursor-inner-hex">#a78bfa</span>
+            <pre class="code-block"><code id="code-cursor"></code></pre>
+              <button class="customize-btn" data-ctrl="ctrl-cursor">⚙ Customize</button>
+            </div>
+            <div class="ctrl-drawer" id="ctrl-cursor">
+              <div class="ctrl-inner">
+                <div class="ctrl-row-color">
+                  <label>inner color</label>
+                  <input type="color" id="cursor-inner-color" value="#34d399" />
+                  <span id="cursor-inner-hex">#34d399</span>
                 </div>
-              </div>
-              <div class="ctrl">
-                <label
-                  >Inner size
-                  <output id="cursor-inner-size-val">8</output>
-                  px</label
-                >
-                <input type="range" id="cursor-inner-size" min="3" max="20" value="8" />
-              </div>
-              <div class="ctrl">
-                <label>Outer color</label>
-                <div class="color-row">
-                  <input type="color" id="cursor-outer-color" value="#a78bfa" />
-                  <span class="color-hex" id="cursor-outer-hex">#a78bfa</span>
+                <div class="ctrl-row-color">
+                  <label>outer color</label>
+                  <input type="color" id="cursor-outer-color" value="#34d399" />
+                  <span id="cursor-outer-hex">#34d399</span>
                 </div>
-              </div>
-              <div class="ctrl">
-                <label
-                  >Outer opacity
-                  <output id="cursor-outer-opacity-val">0.4</output>
-                </label>
-                <input type="range" id="cursor-outer-opacity" min="5" max="90" value="40" />
-              </div>
-              <div class="ctrl">
-                <label
-                  >Outer size
+                <div class="ctrl-row">
+                  <label>inner size</label>
+                  <input type="range" id="cursor-inner-size" min="2" max="20" value="6" step="1" />
+                  <output id="cursor-inner-size-val">6</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>outer size</label>
+                  <input type="range" id="cursor-outer-size" min="20" max="80" value="36" step="2" />
                   <output id="cursor-outer-size-val">36</output>
-                  px</label
-                >
-                <input type="range" id="cursor-outer-size" min="16" max="80" value="36" />
+                </div>
+                <div class="ctrl-row">
+                  <label>smoothness</label>
+                  <input type="range" id="cursor-smooth" min="1" max="99" value="15" step="1" />
+                  <output id="cursor-smooth-val">0.15</output>
+                </div>
               </div>
-              <div class="ctrl">
-                <label
-                  >Smoothness
-                  <output id="cursor-smooth-val">0.12</output>
-                </label>
-                <input type="range" id="cursor-smooth" min="5" max="80" value="12" />
-              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 3: Magnetic ──────────────────────────────────── -->
+        <div class="slide" data-effect="magnetic">
+          <div class="slide-glow"></div>
+          <div class="panel" style="max-width:580px;">
+            <span class="badge">npm i mouse-animations</span>
+            <h1>Magnetic</h1>
+            <p class="subtitle">// elements are pulled toward your cursor</p>
+            <div class="demo-zone">
+              <button class="mag-target mag-btn">Connect</button>
+              <button class="mag-target mag-btn">Attract</button>
+              <button class="mag-target mag-btn">Follow</button>
+              <button class="mag-target mag-btn">Pull</button>
             </div>
             <div class="code-wrap">
-              <div class="code-label">Usage</div>
-              <pre><code id="code-cursor"></code></pre>
+              <div class="mode-toggle" id="toggle-magnetic">
+              <button class="toggle-btn active" data-mode="js">JS</button>
+              <button class="toggle-btn" data-mode="jquery">jQuery</button>
             </div>
-          </div>
-        </section>
-
-        <!-- ── MAGNETIC ── -->
-        <section class="card" id="card-magnetic">
-          <div class="card-head">
-            <div>
-              <h2>Magnetic</h2>
-              <p>Elements are pulled toward the cursor as it approaches within the activation radius.</p>
+            <pre class="code-block"><code id="code-magnetic"></code></pre>
+              <button class="customize-btn" data-ctrl="ctrl-magnetic">⚙ Customize</button>
             </div>
-            <button class="toggle" id="btn-magnetic">Enable</button>
-          </div>
-          <div class="mag-grid">
-            <button class="mag-btn mag-target">Button A</button>
-            <button class="mag-btn mag-target">Button B</button>
-            <button class="mag-btn mag-target">Button C</button>
-            <button class="mag-btn mag-target">Button D</button>
-            <button class="mag-btn mag-target">Button E</button>
-          </div>
-          <div class="card-foot">
-            <div class="controls">
-              <div class="ctrl">
-                <label
-                  >Strength
-                  <output id="mag-strength-val">0.4</output>
-                </label>
-                <input type="range" id="mag-strength" min="5" max="80" value="40" />
-              </div>
-              <div class="ctrl">
-                <label
-                  >Radius
+            <div class="ctrl-drawer" id="ctrl-magnetic">
+              <div class="ctrl-inner">
+                <div class="ctrl-row">
+                  <label>strength</label>
+                  <input type="range" id="mag-strength" min="1" max="100" value="40" step="1" />
+                  <output id="mag-strength-val">0.40</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>radius</label>
+                  <input type="range" id="mag-radius" min="50" max="300" value="120" step="10" />
                   <output id="mag-radius-val">120</output>
-                  px</label
-                >
-                <input type="range" id="mag-radius" min="30" max="250" value="120" />
-              </div>
-              <div class="ctrl">
-                <label
-                  >Ease
-                  <output id="mag-ease-val">0.12</output>
-                </label>
-                <input type="range" id="mag-ease" min="3" max="60" value="12" />
-              </div>
-            </div>
-            <div class="code-wrap">
-              <div class="code-label">Usage</div>
-              <pre><code id="code-magnetic"></code></pre>
-            </div>
-          </div>
-        </section>
-
-        <!-- ── PARTICLES ── -->
-        <section class="card" id="card-particles">
-          <div class="card-head">
-            <div>
-              <h2>Particles</h2>
-              <p>Coloured canvas particles burst from each click position with gravity and air resistance.</p>
-              <p class="card-hint">Click anywhere to burst</p>
-            </div>
-            <button class="toggle" id="btn-particles">Enable</button>
-          </div>
-          <div class="card-foot">
-            <div class="controls">
-              <div class="ctrl">
-                <label
-                  >Count
-                  <output id="particles-count-val">24</output>
-                </label>
-                <input type="range" id="particles-count" min="5" max="60" value="24" />
-              </div>
-              <div class="ctrl">
-                <label
-                  >Size
-                  <output id="particles-size-val">6</output>
-                </label>
-                <input type="range" id="particles-size" min="2" max="16" value="6" />
-              </div>
-              <div class="ctrl">
-                <label
-                  >Spread
-                  <output id="particles-spread-val">10</output>
-                </label>
-                <input type="range" id="particles-spread" min="2" max="24" value="10" />
-              </div>
-              <div class="ctrl">
-                <label
-                  >Decay
-                  <output id="particles-decay-val">0.02</output>
-                </label>
-                <input type="range" id="particles-decay" min="5" max="50" value="20" />
-              </div>
-              <div class="ctrl">
-                <label>Colors</label>
-                <div class="palette" id="particles-palette">
-                  <span class="swatch on" data-color="#ff6b6b" style="background: #ff6b6b" title="#ff6b6b"></span>
-                  <span class="swatch on" data-color="#ffd93d" style="background: #ffd93d" title="#ffd93d"></span>
-                  <span class="swatch on" data-color="#6bcb77" style="background: #6bcb77" title="#6bcb77"></span>
-                  <span class="swatch on" data-color="#4d96ff" style="background: #4d96ff" title="#4d96ff"></span>
-                  <span class="swatch on" data-color="#c77dff" style="background: #c77dff" title="#c77dff"></span>
-                  <span class="swatch on" data-color="#ff9f1c" style="background: #ff9f1c" title="#ff9f1c"></span>
-                  <span class="swatch on" data-color="#f72585" style="background: #f72585" title="#f72585"></span>
-                  <span class="swatch on" data-color="#4cc9f0" style="background: #4cc9f0" title="#4cc9f0"></span>
+                </div>
+                <div class="ctrl-row">
+                  <label>ease</label>
+                  <input type="range" id="mag-ease" min="1" max="50" value="15" step="1" />
+                  <output id="mag-ease-val">0.15</output>
                 </div>
               </div>
             </div>
-            <div class="code-wrap">
-              <div class="code-label">Usage</div>
-              <pre><code id="code-particles"></code></pre>
-            </div>
           </div>
-        </section>
+        </div>
 
-        <!-- ── PARALLAX ── -->
-        <section class="card" id="card-parallax">
-          <div class="card-head">
-            <div>
-              <h2>Parallax</h2>
-              <p>Elements float and shift based on mouse position across the viewport — great for depth-layered hero sections.</p>
+        <!-- ── 4: Particles ─────────────────────────────────── -->
+        <div class="slide" data-effect="particles">
+          <div class="slide-glow"></div>
+          <div class="panel">
+            <span class="badge">npm i mouse-animations</span>
+            <h1>Particles</h1>
+            <p class="subtitle">// click to burst</p>
+            <div class="code-wrap">
+              <div class="mode-toggle" id="toggle-particles">
+              <button class="toggle-btn active" data-mode="js">JS</button>
+              <button class="toggle-btn" data-mode="jquery">jQuery</button>
             </div>
-            <button class="toggle" id="btn-parallax">Enable</button>
+            <pre class="code-block"><code id="code-particles"></code></pre>
+              <button class="customize-btn" data-ctrl="ctrl-particles">⚙ Customize</button>
+            </div>
+            <div class="ctrl-drawer" id="ctrl-particles">
+              <div class="ctrl-inner">
+                <div class="ctrl-row">
+                  <label>count</label>
+                  <input type="range" id="particles-count" min="3" max="30" value="27" step="1" />
+                  <output id="particles-count-val">27</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>size</label>
+                  <input type="range" id="particles-size" min="2" max="16" value="10" step="1" />
+                  <output id="particles-size-val">10</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>spread</label>
+                  <input type="range" id="particles-spread" min="20" max="200" value="35" step="5" />
+                  <output id="particles-spread-val">35</output>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="demo-zone" style="min-height: 160px; gap: 20px; flex-wrap: wrap; position: relative">
-            <div
-              class="parallax-target"
-              style="width: 60px; height: 60px; background: rgba(167, 139, 250, 0.35); border: 2px solid rgba(167, 139, 250, 0.8); border-radius: 12px"></div>
-            <div
-              class="parallax-target"
-              style="width: 44px; height: 44px; background: rgba(96, 165, 250, 0.35); border: 2px solid rgba(96, 165, 250, 0.8); border-radius: 50%"></div>
-            <div
-              class="parallax-target"
-              style="width: 72px; height: 24px; background: rgba(52, 211, 153, 0.35); border: 2px solid rgba(52, 211, 153, 0.8); border-radius: 6px"></div>
-            <span class="demo-hint" style="position: absolute; font-size: 15px">Move your mouse across the page</span>
+        </div>
+
+        <!-- ── 5: Parallax ──────────────────────────────────── -->
+        <div class="slide" data-effect="parallax">
+          <div class="slide-glow"></div>
+          <div class="parallax-scene">
+            <div class="p-shape parallax-target" style="width:200px;height:200px;top:12%;left:6%;"></div>
+            <div class="p-shape parallax-target" style="width:110px;height:110px;top:55%;left:78%;"></div>
+            <div class="p-shape parallax-target" style="width:70px;height:70px;top:20%;left:72%;"></div>
+            <div class="p-shape parallax-target" style="width:150px;height:150px;top:68%;left:10%;"></div>
+            <div class="p-shape parallax-target" style="width:45px;height:45px;top:40%;left:88%;"></div>
           </div>
-          <div class="card-foot">
-            <div class="controls">
-              <div class="ctrl">
-                <label
-                  >Depth
+          <div class="panel">
+            <span class="badge">npm i mouse-animations</span>
+            <h1>Parallax</h1>
+            <p class="subtitle">// elements shift with mouse depth</p>
+            <div class="code-wrap">
+              <div class="mode-toggle" id="toggle-parallax">
+              <button class="toggle-btn active" data-mode="js">JS</button>
+              <button class="toggle-btn" data-mode="jquery">jQuery</button>
+            </div>
+            <pre class="code-block"><code id="code-parallax"></code></pre>
+              <button class="customize-btn" data-ctrl="ctrl-parallax">⚙ Customize</button>
+            </div>
+            <div class="ctrl-drawer" id="ctrl-parallax">
+              <div class="ctrl-inner">
+                <div class="ctrl-row">
+                  <label>depth</label>
+                  <input type="range" id="parallax-depth" min="5" max="50" value="20" step="1" />
                   <output id="parallax-depth-val">20</output>
-                  px</label
-                >
-                <input type="range" id="parallax-depth" min="5" max="80" value="20" />
+                </div>
+                <div class="ctrl-row">
+                  <label>ease</label>
+                  <input type="range" id="parallax-ease" min="1" max="30" value="8" step="1" />
+                  <output id="parallax-ease-val">0.08</output>
+                </div>
               </div>
-              <div class="ctrl">
-                <label
-                  >Ease
-                  <output id="parallax-ease-val">0.1</output>
-                </label>
-                <input type="range" id="parallax-ease" min="2" max="40" value="10" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 6: Tilt ──────────────────────────────────────── -->
+        <div class="slide" data-effect="tilt">
+          <div class="slide-glow"></div>
+          <div class="panel" style="max-width:680px;">
+            <span class="badge">npm i mouse-animations</span>
+            <h1>Tilt</h1>
+            <p class="subtitle">// hover the cards</p>
+            <div class="demo-zone">
+              <div class="tilt-target demo-card" style="min-width:140px;">
+                <div style="font-size:1.4rem;margin-bottom:0.6rem;opacity:0.7;">⟡</div>
+                <div>TypeScript</div>
+              </div>
+              <div class="tilt-target demo-card" style="min-width:140px;">
+                <div style="font-size:1.4rem;margin-bottom:0.6rem;opacity:0.7;">◈</div>
+                <div>Zero deps</div>
+              </div>
+              <div class="tilt-target demo-card" style="min-width:140px;">
+                <div style="font-size:1.4rem;margin-bottom:0.6rem;opacity:0.7;">◇</div>
+                <div>&lt; 5 kB</div>
               </div>
             </div>
             <div class="code-wrap">
-              <div class="code-label">Usage</div>
-              <pre><code id="code-parallax"></code></pre>
+              <div class="mode-toggle" id="toggle-tilt">
+              <button class="toggle-btn active" data-mode="js">JS</button>
+              <button class="toggle-btn" data-mode="jquery">jQuery</button>
             </div>
-          </div>
-        </section>
-
-        <!-- ── TILT ── -->
-        <section class="card" id="card-tilt">
-          <div class="card-head">
-            <div>
-              <h2>Tilt</h2>
-              <p>3D perspective tilt that follows the cursor within each element, with an optional glare highlight.</p>
+            <pre class="code-block"><code id="code-tilt"></code></pre>
+              <button class="customize-btn" data-ctrl="ctrl-tilt">⚙ Customize</button>
             </div>
-            <button class="toggle" id="btn-tilt">Enable</button>
-          </div>
-          <div class="demo-zone" style="min-height: 160px; gap: 20px; flex-wrap: wrap">
-            <div
-              class="tilt-target"
-                style="
-                  width: 140px;
-                  height: 96px;
-                  background: rgba(255, 255, 255, 0.07);
-                  border: 2px solid rgba(255, 255, 255, 0.35);
-                  border-radius: 14px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  font-size: 16px;
-                  font-weight: 600;
-                  color: var(--text);
-                ">
-                Card A
-              </div>
-              <div
-                class="tilt-target"
-                style="
-                  width: 140px;
-                  height: 96px;
-                  background: rgba(167, 139, 250, 0.25);
-                  border: 2px solid rgba(167, 139, 250, 0.75);
-                  border-radius: 14px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  font-size: 16px;
-                  font-weight: 600;
-                  color: var(--accent);
-                ">
-                Card B
-              </div>
-              <div
-                class="tilt-target"
-                style="
-                  width: 140px;
-                  height: 96px;
-                  background: rgba(96, 165, 250, 0.25);
-                  border: 2px solid rgba(96, 165, 250, 0.75);
-                  border-radius: 14px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  font-size: 16px;
-                  font-weight: 600;
-                  color: var(--accent2);
-                ">
-                Card C
-            </div>
-          </div>
-          <div class="card-foot">
-            <div class="controls">
-              <div class="ctrl">
-                <label
-                  >Max tilt
+            <div class="ctrl-drawer" id="ctrl-tilt">
+              <div class="ctrl-inner">
+                <div class="ctrl-row">
+                  <label>max tilt</label>
+                  <input type="range" id="tilt-max" min="5" max="40" value="15" step="1" />
                   <output id="tilt-max-val">15</output>
-                  °</label
-                >
-                <input type="range" id="tilt-max" min="2" max="35" value="15" />
-              </div>
-              <div class="ctrl">
-                <label
-                  >Perspective
+                </div>
+                <div class="ctrl-row">
+                  <label>perspective</label>
+                  <input type="range" id="tilt-perspective" min="300" max="2000" value="800" step="50" />
                   <output id="tilt-perspective-val">800</output>
-                  px</label
-                >
-                <input type="range" id="tilt-perspective" min="200" max="2000" step="50" value="800" />
-              </div>
-              <div class="ctrl">
-                <label
-                  >Ease
-                  <output id="tilt-ease-val">0.1</output>
-                </label>
-                <input type="range" id="tilt-ease" min="2" max="40" value="10" />
-              </div>
-              <div class="ctrl" style="flex-direction: row; align-items: center; gap: 10px">
-                <label style="justify-content: flex-start; gap: 8px; cursor: pointer">
+                </div>
+                <div class="ctrl-row-check">
                   <input type="checkbox" id="tilt-glare" />
-                  Glare overlay
-                </label>
+                  <label for="tilt-glare">glare</label>
+                </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 7: Spotlight ─────────────────────────────────── -->
+        <div class="slide" data-effect="spotlight">
+          <div class="slide-glow"></div>
+          <div class="panel" style="max-width:680px;">
+            <span class="badge">npm i mouse-animations</span>
+            <h1>Spotlight</h1>
+            <p class="subtitle">// hover the cards</p>
+            <div class="demo-zone">
+              <div class="spotlight-target demo-card" style="min-width:130px;">Trail</div>
+              <div class="spotlight-target demo-card" style="min-width:130px;">Ripple</div>
+              <div class="spotlight-target demo-card" style="min-width:130px;">Magnetic</div>
             </div>
             <div class="code-wrap">
-              <div class="code-label">Usage</div>
-              <pre><code id="code-tilt"></code></pre>
+              <div class="mode-toggle" id="toggle-spotlight">
+              <button class="toggle-btn active" data-mode="js">JS</button>
+              <button class="toggle-btn" data-mode="jquery">jQuery</button>
             </div>
-          </div>
-        </section>
-
-        <!-- ── SPOTLIGHT ── -->
-        <section class="card" id="card-spotlight">
-          <div class="card-head">
-            <div>
-              <h2>Spotlight</h2>
-              <p>A radial gradient glow that follows the cursor inside each matched element. Works best on dark cards and panels.</p>
-              <p class="card-hint">Hover over the cards below</p>
+            <pre class="code-block"><code id="code-spotlight"></code></pre>
+              <button class="customize-btn" data-ctrl="ctrl-spotlight">⚙ Customize</button>
             </div>
-            <button class="toggle" id="btn-spotlight">Enable</button>
-          </div>
-
-          <div class="demo-zone" style="min-height: 180px; gap: 24px; flex-wrap: wrap">
-            <div class="spotlight-target" style="width: 180px; height: 110px; background: var(--surface2); border: 1px solid var(--border-hi); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;">
-              <div style="font-size: 17px; font-weight: 600; color: var(--text)">Card A</div>
-              <div style="font-size: 13px; color: var(--muted)">Hover to see spotlight</div>
-            </div>
-            <div class="spotlight-target" style="width: 180px; height: 110px; background: rgba(167,139,250,0.07); border: 1px solid rgba(167,139,250,0.3); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;">
-              <div style="font-size: 17px; font-weight: 600; color: var(--accent)">Card B</div>
-              <div style="font-size: 13px; color: var(--muted)">Hover to see spotlight</div>
-            </div>
-            <div class="spotlight-target" style="width: 180px; height: 110px; background: rgba(96,165,250,0.07); border: 1px solid rgba(96,165,250,0.3); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;">
-              <div style="font-size: 17px; font-weight: 600; color: var(--accent2)">Card C</div>
-              <div style="font-size: 13px; color: var(--muted)">Hover to see spotlight</div>
-            </div>
-          </div>
-
-          <div class="card-foot">
-            <div class="controls">
-              <div class="ctrl">
-                <label>Color</label>
-                <div class="color-row">
-                  <input type="color" id="spotlight-color" value="#ffffff" />
-                  <span class="color-hex" id="spotlight-color-hex">#ffffff</span>
+            <div class="ctrl-drawer" id="ctrl-spotlight">
+              <div class="ctrl-inner">
+                <div class="ctrl-row-color">
+                  <label>color</label>
+                  <input type="color" id="spotlight-color" value="#fb923c" />
+                  <span id="spotlight-color-hex">#fb923c</span>
+                </div>
+                <div class="ctrl-row">
+                  <label>opacity</label>
+                  <input type="range" id="spotlight-opacity" min="5" max="100" value="15" step="5" />
+                  <output id="spotlight-opacity-val">0.15</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>size</label>
+                  <input type="range" id="spotlight-size" min="50" max="400" value="200" step="10" />
+                  <output id="spotlight-size-val">200</output>
                 </div>
               </div>
-              <div class="ctrl">
-                <label>Opacity <output id="spotlight-opacity-val">0.12</output></label>
-                <input type="range" id="spotlight-opacity" min="2" max="100" value="12" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 8: Flashlight ────────────────────────────────── -->
+        <div class="slide" data-effect="flashlight">
+          <div class="slide-glow"></div>
+          <div class="panel">
+            <span class="badge">npm i mouse-animations</span>
+            <h1>Flashlight</h1>
+            <p class="subtitle">// move to reveal</p>
+            <div class="code-wrap">
+              <div class="mode-toggle" id="toggle-flashlight">
+              <button class="toggle-btn active" data-mode="js">JS</button>
+              <button class="toggle-btn" data-mode="jquery">jQuery</button>
+            </div>
+            <pre class="code-block"><code id="code-flashlight"></code></pre>
+              <button class="customize-btn" data-ctrl="ctrl-flashlight">⚙ Customize</button>
+            </div>
+            <div class="ctrl-drawer" id="ctrl-flashlight">
+              <div class="ctrl-inner">
+                <div class="ctrl-row">
+                  <label>opacity</label>
+                  <input type="range" id="fl-opacity" min="20" max="98" value="85" step="1" />
+                  <output id="fl-opacity-val">0.85</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>size</label>
+                  <input type="range" id="fl-size" min="50" max="400" value="180" step="10" />
+                  <output id="fl-size-val">180</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>blur</label>
+                  <input type="range" id="fl-blur" min="0" max="40" value="8" step="1" />
+                  <output id="fl-blur-val">8</output>
+                </div>
               </div>
-              <div class="ctrl">
-                <label>Size <output id="spotlight-size-val">200</output> px</label>
-                <input type="range" id="spotlight-size" min="50" max="500" step="10" value="200" />
-              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 9: Invert ────────────────────────────────────── -->
+        <!-- ── 10: Image Cursor ──────────────────────────────── -->
+        <div class="slide" data-effect="image">
+          <div class="slide-glow"></div>
+          <div class="panel" style="max-width:600px;">
+            <span class="badge">npm i mouse-animations</span>
+            <h1>Image Cursor</h1>
+            <p class="subtitle">// custom SVG replaces your cursor</p>
+            <div class="demo-zone" id="imgcursor-presets">
+              <button class="demo-card preset-btn active" data-preset="star">★</button>
+              <button class="demo-card preset-btn" data-preset="arrow">↖</button>
+              <button class="demo-card preset-btn" data-preset="crosshair">⊕</button>
+              <button class="demo-card preset-btn" data-preset="heart">♥</button>
             </div>
             <div class="code-wrap">
-              <div class="code-label">Usage</div>
-              <pre><code id="code-spotlight"></code></pre>
+              <div class="mode-toggle" id="toggle-image">
+              <button class="toggle-btn active" data-mode="js">JS</button>
+              <button class="toggle-btn" data-mode="jquery">jQuery</button>
             </div>
-          </div>
-        </section>
-
-        <!-- ── FLASHLIGHT ── -->
-        <section class="card" id="card-flashlight">
-          <div class="card-head">
-            <div>
-              <h2>Flashlight</h2>
-              <p>A full-page dark overlay with a transparent circle that follows the cursor, revealing the content beneath like a flashlight.</p>
-              <p class="card-hint">Move your mouse anywhere on the page</p>
+            <pre class="code-block"><code id="code-image"></code></pre>
+              <button class="customize-btn" data-ctrl="ctrl-image">⚙ Customize</button>
             </div>
-            <button class="toggle" id="btn-flashlight">Enable</button>
-          </div>
-
-          <div class="demo-zone" style="min-height: 80px; align-items: center; justify-content: center;">
-            <div style="font-size: 16px; color: var(--muted); text-align: center;">
-              The flashlight overlay is <strong>active</strong> — move your cursor to reveal the page beneath.
-            </div>
-          </div>
-
-          <div class="card-foot">
-            <div class="controls">
-              <div class="ctrl">
-                <label>Backdrop opacity</label>
-                <div class="color-row">
-                  <span style="font-size: 13px; color: var(--muted)">—</span>
+            <div class="ctrl-drawer" id="ctrl-image">
+              <div class="ctrl-inner">
+                <div class="ctrl-row">
+                  <label>width</label>
+                  <input type="range" id="imgcursor-width" min="16" max="80" value="32" step="2" />
+                  <output id="imgcursor-width-val">32</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>height</label>
+                  <input type="range" id="imgcursor-height" min="16" max="80" value="32" step="2" />
+                  <output id="imgcursor-height-val">32</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>smoothness</label>
+                  <input type="range" id="imgcursor-smooth" min="0" max="50" value="10" step="1" />
+                  <output id="imgcursor-smooth-val">0.10</output>
                 </div>
               </div>
-              <div class="ctrl">
-                <label>Opacity <output id="fl-opacity-val">0.85</output></label>
-                <input type="range" id="fl-opacity" min="10" max="100" value="85" />
-              </div>
-              <div class="ctrl">
-                <label>Size <output id="fl-size-val">200</output> px</label>
-                <input type="range" id="fl-size" min="50" max="500" step="10" value="200" />
-              </div>
-              <div class="ctrl">
-                <label>Blur <output id="fl-blur-val">0</output> px</label>
-                <input type="range" id="fl-blur" min="0" max="30" value="0" />
-              </div>
-              <div class="ctrl">
-                <label>Smoothness <output id="fl-smooth-val">1.00</output></label>
-                <input type="range" id="fl-smooth" min="5" max="100" value="100" />
-              </div>
-            </div>
-            <div class="code-wrap">
-              <div class="code-label">Usage</div>
-              <pre><code id="code-flashlight"></code></pre>
             </div>
           </div>
-        </section>
+        </div>
 
-        <!-- ── IMAGE CURSOR ── -->
-        <section class="card" id="card-image">
-          <div class="card-head">
-            <div>
-              <h2>Image</h2>
-              <p>Replaces the native cursor with a custom image or inline SVG that follows the mouse.</p>
-              <p class="card-hint">Move your mouse anywhere on the page</p>
-            </div>
-            <button class="toggle" id="btn-image">Enable</button>
-          </div>
-          <div class="card-foot">
-            <div class="controls">
-              <div class="ctrl">
-                <label>Preset</label>
-                <div class="preset-row" id="imgcursor-presets">
-                  <button class="preset-btn on" data-preset="star" title="Star">★</button>
-                  <button class="preset-btn" data-preset="arrow" title="Arrow">↖</button>
-                  <button class="preset-btn" data-preset="crosshair" title="Crosshair">⊕</button>
-                  <button class="preset-btn" data-preset="heart" title="Heart">♥</button>
-                </div>
-              </div>
-              <div class="ctrl">
-                <label>Width <output id="imgcursor-width-val">32</output> px</label>
-                <input type="range" id="imgcursor-width" min="16" max="80" value="32" />
-              </div>
-              <div class="ctrl">
-                <label>Height <output id="imgcursor-height-val">32</output> px</label>
-                <input type="range" id="imgcursor-height" min="16" max="80" value="32" />
-              </div>
-              <div class="ctrl">
-                <label>Smoothness <output id="imgcursor-smooth-val">1.00</output></label>
-                <input type="range" id="imgcursor-smooth" min="5" max="100" value="100" />
-              </div>
-              <div class="ctrl" style="flex-direction: row; align-items: center; gap: 10px">
-                <label style="justify-content: flex-start; gap: 8px; cursor: pointer">
-                  <input type="checkbox" id="imgcursor-override" />
-                  Override all cursors
-                </label>
-              </div>
-              <div class="ctrl">
-                <label>Hover state</label>
-                <div class="preset-row" id="imgcursor-hover-presets">
-                  <button class="preset-btn on" data-hover="none" title="None (disabled)">—</button>
-                  <button class="preset-btn" data-hover="hand" title="Hand pointer">☝</button>
-                  <button class="preset-btn" data-hover="lens" title="Magnifier">⊙</button>
-                  <button class="preset-btn" data-hover="spark" title="Sparkle">✦</button>
-                </div>
-              </div>
-              <div class="ctrl" style="flex-direction: row; align-items: center; gap: 10px">
-                <label style="justify-content: flex-start; gap: 8px; cursor: pointer">
-                  <input type="checkbox" id="imgcursor-active" />
-                  Active (click) state
-                </label>
-              </div>
-            </div>
-            <div class="code-wrap">
-              <div class="code-label">Usage</div>
-              <pre><code id="code-image"></code></pre>
-            </div>
-          </div>
-        </section>
+      </div><!-- /slider-track -->
+    </div><!-- /slider-wrapper -->
 
-        <!-- ── JQUERY PLUGIN ── -->
-        <section class="card" id="card-jquery">
-          <div class="card-head">
-            <div>
-              <h2>jQuery Plugin</h2>
-              <p>
-                All effects are available as jQuery methods. Import the plugin once — it extends
-                <code style="font-family: var(--mono); font-size: 0.8em; color: var(--accent2)">$.fn</code> automatically.
-              </p>
-            </div>
-          </div>
-          <div style="padding: 0 24px 24px; display: flex; flex-direction: column; gap: 16px">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px">
-              <div>
-                <div class="code-label" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 10px">
-                  Installation
-                </div>
-                <pre><code><span class="tok-str">npm install mouse-animations jquery</span></code></pre>
-              </div>
+    <!-- ── Arrows ─────────────────────────────────────────────── -->
+    <button class="arrow arrow-prev" id="arrow-prev" aria-label="Previous">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <button class="arrow arrow-next" id="arrow-next" aria-label="Next">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
 
-              <div>
-                <div class="code-label" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 10px">
-                  Import
-                </div>
-                <pre><code><span class="tok-kw">import</span> <span class="tok-str">'mouse-animations/jquery'</span><span
-                class="tok-pun">;</span>
-
-<span class="tok-pun">// extends $.fn — no return value needed</span></code></pre>
-              </div>
-            </div>
-
-            <div>
-              <div class="code-label" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 10px">
-                Usage
-              </div>
-              <pre><code><span class="tok-pun">// Global effects</span>
-<span class="tok-cls">$</span><span class="tok-pun">(</span><span class="tok-str">'body'</span><span
-                class="tok-pun">).</span><span class="tok-key">trail</span><span class="tok-pun">({</span> <span
-                class="tok-key">color</span><span class="tok-pun">:</span> <span class="tok-str">'#a78bfa'</span><span
-                class="tok-pun">,</span> <span class="tok-key">size</span><span class="tok-pun">:</span> <span
-                class="tok-num">8</span> <span class="tok-pun">});</span>
-<span class="tok-cls">$</span><span class="tok-pun">(</span><span class="tok-str">'body'</span><span
-                class="tok-pun">).</span><span class="tok-key">ripple</span><span class="tok-pun">({</span> <span
-                class="tok-key">duration</span><span class="tok-pun">:</span> <span class="tok-num">700</span><span
-                class="tok-pun">,</span> <span class="tok-key">maxSize</span><span class="tok-pun">:</span> <span
-                class="tok-num">120</span> <span class="tok-pun">});</span>
-<span class="tok-cls">$</span><span class="tok-pun">(</span><span class="tok-str">'body'</span><span
-                class="tok-pun">).</span><span class="tok-key">customCursor</span><span class="tok-pun">({</span> <span
-                class="tok-key">innerColor</span><span class="tok-pun">:</span> <span
-                class="tok-str">'#a78bfa'</span><span class="tok-pun">,</span> <span
-                class="tok-key">smoothness</span><span class="tok-pun">:</span> <span class="tok-num">0.12</span> <span
-                class="tok-pun">});</span>
-<span class="tok-cls">$</span><span class="tok-pun">(</span><span class="tok-str">'body'</span><span
-                class="tok-pun">).</span><span class="tok-key">particles</span><span class="tok-pun">({</span> <span
-                class="tok-key">count</span><span class="tok-pun">:</span> <span class="tok-num">24</span> <span
-                class="tok-pun">});</span>
-<span class="tok-cls">$</span><span class="tok-pun">(</span><span class="tok-str">'body'</span><span
-                class="tok-pun">).</span><span class="tok-key">invert</span><span class="tok-pun">({</span> <span
-                class="tok-key">size</span><span class="tok-pun">:</span> <span class="tok-num">40</span><span
-                class="tok-pun">,</span> <span class="tok-key">color</span><span class="tok-pun">:</span> <span
-                class="tok-str">'#ffffff'</span> <span class="tok-pun">});</span>
-<span class="tok-cls">$</span><span class="tok-pun">(</span><span class="tok-str">'body'</span><span
-                class="tok-pun">).</span><span class="tok-key">image</span><span class="tok-pun">({</span> <span
-                class="tok-key">src</span><span class="tok-pun">:</span> <span class="tok-str">'&lt;svg .../&gt;'</span><span
-                class="tok-pun">,</span> <span class="tok-key">overrideAll</span><span class="tok-pun">:</span> <span
-                class="tok-key">true</span><span class="tok-pun">,</span> <span class="tok-key">states</span><span
-                class="tok-pun">:</span> <span class="tok-pun">{</span> <span class="tok-key">hover</span><span
-                class="tok-pun">:</span> <span class="tok-str">'&lt;svg .../&gt;'</span> <span class="tok-pun">}</span> <span
-                class="tok-pun">});</span>
-
-<span class="tok-pun">// Magnetic — selector auto-derived from the jQuery set</span>
-<span class="tok-cls">$</span><span class="tok-pun">(</span><span class="tok-str">'.btn'</span><span
-                class="tok-pun">).</span><span class="tok-key">magnetic</span><span class="tok-pun">({</span> <span
-                class="tok-key">strength</span><span class="tok-pun">:</span> <span class="tok-num">0.4</span><span
-                class="tok-pun">,</span> <span class="tok-key">radius</span><span class="tok-pun">:</span> <span
-                class="tok-num">120</span> <span class="tok-pun">});</span>
-
-<span class="tok-pun">// Parallax — elements shift on mouse move</span>
-<span class="tok-cls">$</span><span class="tok-pun">(</span><span class="tok-str">'.layer'</span><span
-                class="tok-pun">).</span><span class="tok-key">parallax</span><span class="tok-pun">({</span> <span
-                class="tok-key">depth</span><span class="tok-pun">:</span> <span class="tok-num">20</span><span
-                class="tok-pun">,</span> <span class="tok-key">ease</span><span class="tok-pun">:</span> <span
-                class="tok-num">0.1</span> <span class="tok-pun">});</span>
-
-<span class="tok-pun">// Tilt — 3D perspective tilt with optional glare</span>
-<span class="tok-cls">$</span><span class="tok-pun">(</span><span class="tok-str">'.card'</span><span
-                class="tok-pun">).</span><span class="tok-key">tilt</span><span class="tok-pun">({</span> <span
-                class="tok-key">maxTilt</span><span class="tok-pun">:</span> <span class="tok-num">15</span><span
-                class="tok-pun">,</span> <span class="tok-key">perspective</span><span class="tok-pun">:</span> <span
-                class="tok-num">800</span><span class="tok-pun">,</span> <span class="tok-key">glare</span><span
-                class="tok-pun">:</span> <span class="tok-key">true</span> <span class="tok-pun">});</span>
-
-<span class="tok-pun">// enable / disable / destroy on any plugin</span>
-<span class="tok-cls">$</span><span class="tok-pun">(</span><span class="tok-str">'body'</span><span
-                class="tok-pun">).</span><span class="tok-key">trail</span><span class="tok-pun">(</span><span
-                class="tok-str">'disable'</span><span class="tok-pun">);</span>
-<span class="tok-cls">$</span><span class="tok-pun">(</span><span class="tok-str">'body'</span><span
-                class="tok-pun">).</span><span class="tok-key">trail</span><span class="tok-pun">(</span><span
-                class="tok-str">'enable'</span><span class="tok-pun">);</span>
-<span class="tok-cls">$</span><span class="tok-pun">(</span><span class="tok-str">'body'</span><span
-                class="tok-pun">).</span><span class="tok-key">trail</span><span class="tok-pun">(</span><span
-                class="tok-str">'destroy'</span><span class="tok-pun">);</span></code></pre>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <footer>
-        <svg class="footer-mouse" viewBox="0 -40 200 460" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M100 48 C100 18, 130 4, 145 -28 C155 -50, 148 -75, 162 -100" stroke="var(--emerald)" stroke-width="18" stroke-linecap="round"/>
-          <rect x="8" y="48" width="184" height="274" rx="92" fill="var(--accent)" fill-opacity="0.95" stroke="var(--emerald)" stroke-width="18"/>
-          <line x1="8" y1="168" x2="192" y2="168" stroke="var(--emerald)" stroke-width="12"/>
-          <line x1="100" y1="48" x2="100" y2="168" stroke="var(--emerald)" stroke-width="12"/>
-        </svg>
-        <p>mouse-animations ·&nbsp; <a href="https://github.com/tgomilar" target="_blank">tgomilar</a> &nbsp;·&nbsp; <a href="https://github.com/tgomilar/mouse-animations" target="_blank">GitHub</a></p>
-      </footer>
+    <div class="footer-links">
+      <a href="https://github.com/tgomilar" target="_blank" rel="noopener">tgomilar</a>
+      <span class="divider"></span>
+      <a class="primary" href="https://github.com/tgomilar/mouse-animations" target="_blank" rel="noopener">
+        GitHub
+      </a>
+      <span class="divider"></span>
+      <a href="https://github.com/tgomilar/mouse-animations#mouse-animations" target="_blank" rel="noopener">
+        Docs
+      </a>
+      <span class="divider"></span>
+      <a href="https://github.com/tgomilar/mouse-animations#jquery-plugin" target="_blank" rel="noopener">
+        jQuery plugin
+      </a>
     </div>
+
+    <div class="slide-counter" id="slide-counter">1 / 11</div>
 
     <script type="module" src="./main.ts"></script>
   </body>

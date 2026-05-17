@@ -1,715 +1,702 @@
-import { Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax, Tilt, Spotlight, Flashlight, Invert, Image } from 'mouse-animations';
+import {
+  Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax,
+  Tilt, Spotlight, Flashlight, Invert, Image,
+} from 'mouse-animations';
 
-// ─── Utils ────────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function getElement<T extends HTMLElement = HTMLElement>(id: string): T {
+function el<T extends HTMLElement = HTMLElement>(id: string): T {
   return document.getElementById(id) as T;
 }
 
-function getInput(id: string): HTMLInputElement {
-  return document.getElementById(id) as HTMLInputElement;
-}
-
-function getOutput(id: string): HTMLOutputElement {
-  return document.getElementById(id) as HTMLOutputElement;
-}
+function inp(id: string): HTMLInputElement  { return el<HTMLInputElement>(id); }
+function out(id: string): HTMLOutputElement { return el<HTMLOutputElement>(id); }
 
 function hexToRgba(hex: string, alpha: number): string {
   const n = parseInt(hex.replace('#', ''), 16);
-  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha.toFixed(2)})`;
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha.toFixed(2)})`;
 }
 
-function escapeHtml(str: string): string {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function esc(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-function buildCodeSnippet(className: string, opts: Record<string, unknown>): string {
-  const rows = Object.entries(opts).map(([key, value]) => {
-    let renderedValue: string;
-    if (typeof value === 'string') {
-      renderedValue = `<span class="tok-str">'${escapeHtml(value)}'</span>`;
-    } else if (Array.isArray(value)) {
-      renderedValue =
+function renderCode(
+  codeId: string,
+  cls: string,
+  opts: Record<string, unknown>,
+  mode: 'js' | 'jquery' = 'js',
+  jqTarget = '$(document)',
+): void {
+  const jqMethod = cls.charAt(0).toLowerCase() + cls.slice(1);
+  const varName  = jqMethod;
+
+  const displayOpts = mode === 'jquery'
+    ? Object.fromEntries(Object.entries(opts).filter(([k]) => k !== 'selector'))
+    : opts;
+
+  const rows = Object.entries(displayOpts).map(([k, v]) => {
+    let val: string;
+    if (typeof v === 'string') {
+      val = `<span class="tok-str">'${esc(v)}'</span>`;
+    } else if (typeof v === 'boolean') {
+      val = `<span class="tok-bool">${v}</span>`;
+    } else if (Array.isArray(v)) {
+      val =
         '<span class="tok-pun">[</span>' +
-        (value as string[])
-          .map(item => `<span class="tok-str">'${escapeHtml(item)}'</span>`)
-          .join('<span class="tok-pun">, </span>') +
+        (v as string[]).map(s => `<span class="tok-str">'${esc(s)}'</span>`).join('<span class="tok-pun">, </span>') +
         '<span class="tok-pun">]</span>';
-    } else if (typeof value === 'object' && value !== null) {
-      const inner = Object.entries(value as Record<string, unknown>)
-        .map(([k, v]) => `<span class="tok-key">${k}</span><span class="tok-pun">: </span><span class="tok-str">'${escapeHtml(String(v))}'</span>`)
-        .join('<span class="tok-pun">, </span>');
-      renderedValue = `<span class="tok-pun">{ </span>${inner}<span class="tok-pun"> }</span>`;
     } else {
-      renderedValue = `<span class="tok-num">${value}</span>`;
+      val = `<span class="tok-num">${v}</span>`;
     }
-    return `  <span class="tok-key">${key}</span><span class="tok-pun">:</span> ${renderedValue}<span class="tok-pun">,</span>`;
+    return `  <span class="tok-key">${k}</span><span class="tok-pun">:</span> ${val}<span class="tok-pun">,</span>`;
   });
-  return [
-    `<span class="tok-kw">new</span> <span class="tok-cls">${className}</span><span class="tok-pun">({</span>`,
-    ...rows,
-    `<span class="tok-pun">})</span>`,
-  ].join('\n');
+
+  if (mode === 'jquery') {
+    el(codeId).innerHTML = [
+      `<span class="tok-kw">import</span> <span class="tok-str">"mouse-animations/jquery"</span><span class="tok-pun">;</span>`,
+      `<span class="tok-pun">// &lt;script src="https://esm.sh/mouse-animations/jquery"&gt;&lt;/script&gt;</span>`,
+      ``,
+      `<span class="tok-key">${jqTarget}</span><span class="tok-pun">.</span><span class="tok-cls">${jqMethod}</span><span class="tok-pun">({</span>`,
+      ...rows,
+      `<span class="tok-pun">})</span>`,
+      ``,
+      `<span class="tok-pun">// ${jqTarget}.${jqMethod}('disable')   pause</span>`,
+      `<span class="tok-pun">// ${jqTarget}.${jqMethod}('enable')    resume</span>`,
+      `<span class="tok-pun">// ${jqTarget}.${jqMethod}('destroy')   cleanup</span>`,
+    ].join('\n');
+  } else {
+    el(codeId).innerHTML = [
+      `<span class="tok-kw">import</span> <span class="tok-pun">{</span> <span class="tok-cls">${cls}</span> <span class="tok-pun">}</span> <span class="tok-kw">from</span> <span class="tok-str">"mouse-animations"</span><span class="tok-pun">;</span>`,
+      `<span class="tok-pun">// import { ${cls} } from "https://esm.sh/mouse-animations";</span>`,
+      ``,
+      `<span class="tok-kw">const</span> <span class="tok-key">${varName}</span> <span class="tok-pun">=</span> <span class="tok-kw">new</span> <span class="tok-cls">${cls}</span><span class="tok-pun">({</span>`,
+      ...rows,
+      `<span class="tok-pun">})</span>`,
+      ``,
+      `<span class="tok-pun">// ${varName}.disable()   pause</span>`,
+      `<span class="tok-pun">// ${varName}.enable()    resume</span>`,
+      `<span class="tok-pun">// ${varName}.destroy()   cleanup</span>`,
+    ].join('\n');
+  }
 }
 
-function renderCode(codeElementId: string, className: string, opts: Record<string, unknown>): void {
-  getElement(codeElementId).innerHTML = buildCodeSnippet(className, opts);
+function setupModeToggle(toggleId: string, onChange: (mode: 'js' | 'jquery') => void): () => void {
+  const btns = document.querySelectorAll<HTMLButtonElement>(`#${toggleId} .toggle-btn`);
+  btns.forEach(btn => {
+    btn.onclick = () => {
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      onChange(btn.dataset['mode'] as 'js' | 'jquery');
+    };
+  });
+  return () => { btns.forEach(btn => { btn.onclick = null; }); };
 }
 
-function setCardActive(buttonId: string, cardId: string, active: boolean): void {
-  const button = getElement(buttonId);
-  button.classList.toggle('on', active);
-  button.textContent = active ? 'Disable' : 'Enable';
-  getElement(cardId).classList.toggle('active', active);
+// ─── Slider ───────────────────────────────────────────────────────────────────
+
+const TOTAL = 11;
+const ACCENTS = [
+  '#f43f5e', '#c084fc', '#60a5fa', '#34d399', '#f472b6',
+  '#fbbf24', '#a78bfa', '#38bdf8', '#fb923c', '#94a3b8', '#4ade80',
+];
+const CURSOR_NONE = new Set([0, 3, 10]); // invert, cursor, image
+
+let current = 0;
+let sliding  = false;
+
+const track   = el('slider-track');
+const prevBtn = el<HTMLButtonElement>('arrow-prev');
+const nextBtn = el<HTMLButtonElement>('arrow-next');
+const counter = el('slide-counter');
+const navBtns = document.querySelectorAll<HTMLButtonElement>('.nav-btn');
+
+function updateUI(idx: number): void {
+  counter.textContent = `${idx + 1} / ${TOTAL}`;
+  prevBtn.disabled = idx === 0;
+  nextBtn.disabled = idx === TOTAL - 1;
+  document.body.classList.toggle('cursor-none', CURSOR_NONE.has(idx));
+  document.documentElement.style.setProperty('--accent', ACCENTS[idx]!);
+  navBtns.forEach(btn => btn.classList.toggle('active', +btn.dataset['idx']! === idx));
+}
+
+function goTo(idx: number): void {
+  if (sliding || idx < 0 || idx >= TOTAL || idx === current) return;
+  sliding = true;
+  destroyEffect();
+  track.style.transform = `translateX(${-idx * 100}vw)`;
+  current = idx;
+  updateUI(idx);
+  track.addEventListener('transitionend', function handler() {
+    track.removeEventListener('transitionend', handler);
+    sliding = false;
+    mountEffect(idx);
+  }, { once: true });
+}
+
+prevBtn.addEventListener('click', () => goTo(current - 1));
+nextBtn.addEventListener('click', () => goTo(current + 1));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
+});
+
+navBtns.forEach(btn => {
+  btn.addEventListener('click', () => goTo(+btn.dataset['idx']!));
+});
+
+let touchX = 0;
+document.addEventListener('touchstart', e => { touchX = e.touches[0]!.clientX; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0]!.clientX - touchX;
+  if (Math.abs(dx) > 50) goTo(current + (dx < 0 ? 1 : -1));
+});
+
+document.querySelectorAll<HTMLButtonElement>('.customize-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const drawer = el(btn.dataset['ctrl']!);
+    const open = drawer.classList.toggle('open');
+    btn.classList.toggle('open', open);
+    btn.textContent = open ? '⚙ Close' : '⚙ Customize';
+  });
+});
+
+// ─── Effect registry ──────────────────────────────────────────────────────────
+
+type AnyInstance = { destroy(): void };
+let instance: AnyInstance | null = null;
+
+const MOUNTS: Array<() => AnyInstance> = [
+  mountInvert, mountTrail, mountRipple, mountCursor, mountMagnetic, mountParticles,
+  mountParallax, mountTilt, mountSpotlight, mountFlashlight, mountImage,
+];
+
+function mountEffect(idx: number): void { instance = MOUNTS[idx]!(); }
+function destroyEffect(): void          { instance?.destroy(); instance = null; }
+
+// ─── Invert ───────────────────────────────────────────────────────────────────
+
+function mountInvert(): AnyInstance {
+  let mode: 'js' | 'jquery' = 'js';
+  const JQ = '$(document)';
+
+  function opts() {
+    return {
+      color:      '#ffffff',
+      size:       +inp('invert-size').value,
+      smoothness: +(+inp('invert-smooth').value / 100).toFixed(2),
+    };
+  }
+
+  let invert = new Invert(opts());
+  renderCode('code-invert', 'Invert', opts(), mode, JQ);
+
+  function refresh() {
+    invert.destroy();
+    invert = new Invert(opts());
+    renderCode('code-invert', 'Invert', opts(), mode, JQ);
+  }
+
+  const cleanupToggle = setupModeToggle('toggle-invert', m => { mode = m; renderCode('code-invert', 'Invert', opts(), mode, JQ); });
+
+  inp('invert-size').oninput = e => {
+    out('invert-size-val').value = (e.target as HTMLInputElement).value;
+    refresh();
+  };
+  inp('invert-smooth').oninput = e => {
+    out('invert-smooth-val').value = (+((e.target as HTMLInputElement).value) / 100).toFixed(2);
+    refresh();
+  };
+
+  return {
+    destroy() {
+      invert.destroy();
+      cleanupToggle();
+      inp('invert-size').oninput = null;
+      inp('invert-smooth').oninput = null;
+    },
+  };
 }
 
 // ─── Trail ────────────────────────────────────────────────────────────────────
 
-{
-  let instance: Trail | null = null;
+function mountTrail(): AnyInstance {
+  let mode: 'js' | 'jquery' = 'js';
+  const JQ = '$(document)';
 
-  function getOpts() {
+  function opts() {
     return {
-      color:  getInput('trail-color').value,
-      size:   +getInput('trail-size').value,
-      length: +getInput('trail-length').value,
-      decay:  +(+getInput('trail-decay').value / 100).toFixed(2),
-      blur:   +getInput('trail-blur').value,
+      color:  inp('trail-color').value,
+      size:   +inp('trail-size').value,
+      length: +inp('trail-length').value,
+      decay:  +(+inp('trail-decay').value / 100).toFixed(2),
+      blur:   +inp('trail-blur').value,
     };
   }
 
-  function refresh(): void {
-    const opts = getOpts();
-    renderCode('code-trail', 'Trail', opts);
-    if (instance) { instance.destroy(); instance = new Trail(opts); }
+  let trail = new Trail(opts());
+  renderCode('code-trail', 'Trail', opts(), mode, JQ);
+
+  function refresh() {
+    trail.destroy();
+    trail = new Trail(opts());
+    renderCode('code-trail', 'Trail', opts(), mode, JQ);
   }
 
-  renderCode('code-trail', 'Trail', getOpts());
+  const cleanupToggle = setupModeToggle('toggle-trail', m => { mode = m; renderCode('code-trail', 'Trail', opts(), mode, JQ); });
 
-  getInput('trail-color').addEventListener('input', event => {
-    const color = (event.target as HTMLInputElement).value;
-    getElement('trail-color-hex').textContent = color;
+  inp('trail-color').oninput = e => {
+    el('trail-color-hex').textContent = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('trail-size').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('trail-size-val').value = String(value);
+  };
+  inp('trail-size').oninput = e => {
+    out('trail-size-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('trail-length').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('trail-length-val').value = String(value);
+  };
+  inp('trail-length').oninput = e => {
+    out('trail-length-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('trail-decay').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('trail-decay-val').value = (value / 100).toFixed(2);
+  };
+  inp('trail-decay').oninput = e => {
+    out('trail-decay-val').value = (+((e.target as HTMLInputElement).value) / 100).toFixed(2);
     refresh();
-  });
-
-  getInput('trail-blur').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('trail-blur-val').value = String(value);
+  };
+  inp('trail-blur').oninput = e => {
+    out('trail-blur-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
+  };
 
-  getElement('btn-trail').addEventListener('click', () => {
-    if (instance) {
-      instance.destroy();
-      instance = null;
-      setCardActive('btn-trail', 'card-trail', false);
-    } else {
-      instance = new Trail(getOpts());
-      setCardActive('btn-trail', 'card-trail', true);
-    }
-  });
+  return {
+    destroy() {
+      trail.destroy();
+      cleanupToggle();
+      inp('trail-color').oninput = null;
+      inp('trail-size').oninput = null;
+      inp('trail-length').oninput = null;
+      inp('trail-decay').oninput = null;
+      inp('trail-blur').oninput = null;
+    },
+  };
 }
 
 // ─── Ripple ───────────────────────────────────────────────────────────────────
 
-{
-  let instance: Ripple | null = null;
+function mountRipple(): AnyInstance {
+  let mode: 'js' | 'jquery' = 'js';
+  const JQ = '$(document)';
 
-  function getOpts() {
-    const hex   = getInput('ripple-color').value;
-    const alpha = +getInput('ripple-opacity').value / 100;
+  function opts() {
+    const hex   = inp('ripple-color').value;
+    const alpha = +inp('ripple-opacity').value / 100;
     return {
       color:    hexToRgba(hex, alpha),
-      duration: +getInput('ripple-duration').value,
-      maxSize:  +getInput('ripple-size').value,
+      duration: +inp('ripple-duration').value,
+      maxSize:  +inp('ripple-size').value,
     };
   }
 
-  function refresh(): void {
-    const opts = getOpts();
-    renderCode('code-ripple', 'Ripple', opts);
-    if (instance) { instance.destroy(); instance = new Ripple(opts); }
+  let ripple = new Ripple(opts());
+  renderCode('code-ripple', 'Ripple', opts(), mode, JQ);
+
+  function refresh() {
+    ripple.destroy();
+    ripple = new Ripple(opts());
+    renderCode('code-ripple', 'Ripple', opts(), mode, JQ);
   }
 
-  renderCode('code-ripple', 'Ripple', getOpts());
+  const cleanupToggle = setupModeToggle('toggle-ripple', m => { mode = m; renderCode('code-ripple', 'Ripple', opts(), mode, JQ); });
 
-  getInput('ripple-color').addEventListener('input', event => {
-    const color = (event.target as HTMLInputElement).value;
-    getElement('ripple-color-hex').textContent = color;
+  inp('ripple-color').oninput = e => {
+    el('ripple-color-hex').textContent = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('ripple-opacity').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('ripple-opacity-val').value = (value / 100).toFixed(2);
+  };
+  inp('ripple-opacity').oninput = e => {
+    out('ripple-opacity-val').value = (+((e.target as HTMLInputElement).value) / 100).toFixed(2);
     refresh();
-  });
-
-  getInput('ripple-duration').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('ripple-duration-val').value = String(value);
+  };
+  inp('ripple-duration').oninput = e => {
+    out('ripple-duration-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('ripple-size').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('ripple-size-val').value = String(value);
+  };
+  inp('ripple-size').oninput = e => {
+    out('ripple-size-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
+  };
 
-  getElement('btn-ripple').addEventListener('click', () => {
-    if (instance) {
-      instance.destroy();
-      instance = null;
-      setCardActive('btn-ripple', 'card-ripple', false);
-    } else {
-      instance = new Ripple(getOpts());
-      setCardActive('btn-ripple', 'card-ripple', true);
-    }
-  });
+  return {
+    destroy() {
+      ripple.destroy();
+      cleanupToggle();
+      inp('ripple-color').oninput = null;
+      inp('ripple-opacity').oninput = null;
+      inp('ripple-duration').oninput = null;
+      inp('ripple-size').oninput = null;
+    },
+  };
 }
 
 // ─── Custom Cursor ────────────────────────────────────────────────────────────
 
-{
-  let instance: CustomCursor | null = null;
+function mountCursor(): AnyInstance {
+  let mode: 'js' | 'jquery' = 'js';
+  const JQ = '$(document)';
 
-  function getOpts() {
-    const outerHex   = getInput('cursor-outer-color').value;
-    const outerAlpha = +getInput('cursor-outer-opacity').value / 100;
+  function opts() {
     return {
-      innerSize:  +getInput('cursor-inner-size').value,
-      outerSize:  +getInput('cursor-outer-size').value,
-      innerColor:  getInput('cursor-inner-color').value,
-      outerColor:  hexToRgba(outerHex, outerAlpha),
-      smoothness: +(+getInput('cursor-smooth').value / 100).toFixed(2),
+      innerSize:  +inp('cursor-inner-size').value,
+      outerSize:  +inp('cursor-outer-size').value,
+      innerColor:  inp('cursor-inner-color').value,
+      outerColor:  hexToRgba(inp('cursor-outer-color').value, 0.3),
+      smoothness: +(+inp('cursor-smooth').value / 100).toFixed(2),
     };
   }
 
-  function refresh(): void {
-    const opts = getOpts();
-    renderCode('code-cursor', 'CustomCursor', opts);
-    if (instance) { instance.destroy(); instance = new CustomCursor(opts); }
+  let cursor = new CustomCursor(opts());
+  renderCode('code-cursor', 'CustomCursor', opts(), mode, JQ);
+
+  function refresh() {
+    cursor.destroy();
+    cursor = new CustomCursor(opts());
+    renderCode('code-cursor', 'CustomCursor', opts(), mode, JQ);
   }
 
-  renderCode('code-cursor', 'CustomCursor', getOpts());
+  const cleanupToggle = setupModeToggle('toggle-cursor', m => { mode = m; renderCode('code-cursor', 'CustomCursor', opts(), mode, JQ); });
 
-  getInput('cursor-inner-color').addEventListener('input', event => {
-    const color = (event.target as HTMLInputElement).value;
-    getElement('cursor-inner-hex').textContent = color;
+  inp('cursor-inner-color').oninput = e => {
+    el('cursor-inner-hex').textContent = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('cursor-outer-color').addEventListener('input', event => {
-    const color = (event.target as HTMLInputElement).value;
-    getElement('cursor-outer-hex').textContent = color;
+  };
+  inp('cursor-outer-color').oninput = e => {
+    el('cursor-outer-hex').textContent = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('cursor-inner-size').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('cursor-inner-size-val').value = String(value);
+  };
+  inp('cursor-inner-size').oninput = e => {
+    out('cursor-inner-size-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('cursor-outer-opacity').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('cursor-outer-opacity-val').value = (value / 100).toFixed(2);
+  };
+  inp('cursor-outer-size').oninput = e => {
+    out('cursor-outer-size-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('cursor-outer-size').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('cursor-outer-size-val').value = String(value);
+  };
+  inp('cursor-smooth').oninput = e => {
+    out('cursor-smooth-val').value = (+((e.target as HTMLInputElement).value) / 100).toFixed(2);
     refresh();
-  });
+  };
 
-  getInput('cursor-smooth').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('cursor-smooth-val').value = (value / 100).toFixed(2);
-    refresh();
-  });
-
-  getElement('btn-cursor').addEventListener('click', () => {
-    if (instance) {
-      instance.destroy();
-      instance = null;
-      setCardActive('btn-cursor', 'card-cursor', false);
-    } else {
-      instance = new CustomCursor(getOpts());
-      setCardActive('btn-cursor', 'card-cursor', true);
-    }
-  });
+  return {
+    destroy() {
+      cursor.destroy();
+      cleanupToggle();
+      inp('cursor-inner-color').oninput = null;
+      inp('cursor-outer-color').oninput = null;
+      inp('cursor-inner-size').oninput = null;
+      inp('cursor-outer-size').oninput = null;
+      inp('cursor-smooth').oninput = null;
+    },
+  };
 }
 
 // ─── Magnetic ─────────────────────────────────────────────────────────────────
 
-{
-  let instance: Magnetic | null = null;
+function mountMagnetic(): AnyInstance {
+  let mode: 'js' | 'jquery' = 'js';
+  const JQ = "$('.mag-target')";
 
-  function getOpts() {
+  function opts() {
     return {
       selector: '.mag-target',
-      strength: +(+getInput('mag-strength').value / 100).toFixed(2),
-      radius:   +getInput('mag-radius').value,
-      ease:     +(+getInput('mag-ease').value / 100).toFixed(2),
+      strength: +(+inp('mag-strength').value / 100).toFixed(2),
+      radius:   +inp('mag-radius').value,
+      ease:     +(+inp('mag-ease').value / 100).toFixed(2),
     };
   }
 
-  function refresh(): void {
-    const opts = getOpts();
-    renderCode('code-magnetic', 'Magnetic', opts);
-    if (instance) { instance.destroy(); instance = new Magnetic(opts); }
+  let mag = new Magnetic(opts());
+  renderCode('code-magnetic', 'Magnetic', opts(), mode, JQ);
+
+  function refresh() {
+    mag.destroy();
+    mag = new Magnetic(opts());
+    renderCode('code-magnetic', 'Magnetic', opts(), mode, JQ);
   }
 
-  renderCode('code-magnetic', 'Magnetic', getOpts());
+  const cleanupToggle = setupModeToggle('toggle-magnetic', m => { mode = m; renderCode('code-magnetic', 'Magnetic', opts(), mode, JQ); });
 
-  getInput('mag-strength').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('mag-strength-val').value = (value / 100).toFixed(2);
+  inp('mag-strength').oninput = e => {
+    out('mag-strength-val').value = (+((e.target as HTMLInputElement).value) / 100).toFixed(2);
     refresh();
-  });
-
-  getInput('mag-radius').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('mag-radius-val').value = String(value);
+  };
+  inp('mag-radius').oninput = e => {
+    out('mag-radius-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('mag-ease').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('mag-ease-val').value = (value / 100).toFixed(2);
+  };
+  inp('mag-ease').oninput = e => {
+    out('mag-ease-val').value = (+((e.target as HTMLInputElement).value) / 100).toFixed(2);
     refresh();
-  });
+  };
 
-  getElement('btn-magnetic').addEventListener('click', () => {
-    if (instance) {
-      instance.destroy();
-      instance = null;
-      setCardActive('btn-magnetic', 'card-magnetic', false);
-    } else {
-      instance = new Magnetic(getOpts());
-      setCardActive('btn-magnetic', 'card-magnetic', true);
-    }
-  });
+  return {
+    destroy() {
+      mag.destroy();
+      cleanupToggle();
+      inp('mag-strength').oninput = null;
+      inp('mag-radius').oninput = null;
+      inp('mag-ease').oninput = null;
+    },
+  };
 }
 
 // ─── Particles ────────────────────────────────────────────────────────────────
 
-{
-  let instance: Particles | null = null;
+function mountParticles(): AnyInstance {
+  let mode: 'js' | 'jquery' = 'js';
+  const JQ = '$(document)';
+  const COLORS = ['#c084fc', '#60a5fa', '#fbbf24', '#f472b6', '#34d399', '#fb923c'];
 
-  function getActiveColors(): string[] {
-    return Array.from(document.querySelectorAll<HTMLElement>('#particles-palette .swatch.on'))
-      .map(swatch => swatch.dataset['color']!);
-  }
-
-  function getOpts() {
+  function opts() {
     return {
-      count:  +getInput('particles-count').value,
-      colors:  getActiveColors(),
-      size:   +getInput('particles-size').value,
-      spread: +getInput('particles-spread').value,
-      decay:  +(+getInput('particles-decay').value / 1000).toFixed(3),
+      count:  +inp('particles-count').value,
+      colors: COLORS,
+      size:   +inp('particles-size').value,
+      spread: +inp('particles-spread').value,
+      decay:  0.015,
     };
   }
 
-  function refresh(): void {
-    const opts = getOpts();
-    renderCode('code-particles', 'Particles', opts);
-    if (instance) { instance.destroy(); instance = new Particles(opts); }
+  let particles = new Particles(opts());
+  renderCode('code-particles', 'Particles', opts(), mode, JQ);
+
+  function refresh() {
+    particles.destroy();
+    particles = new Particles(opts());
+    renderCode('code-particles', 'Particles', opts(), mode, JQ);
   }
 
-  renderCode('code-particles', 'Particles', getOpts());
+  const cleanupToggle = setupModeToggle('toggle-particles', m => { mode = m; renderCode('code-particles', 'Particles', opts(), mode, JQ); });
 
-  getInput('particles-count').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('particles-count-val').value = String(value);
+  inp('particles-count').oninput = e => {
+    out('particles-count-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('particles-size').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('particles-size-val').value = String(value);
+  };
+  inp('particles-size').oninput = e => {
+    out('particles-size-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('particles-spread').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('particles-spread-val').value = String(value);
+  };
+  inp('particles-spread').oninput = e => {
+    out('particles-spread-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
+  };
 
-  getInput('particles-decay').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('particles-decay-val').value = (value / 1000).toFixed(3);
-    refresh();
-  });
-
-  document.querySelectorAll<HTMLElement>('#particles-palette .swatch').forEach(swatch => {
-    swatch.addEventListener('click', () => {
-      const activeCount = document.querySelectorAll('#particles-palette .swatch.on').length;
-      if (swatch.classList.contains('on') && activeCount <= 1) return;
-      swatch.classList.toggle('on');
-      refresh();
-    });
-  });
-
-  getElement('btn-particles').addEventListener('click', () => {
-    if (instance) {
-      instance.destroy();
-      instance = null;
-      setCardActive('btn-particles', 'card-particles', false);
-    } else {
-      instance = new Particles(getOpts());
-      setCardActive('btn-particles', 'card-particles', true);
-    }
-  });
+  return {
+    destroy() {
+      particles.destroy();
+      cleanupToggle();
+      inp('particles-count').oninput = null;
+      inp('particles-size').oninput = null;
+      inp('particles-spread').oninput = null;
+    },
+  };
 }
 
 // ─── Parallax ─────────────────────────────────────────────────────────────────
 
-{
-  let instance: Parallax | null = null;
+function mountParallax(): AnyInstance {
+  let mode: 'js' | 'jquery' = 'js';
+  const JQ = "$('.parallax-target')";
 
-  function getOpts() {
+  function opts() {
     return {
       selector: '.parallax-target',
-      depth: +getInput('parallax-depth').value,
-      ease:  +(+getInput('parallax-ease').value / 100).toFixed(2),
+      depth: +inp('parallax-depth').value,
+      ease:  +(+inp('parallax-ease').value / 100).toFixed(2),
     };
   }
 
-  function refresh(): void {
-    const opts = getOpts();
-    renderCode('code-parallax', 'Parallax', opts);
-    if (instance) { instance.destroy(); instance = new Parallax(opts); }
+  let parallax = new Parallax(opts());
+  renderCode('code-parallax', 'Parallax', opts(), mode, JQ);
+
+  function refresh() {
+    parallax.destroy();
+    parallax = new Parallax(opts());
+    renderCode('code-parallax', 'Parallax', opts(), mode, JQ);
   }
 
-  renderCode('code-parallax', 'Parallax', getOpts());
+  const cleanupToggle = setupModeToggle('toggle-parallax', m => { mode = m; renderCode('code-parallax', 'Parallax', opts(), mode, JQ); });
 
-  getInput('parallax-depth').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('parallax-depth-val').value = String(value);
+  inp('parallax-depth').oninput = e => {
+    out('parallax-depth-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('parallax-ease').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('parallax-ease-val').value = (value / 100).toFixed(2);
+  };
+  inp('parallax-ease').oninput = e => {
+    out('parallax-ease-val').value = (+((e.target as HTMLInputElement).value) / 100).toFixed(2);
     refresh();
-  });
+  };
 
-  getElement('btn-parallax').addEventListener('click', () => {
-    if (instance) {
-      instance.destroy();
-      instance = null;
-      setCardActive('btn-parallax', 'card-parallax', false);
-    } else {
-      instance = new Parallax(getOpts());
-      setCardActive('btn-parallax', 'card-parallax', true);
-    }
-  });
-}
-
-// ─── Logo demo — trail + cursor orbiting the M ────────────────────────────────
-
-{
-  const canvas = document.getElementById('logo-canvas') as HTMLCanvasElement;
-  const span  = document.querySelector('.logo-anim') as HTMLElement;
-  const ctx    = canvas.getContext('2d')!;
-
-  let cx = 0, cy = 0, rx = 0, ry = 0;
-
-  function updateGeometry(): void {
-    const h1 = canvas.parentElement as HTMLElement;
-    canvas.width  = h1.offsetWidth  || 1;
-    canvas.height = h1.offsetHeight || 1;
-    cx = span.offsetLeft + span.offsetWidth  / 2  + 50;
-    cy = span.offsetTop  + span.offsetHeight / 2;
-    rx = span.offsetWidth  * 0.62;
-    ry = span.offsetHeight * 0.30;
-  }
-
-  window.addEventListener('resize', updateGeometry);
-
-  let ox = 0, oy = 0;
-
-  function frame(): void {
-    const t = (Date.now() / 1400) % (Math.PI * 2);
-    const x = cx + rx * Math.cos(t);
-    const y = cy + ry * Math.sin(t);
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ox += (x - ox) * 0.1;
-    oy += (y - oy) * 0.1;
-
-    ctx.globalAlpha = 0.65;
-    ctx.strokeStyle = 'rgba(134,239,172,0.8)';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(ox, oy, 13, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = '#86efac';
-    ctx.beginPath();
-    ctx.arc(x, y, 3.5, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.globalAlpha = 1;
-    requestAnimationFrame(frame);
-  }
-
-  document.fonts.ready.then(() => {
-    updateGeometry();
-    ox = cx; oy = cy;
-    requestAnimationFrame(frame);
-  });
+  return {
+    destroy() {
+      parallax.destroy();
+      cleanupToggle();
+      inp('parallax-depth').oninput = null;
+      inp('parallax-ease').oninput = null;
+    },
+  };
 }
 
 // ─── Tilt ─────────────────────────────────────────────────────────────────────
 
-{
-  let instance: Tilt | null = null;
+function mountTilt(): AnyInstance {
+  let mode: 'js' | 'jquery' = 'js';
+  const JQ = "$('.tilt-target')";
 
-  function getOpts() {
+  function opts() {
     return {
       selector:    '.tilt-target',
-      maxTilt:     +getInput('tilt-max').value,
-      perspective: +getInput('tilt-perspective').value,
-      ease:        +(+getInput('tilt-ease').value / 100).toFixed(2),
-      glare:        getInput('tilt-glare').checked,
+      maxTilt:     +inp('tilt-max').value,
+      perspective: +inp('tilt-perspective').value,
+      ease:        0.1,
+      glare:       inp('tilt-glare').checked,
     };
   }
 
-  function refresh(): void {
-    const opts = getOpts();
-    renderCode('code-tilt', 'Tilt', opts);
-    if (instance) { instance.destroy(); instance = new Tilt(opts); }
+  let tilt = new Tilt(opts());
+  renderCode('code-tilt', 'Tilt', opts(), mode, JQ);
+
+  function refresh() {
+    tilt.destroy();
+    tilt = new Tilt(opts());
+    renderCode('code-tilt', 'Tilt', opts(), mode, JQ);
   }
 
-  renderCode('code-tilt', 'Tilt', getOpts());
+  const cleanupToggle = setupModeToggle('toggle-tilt', m => { mode = m; renderCode('code-tilt', 'Tilt', opts(), mode, JQ); });
 
-  getInput('tilt-max').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('tilt-max-val').value = String(value);
+  inp('tilt-max').oninput = e => {
+    out('tilt-max-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('tilt-perspective').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('tilt-perspective-val').value = String(value);
+  };
+  inp('tilt-perspective').oninput = e => {
+    out('tilt-perspective-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
+  };
+  inp('tilt-glare').onchange = () => refresh();
 
-  getInput('tilt-ease').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('tilt-ease-val').value = (value / 100).toFixed(2);
-    refresh();
-  });
-
-  getInput('tilt-glare').addEventListener('change', () => refresh());
-
-  getElement('btn-tilt').addEventListener('click', () => {
-    if (instance) {
-      instance.destroy();
-      instance = null;
-      setCardActive('btn-tilt', 'card-tilt', false);
-    } else {
-      instance = new Tilt(getOpts());
-      setCardActive('btn-tilt', 'card-tilt', true);
-    }
-  });
+  return {
+    destroy() {
+      tilt.destroy();
+      cleanupToggle();
+      inp('tilt-max').oninput = null;
+      inp('tilt-perspective').oninput = null;
+      inp('tilt-glare').onchange = null;
+    },
+  };
 }
 
 // ─── Spotlight ────────────────────────────────────────────────────────────────
 
-{
-  let instance: Spotlight | null = null;
+function mountSpotlight(): AnyInstance {
+  let mode: 'js' | 'jquery' = 'js';
+  const JQ = "$('.spotlight-target')";
 
-  function getOpts() {
-    const hex     = getInput('spotlight-color').value;
-    const opacity = +getInput('spotlight-opacity').value / 100;
+  function opts() {
+    const hex     = inp('spotlight-color').value;
+    const opacity = +inp('spotlight-opacity').value / 100;
     return {
       selector: '.spotlight-target',
-      color: hexToRgba(hex, opacity),
-      size: +getInput('spotlight-size').value,
+      color:    hexToRgba(hex, opacity),
+      size:     +inp('spotlight-size').value,
     };
   }
 
-  function refresh(): void {
-    const opts = getOpts();
-    renderCode('code-spotlight', 'Spotlight', opts);
-    if (instance) { instance.destroy(); instance = new Spotlight(opts); }
+  let spotlight = new Spotlight(opts());
+  renderCode('code-spotlight', 'Spotlight', opts(), mode, JQ);
+
+  function refresh() {
+    spotlight.destroy();
+    spotlight = new Spotlight(opts());
+    renderCode('code-spotlight', 'Spotlight', opts(), mode, JQ);
   }
 
-  renderCode('code-spotlight', 'Spotlight', getOpts());
+  const cleanupToggle = setupModeToggle('toggle-spotlight', m => { mode = m; renderCode('code-spotlight', 'Spotlight', opts(), mode, JQ); });
 
-  getInput('spotlight-color').addEventListener('input', event => {
-    const color = (event.target as HTMLInputElement).value;
-    getElement('spotlight-color-hex').textContent = color;
+  inp('spotlight-color').oninput = e => {
+    el('spotlight-color-hex').textContent = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('spotlight-opacity').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('spotlight-opacity-val').value = (value / 100).toFixed(2);
+  };
+  inp('spotlight-opacity').oninput = e => {
+    out('spotlight-opacity-val').value = (+((e.target as HTMLInputElement).value) / 100).toFixed(2);
     refresh();
-  });
-
-  getInput('spotlight-size').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('spotlight-size-val').value = String(value);
+  };
+  inp('spotlight-size').oninput = e => {
+    out('spotlight-size-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
+  };
 
-  getElement('btn-spotlight').addEventListener('click', () => {
-    if (instance) {
-      instance.destroy();
-      instance = null;
-      setCardActive('btn-spotlight', 'card-spotlight', false);
-    } else {
-      instance = new Spotlight(getOpts());
-      setCardActive('btn-spotlight', 'card-spotlight', true);
-    }
-  });
+  return {
+    destroy() {
+      spotlight.destroy();
+      cleanupToggle();
+      inp('spotlight-color').oninput = null;
+      inp('spotlight-opacity').oninput = null;
+      inp('spotlight-size').oninput = null;
+    },
+  };
 }
 
-// ─── Flashlight ────────────────────────────────────────────────────────────────
+// ─── Flashlight ───────────────────────────────────────────────────────────────
 
-{
-  let instance: Flashlight | null = null;
+function mountFlashlight(): AnyInstance {
+  let mode: 'js' | 'jquery' = 'js';
+  const JQ = '$(document)';
 
-  function getOpts() {
+  function opts() {
     return {
-      backdrop: `rgba(0,0,0,${(+getInput('fl-opacity').value / 100).toFixed(2)})`,
-      size: +getInput('fl-size').value,
-      blur: +getInput('fl-blur').value,
-      smoothness: +(+getInput('fl-smooth').value / 100).toFixed(2),
+      backdrop:   `rgba(0,0,0,${(+inp('fl-opacity').value / 100).toFixed(2)})`,
+      size:       +inp('fl-size').value,
+      blur:       +inp('fl-blur').value,
+      smoothness: 0.12,
     };
   }
 
-  function refresh(): void {
-    const opts = getOpts();
-    renderCode('code-flashlight', 'Flashlight', opts);
-    if (instance) { instance.destroy(); instance = new Flashlight(opts); }
+  let fl = new Flashlight(opts());
+  renderCode('code-flashlight', 'Flashlight', opts(), mode, JQ);
+
+  function refresh() {
+    fl.destroy();
+    fl = new Flashlight(opts());
+    renderCode('code-flashlight', 'Flashlight', opts(), mode, JQ);
   }
 
-  renderCode('code-flashlight', 'Flashlight', getOpts());
+  const cleanupToggle = setupModeToggle('toggle-flashlight', m => { mode = m; renderCode('code-flashlight', 'Flashlight', opts(), mode, JQ); });
 
-  getInput('fl-opacity').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('fl-opacity-val').value = (value / 100).toFixed(2);
+  inp('fl-opacity').oninput = e => {
+    out('fl-opacity-val').value = (+((e.target as HTMLInputElement).value) / 100).toFixed(2);
     refresh();
-  });
-
-  getInput('fl-size').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('fl-size-val').value = String(value);
+  };
+  inp('fl-size').oninput = e => {
+    out('fl-size-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('fl-blur').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('fl-blur-val').value = String(value);
+  };
+  inp('fl-blur').oninput = e => {
+    out('fl-blur-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
+  };
 
-  getInput('fl-smooth').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('fl-smooth-val').value = (value / 100).toFixed(2);
-    refresh();
-  });
-
-  getElement('btn-flashlight').addEventListener('click', () => {
-    if (instance) {
-      instance.destroy();
-      instance = null;
-      setCardActive('btn-flashlight', 'card-flashlight', false);
-    } else {
-      instance = new Flashlight(getOpts());
-      setCardActive('btn-flashlight', 'card-flashlight', true);
-    }
-  });
-}
-
-// ─── Invert Cursor ────────────────────────────────────────────────────────────
-
-{
-  let instance: Invert | null = null;
-
-  function getOpts() {
-    return {
-      color:      getInput('invert-color').value,
-      size:       +getInput('invert-size').value,
-      smoothness: +(+getInput('invert-smooth').value / 100).toFixed(2),
-    };
-  }
-
-  function refresh(): void {
-    const opts = getOpts();
-    renderCode('code-invert', 'Invert', opts);
-    if (instance) { instance.destroy(); instance = new Invert(opts); }
-  }
-
-  renderCode('code-invert', 'Invert', getOpts());
-  instance = new Invert(getOpts());
-  setCardActive('btn-invert', 'card-invert', true);
-
-  getInput('invert-color').addEventListener('input', event => {
-    const color = (event.target as HTMLInputElement).value;
-    getElement('invert-color-hex').textContent = color;
-    refresh();
-  });
-
-  getInput('invert-size').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('invert-size-val').value = String(value);
-    refresh();
-  });
-
-  getInput('invert-smooth').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('invert-smooth-val').value = (value / 100).toFixed(2);
-    refresh();
-  });
-
-  getElement('btn-invert').addEventListener('click', () => {
-    if (instance) {
-      instance.destroy();
-      instance = null;
-      setCardActive('btn-invert', 'card-invert', false);
-    } else {
-      instance = new Invert(getOpts());
-      setCardActive('btn-invert', 'card-invert', true);
-    }
-  });
+  return {
+    destroy() {
+      fl.destroy();
+      cleanupToggle();
+      inp('fl-opacity').oninput = null;
+      inp('fl-size').oninput = null;
+      inp('fl-blur').oninput = null;
+    },
+  };
 }
 
 // ─── Image Cursor ─────────────────────────────────────────────────────────────
 
-{
-  let instance: Image | null = null;
+function mountImage(): AnyInstance {
+  let mode: 'js' | 'jquery' = 'js';
+  const JQ = '$(document)';
 
   const PRESETS: Record<string, string> = {
     star:      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><polygon points="16,2 20,12 30,12 22,19 25,30 16,24 7,30 10,19 2,12 12,12" fill="#fbbf24" stroke="#f59e0b" stroke-width="1"/></svg>`,
@@ -718,113 +705,73 @@ function setCardActive(buttonId: string, cardId: string, active: boolean): void 
     heart:     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M16 28C16 28 4 20 4 11C4 7 7 4 11 4C13.5 4 15.5 5.5 16 7C16.5 5.5 18.5 4 21 4C25 4 28 7 28 11C28 20 16 28 16 28Z" fill="#f43f5e" stroke="#be123c" stroke-width="1"/></svg>`,
   };
 
-  const HOVER_PRESETS: Record<string, string> = {
-    hand:  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="11" y="2" width="4" height="13" rx="2" fill="#a78bfa"/><rect x="17" y="7" width="4" height="9" rx="2" fill="#a78bfa"/><rect x="23" y="9" width="4" height="8" rx="2" fill="#a78bfa"/><rect x="5" y="13" width="6" height="8" rx="2" fill="#a78bfa"/><rect x="11" y="15" width="16" height="10" rx="3" fill="#a78bfa"/></svg>`,
-    lens:  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="13" cy="13" r="9" fill="none" stroke="#60a5fa" stroke-width="2.5"/><line x1="19.5" y1="19.5" x2="29" y2="29" stroke="#60a5fa" stroke-width="2.5" stroke-linecap="round"/></svg>`,
-    spark: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M16 2L17.5 13L28 16L17.5 19L16 30L14.5 19L4 16L14.5 13Z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1"/></svg>`,
-  };
-
-  const ACTIVE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="5" fill="#f43f5e"/><circle cx="16" cy="16" r="10" fill="none" stroke="#f43f5e" stroke-width="2" opacity="0.6"/><circle cx="16" cy="16" r="15" fill="none" stroke="#f43f5e" stroke-width="1" opacity="0.3"/></svg>`;
-
   let activePreset = 'star';
-  let activeHover  = 'none';
 
-  function getOpts() {
-    const states: Record<string, string> = {};
-    if (activeHover !== 'none') states['hover'] = HOVER_PRESETS[activeHover]!;
-    if (getInput('imgcursor-active').checked) states['active'] = ACTIVE_SVG;
+  function opts() {
     return {
-      src:         PRESETS[activePreset]!,
-      width:       +getInput('imgcursor-width').value,
-      height:      +getInput('imgcursor-height').value,
-      smoothness:  +(+getInput('imgcursor-smooth').value / 100).toFixed(2),
-      overrideAll: getInput('imgcursor-override').checked,
-      ...(Object.keys(states).length ? { states } : {}),
+      src:        PRESETS[activePreset]!,
+      width:      +inp('imgcursor-width').value,
+      height:     +inp('imgcursor-height').value,
+      smoothness: +(+inp('imgcursor-smooth').value / 100).toFixed(2),
     };
   }
 
   function displayOpts() {
-    const opts = getOpts();
-    const display: Record<string, unknown> = {
-      src: '<svg ...>',
-      width: opts.width, height: opts.height, smoothness: opts.smoothness,
+    return {
+      src:        '<svg ...>',
+      width:      +inp('imgcursor-width').value,
+      height:     +inp('imgcursor-height').value,
+      smoothness: +(+inp('imgcursor-smooth').value / 100).toFixed(2),
     };
-    if (opts.overrideAll) display['overrideAll'] = true;
-    if (opts.states) {
-      display['states'] = Object.fromEntries(
-        Object.keys(opts.states).map(k => [k, '<svg ...>'])
-      );
-    }
-    return display;
   }
 
-  function refresh(): void {
-    renderCode('code-image', 'Image', displayOpts());
-    if (instance) { instance.destroy(); instance = new Image(getOpts()); }
+  let img = new Image(opts());
+  renderCode('code-image', 'Image', displayOpts(), mode, JQ);
+
+  function refresh() {
+    img.destroy();
+    img = new Image(opts());
+    renderCode('code-image', 'Image', displayOpts(), mode, JQ);
   }
 
-  renderCode('code-image', 'Image', displayOpts());
+  const cleanupToggle = setupModeToggle('toggle-image', m => { mode = m; renderCode('code-image', 'Image', displayOpts(), mode, JQ); });
 
-  document.querySelectorAll<HTMLElement>('#imgcursor-presets .preset-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll<HTMLElement>('#imgcursor-presets .preset-btn').forEach(b => b.classList.remove('on'));
-      btn.classList.add('on');
+  const presetBtns = document.querySelectorAll<HTMLElement>('#imgcursor-presets .preset-btn');
+  presetBtns.forEach(btn => {
+    btn.onclick = () => {
+      presetBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
       activePreset = btn.dataset['preset']!;
       refresh();
-    });
+    };
   });
 
-  document.querySelectorAll<HTMLElement>('#imgcursor-hover-presets .preset-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll<HTMLElement>('#imgcursor-hover-presets .preset-btn').forEach(b => b.classList.remove('on'));
-      btn.classList.add('on');
-      activeHover = btn.dataset['hover']!;
-      refresh();
-    });
-  });
-
-  getInput('imgcursor-width').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('imgcursor-width-val').value = String(value);
+  inp('imgcursor-width').oninput = e => {
+    out('imgcursor-width-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('imgcursor-height').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('imgcursor-height-val').value = String(value);
+  };
+  inp('imgcursor-height').oninput = e => {
+    out('imgcursor-height-val').value = (e.target as HTMLInputElement).value;
     refresh();
-  });
-
-  getInput('imgcursor-smooth').addEventListener('input', event => {
-    const value = +(event.target as HTMLInputElement).value;
-    getOutput('imgcursor-smooth-val').value = (value / 100).toFixed(2);
+  };
+  inp('imgcursor-smooth').oninput = e => {
+    out('imgcursor-smooth-val').value = (+((e.target as HTMLInputElement).value) / 100).toFixed(2);
     refresh();
-  });
+  };
 
-  getInput('imgcursor-override').addEventListener('change', () => refresh());
-  getInput('imgcursor-active').addEventListener('change', () => refresh());
-
-  getElement('btn-image').addEventListener('click', () => {
-    if (instance) {
-      instance.destroy();
-      instance = null;
-      setCardActive('btn-image', 'card-image', false);
-    } else {
-      instance = new Image(getOpts());
-      setCardActive('btn-image', 'card-image', true);
-    }
-  });
+  return {
+    destroy() {
+      img.destroy();
+      cleanupToggle();
+      presetBtns.forEach(btn => { btn.onclick = null; });
+      inp('imgcursor-width').oninput = null;
+      inp('imgcursor-height').oninput = null;
+      inp('imgcursor-smooth').oninput = null;
+    },
+  };
 }
 
-// ─── Copy install command ──────────────────────────────────────────────────────
+// ─── Init ─────────────────────────────────────────────────────────────────────
 
-{
-  const btn = getElement<HTMLButtonElement>('copy-install');
-  btn.addEventListener('click', () => {
-    navigator.clipboard.writeText('npm install mouse-animations').then(() => {
-      btn.textContent = 'Copied!';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
-    });
-  });
-}
+updateUI(0);
+mountEffect(0);
