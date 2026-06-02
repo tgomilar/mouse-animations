@@ -111,7 +111,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        /* Scroll when content (e.g. an open drawer) is taller than the
+           viewport — short desktop heights as well as mobile. */
+        overflow-y: auto;
       }
+      .slide::-webkit-scrollbar { display: none; }
 
       /* per-slide accent color */
       .slide[data-effect="trail"]      { --accent: #c084fc; }
@@ -161,7 +165,11 @@
         text-align: center;
         max-width: 520px;
         width: 100%;
-        padding: 2rem;
+        /* margin:auto centers within the slide but yields to scroll on overflow
+           (unlike flex centering, which would clip the top). Top/bottom padding
+           keeps the panel clear of the fixed nav and footer when scrolled. */
+        margin: auto;
+        padding: 4.5rem 2rem 5rem;
       }
 
       .badge {
@@ -567,8 +575,9 @@
         /* Smaller heading */
         h1 { font-size: clamp(2rem, 9vw, 3.5rem); }
 
-        /* Tighter panel */
-        .panel { padding: 1.25rem 1rem; gap: 1rem; }
+        /* Tighter panel; margin:auto centers it but yields to scroll on overflow,
+           top/bottom padding keeps it clear of the fixed nav and footer. */
+        .panel { margin: auto; padding: 4.5rem 1rem 5rem; gap: 1rem; }
 
         /* Smaller code block */
         .code-block {
@@ -582,15 +591,21 @@
         .arrow-prev { left: 0.4rem; }
         .arrow-next { right: 0.4rem; }
 
-        /* Footer: stack links, hide long github URL */
+        /* Footer: full-width bar with a gradient backing so panel content
+           scrolling beneath it stays legible instead of being covered. */
         .footer-links {
-          left: 50%;
-          transform: translateX(-50%);
+          left: 0;
+          right: 0;
+          transform: none;
+          bottom: 0;
           gap: 0.75rem;
           flex-wrap: wrap;
           justify-content: center;
-          bottom: 1rem;
+          padding: 0.9rem 1rem 1rem;
+          background: linear-gradient(to top, rgba(10,10,15,0.96) 65%, transparent);
+          pointer-events: none;
         }
+        .footer-links a { pointer-events: auto; }
         .footer-links a.primary { display: none; }
         .footer-links .divider:first-of-type { display: none; }
         .slide-counter { display: none; }
@@ -669,8 +684,8 @@
                 </div>
                 <div class="ctrl-row">
                   <label>smoothness</label>
-                  <input type="range" id="invert-smooth" min="1" max="50" value="12" step="1" />
-                  <output id="invert-smooth-val">0.12</output>
+                  <input type="range" id="invert-smooth" min="1" max="50" value="8" step="1" />
+                  <output id="invert-smooth-val">0.08</output>
                 </div>
               </div>
             </div>
