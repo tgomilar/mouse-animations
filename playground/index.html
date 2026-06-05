@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mouse Animations — Live Playground</title>
+    <title>Mouse Animations — Cursor &amp; Mouse Effects Library for JS &amp; TS</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🖱️</text></svg>" />
     <link rel="canonical" href="https://tgomilar.github.io/mouse-animations/" />
     <meta name="description" content="Zero-dependency TypeScript library for cursor &amp; mouse effects: trail, ripple, custom cursor, magnetic, particles, parallax, tilt, spotlight, invert cursor, image cursor. Under 5 kB. Live playground." />
@@ -22,6 +22,38 @@
     <meta name="twitter:description" content="Cursor &amp; mouse effects in one tiny TypeScript library — trail, ripple, magnetic, particles, parallax, tilt, spotlight, invert cursor, image cursor &amp; more." />
     <meta name="twitter:image" content="https://tgomilar.github.io/mouse-animations/og-image.png" />
     <meta name="google-site-verification" content="TWTDG5sHkQOekIFUa5uWVmi7yO3pJTU7AGMaIPajIHc" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SoftwareSourceCode",
+          "name": "Mouse Animations",
+          "description": "Zero-dependency TypeScript library for cursor & mouse effects: trail, ripple, custom cursor, magnetic, particles, parallax, tilt, spotlight, flashlight, invert cursor and image cursor. Framework-agnostic, under 5 kB gzipped, optional jQuery plugin.",
+          "url": "https://tgomilar.github.io/mouse-animations/",
+          "codeRepository": "https://github.com/tgomilar/mouse-animations",
+          "programmingLanguage": ["TypeScript", "JavaScript"],
+          "runtimePlatform": "Web browser",
+          "license": "https://opensource.org/licenses/MIT",
+          "author": {
+            "@type": "Person",
+            "name": "Tanja Gomilar"
+          },
+          "keywords": "cursor effects, mouse effects, custom cursor, trail, ripple, magnetic, particles, parallax, tilt, spotlight, flashlight, invert cursor, image cursor, typescript, javascript, jquery plugin, zero dependency"
+        },
+        {
+          "@type": "WebSite",
+          "name": "Mouse Animations",
+          "url": "https://tgomilar.github.io/mouse-animations/",
+          "description": "Live playground for the Mouse Animations cursor & mouse effects library.",
+          "author": {
+            "@type": "Person",
+            "name": "Tanja Gomilar"
+          }
+        }
+      ]
+    }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
     <style>
@@ -181,7 +213,19 @@
         border-radius: 100px;
       }
 
-      h1 {
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      h2 {
         font-family: var(--sans);
         font-size: clamp(3.2rem, 7vw, 5.5rem);
         font-weight: 800;
@@ -573,7 +617,7 @@
         .effect-nav::-webkit-scrollbar { display: none; }
 
         /* Smaller heading */
-        h1 { font-size: clamp(2rem, 9vw, 3.5rem); }
+        h2 { font-size: clamp(2rem, 9vw, 3.5rem); }
 
         /* Tighter panel; margin:auto centers it but yields to scroll on overflow,
            top/bottom padding keeps it clear of the fixed nav and footer. */
@@ -632,7 +676,7 @@
       }
 
       @media (max-width: 480px) {
-        h1 { font-size: clamp(1.7rem, 10vw, 2.5rem); }
+        h2 { font-size: clamp(1.7rem, 10vw, 2.5rem); }
         .panel { padding: 1rem 0.75rem; }
         .code-block { font-size: 0.65rem; min-height: 15rem; }
         .demo-zone { gap: 0.6rem; }
@@ -640,6 +684,8 @@
     </style>
   </head>
   <body>
+
+    <h1 class="sr-only">Mouse Animations — cursor &amp; mouse effects library for JavaScript &amp; TypeScript</h1>
 
     <!-- ── Navigation ─────────────────────────────────────────── -->
     <nav class="effect-nav" id="effect-nav">
@@ -665,7 +711,7 @@
           <div class="slide-glow"></div>
           <div class="panel">
             <span class="badge">npm i mouse-animations</span>
-            <h1>Invert</h1>
+            <h2>Invert</h2>
             <p class="subtitle">// colors flip under your cursor</p>
             <div class="code-wrap">
               <div class="mode-toggle" id="toggle-invert">
@@ -697,7 +743,7 @@
           <div class="slide-glow"></div>
           <div class="panel">
             <span class="badge">npm i mouse-animations</span>
-            <h1>Trail</h1>
+            <h2>Trail</h2>
             <p class="subtitle">// move your mouse around</p>
             <div class="code-wrap">
               <div class="mode-toggle" id="toggle-trail">
@@ -744,7 +790,7 @@
           <div class="slide-glow"></div>
           <div class="panel">
             <span class="badge">npm i mouse-animations</span>
-            <h1>Ripple</h1>
+            <h2>Ripple</h2>
             <p class="subtitle">// click anywhere</p>
             <div class="code-wrap">
               <div class="mode-toggle" id="toggle-ripple">
@@ -786,7 +832,7 @@
           <div class="slide-glow"></div>
           <div class="panel">
             <span class="badge">npm i mouse-animations</span>
-            <h1>Custom Cursor</h1>
+            <h2>Custom Cursor</h2>
             <p class="subtitle">// dot + ring following your cursor</p>
             <div class="code-wrap">
               <div class="mode-toggle" id="toggle-cursor">
@@ -833,7 +879,7 @@
           <div class="slide-glow"></div>
           <div class="panel" style="max-width:580px;">
             <span class="badge">npm i mouse-animations</span>
-            <h1>Magnetic</h1>
+            <h2>Magnetic</h2>
             <p class="subtitle">// elements are pulled toward your cursor</p>
             <div class="demo-zone">
               <button class="mag-target mag-btn">Connect</button>
@@ -876,7 +922,7 @@
           <div class="slide-glow"></div>
           <div class="panel">
             <span class="badge">npm i mouse-animations</span>
-            <h1>Particles</h1>
+            <h2>Particles</h2>
             <p class="subtitle">// click to burst</p>
             <div class="code-wrap">
               <div class="mode-toggle" id="toggle-particles">
@@ -920,7 +966,7 @@
           </div>
           <div class="panel">
             <span class="badge">npm i mouse-animations</span>
-            <h1>Parallax</h1>
+            <h2>Parallax</h2>
             <p class="subtitle">// elements shift with mouse depth</p>
             <div class="code-wrap">
               <div class="mode-toggle" id="toggle-parallax">
@@ -952,7 +998,7 @@
           <div class="slide-glow"></div>
           <div class="panel" style="max-width:680px;">
             <span class="badge">npm i mouse-animations</span>
-            <h1>Tilt</h1>
+            <h2>Tilt</h2>
             <p class="subtitle">// hover the cards</p>
             <div class="demo-zone">
               <div class="tilt-target demo-card" style="min-width:140px;">
@@ -1002,7 +1048,7 @@
           <div class="slide-glow"></div>
           <div class="panel" style="max-width:680px;">
             <span class="badge">npm i mouse-animations</span>
-            <h1>Spotlight</h1>
+            <h2>Spotlight</h2>
             <p class="subtitle">// hover the cards</p>
             <div class="demo-zone">
               <div class="spotlight-target demo-card" style="min-width:130px;">Trail</div>
@@ -1044,7 +1090,7 @@
           <div class="slide-glow"></div>
           <div class="panel">
             <span class="badge">npm i mouse-animations</span>
-            <h1>Flashlight</h1>
+            <h2>Flashlight</h2>
             <p class="subtitle">// move to reveal</p>
             <div class="code-wrap">
               <div class="mode-toggle" id="toggle-flashlight">
@@ -1082,7 +1128,7 @@
           <div class="slide-glow"></div>
           <div class="panel" style="max-width:600px;">
             <span class="badge">npm i mouse-animations</span>
-            <h1>Image Cursor</h1>
+            <h2>Image Cursor</h2>
             <p class="subtitle">// custom SVG replaces your cursor</p>
             <div class="demo-zone" id="imgcursor-presets">
               <button class="demo-card preset-btn active" data-preset="star">★</button>
