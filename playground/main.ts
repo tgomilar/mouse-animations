@@ -21,11 +21,13 @@ function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+type CodeMode = 'js' | 'jquery' | 'react';
+
 function renderCode(
   codeId: string,
   cls: string,
   opts: Record<string, unknown>,
-  mode: 'js' | 'jquery' = 'js',
+  mode: CodeMode = 'js',
   jqTarget = '$(document)',
 ): void {
   const jqMethod = cls.charAt(0).toLowerCase() + cls.slice(1);
@@ -51,6 +53,25 @@ function renderCode(
     }
     return `  <span class="tok-key">${k}</span><span class="tok-pun">:</span> ${val}<span class="tok-pun">,</span>`;
   });
+
+  if (mode === 'react') {
+    el(codeId).innerHTML = [
+      `<span class="tok-kw">import</span> <span class="tok-pun">{</span> <span class="tok-key">useEffect</span> <span class="tok-pun">}</span> <span class="tok-kw">from</span> <span class="tok-str">"react"</span><span class="tok-pun">;</span>`,
+      `<span class="tok-kw">import</span> <span class="tok-pun">{</span> <span class="tok-cls">${cls}</span> <span class="tok-pun">}</span> <span class="tok-kw">from</span> <span class="tok-str">"mouse-animations"</span><span class="tok-pun">;</span>`,
+      ``,
+      `<span class="tok-kw">export default function</span> <span class="tok-cls">${cls}Demo</span><span class="tok-pun">() {</span>`,
+      `<span class="tok-key">useEffect</span><span class="tok-pun">(() => {</span>`,
+      `<span class="tok-key">const</span> <span class="tok-key">${varName}</span> <span class="tok-pun">=</span> <span class="tok-kw">new</span> <span class="tok-cls">${cls}</span><span class="tok-pun">({</span>`,
+      ...rows,
+      `<span class="tok-pun">});</span>`,
+      `<span class="tok-key">return</span> <span class="tok-pun">() =></span> <span class="tok-key">${varName}.destroy()</span><span class="tok-pun">;</span>`,
+      `<span class="tok-pun">}, []);</span>`,
+      ``,
+      `<span class="tok-key">return</span> <span class="tok-pun">&lt;</span><span class="tok-key">main</span> <span class="tok-key">style</span><span class="tok-pun">=</span><span class="tok-pun">{</span> <span class="tok-pun">{</span> <span class="tok-key">minHeight</span><span class="tok-pun">:</span> <span class="tok-str">'100vh'</span> <span class="tok-pun">}</span> <span class="tok-pun">}</span><span class="tok-pun">&gt;</span><span class="tok-pun">{</span><span class="tok-pun">/*</span> your app <span class="tok-pun">*/</span><span class="tok-pun">}</span><span class="tok-pun">&lt;/</span><span class="tok-key">main</span><span class="tok-pun">&gt;</span><span class="tok-pun">;</span>`,
+      `<span class="tok-pun">}</span>`,
+    ].join('\n');
+    return;
+  }
 
   if (mode === 'jquery') {
     el(codeId).innerHTML = [
@@ -81,13 +102,13 @@ function renderCode(
   }
 }
 
-function setupModeToggle(toggleId: string, onChange: (mode: 'js' | 'jquery') => void): () => void {
+function setupModeToggle(toggleId: string, onChange: (mode: CodeMode) => void): () => void {
   const btns = document.querySelectorAll<HTMLButtonElement>(`#${toggleId} .toggle-btn`);
   btns.forEach(btn => {
     btn.onclick = () => {
       btns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      onChange(btn.dataset['mode'] as 'js' | 'jquery');
+      onChange(btn.dataset['mode'] as CodeMode);
     };
   });
   return () => { btns.forEach(btn => { btn.onclick = null; }); };
@@ -147,10 +168,20 @@ navBtns.forEach(btn => {
 });
 
 let touchX = 0;
-document.addEventListener('touchstart', e => { touchX = e.touches[0]!.clientX; }, { passive: true });
+let touchY = 0;
+document.addEventListener('touchstart', e => {
+  touchX = e.touches[0]!.clientX;
+  touchY = e.touches[0]!.clientY;
+}, { passive: true });
 document.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0]!.clientX - touchX;
-  if (Math.abs(dx) > 50) goTo(current + (dx < 0 ? 1 : -1));
+  const t = e.changedTouches[0]!;
+  const dx = t.clientX - touchX;
+  const dy = t.clientY - touchY;
+  const target = e.target;
+  const inCodeBlock = target instanceof Element && target.closest('.code-block') !== null;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) && !inCodeBlock) {
+    goTo(current + (dx < 0 ? 1 : -1));
+  }
 });
 
 document.querySelectorAll<HTMLButtonElement>('.customize-btn').forEach(btn => {
@@ -178,7 +209,7 @@ function destroyEffect(): void          { instance?.destroy(); instance = null; 
 // ─── Invert ───────────────────────────────────────────────────────────────────
 
 function mountInvert(): AnyInstance {
-  let mode: 'js' | 'jquery' = 'js';
+  let mode: CodeMode = 'js';
   const JQ = '$(document)';
 
   function opts() {
@@ -222,7 +253,7 @@ function mountInvert(): AnyInstance {
 // ─── Trail ────────────────────────────────────────────────────────────────────
 
 function mountTrail(): AnyInstance {
-  let mode: 'js' | 'jquery' = 'js';
+  let mode: CodeMode = 'js';
   const JQ = '$(document)';
 
   function opts() {
@@ -283,7 +314,7 @@ function mountTrail(): AnyInstance {
 // ─── Ripple ───────────────────────────────────────────────────────────────────
 
 function mountRipple(): AnyInstance {
-  let mode: 'js' | 'jquery' = 'js';
+  let mode: CodeMode = 'js';
   const JQ = '$(document)';
 
   function opts() {
@@ -339,7 +370,7 @@ function mountRipple(): AnyInstance {
 // ─── Custom Cursor ────────────────────────────────────────────────────────────
 
 function mountCursor(): AnyInstance {
-  let mode: 'js' | 'jquery' = 'js';
+  let mode: CodeMode = 'js';
   const JQ = '$(document)';
 
   function opts() {
@@ -400,7 +431,7 @@ function mountCursor(): AnyInstance {
 // ─── Magnetic ─────────────────────────────────────────────────────────────────
 
 function mountMagnetic(): AnyInstance {
-  let mode: 'js' | 'jquery' = 'js';
+  let mode: CodeMode = 'js';
   const JQ = "$('.mag-target')";
 
   function opts() {
@@ -450,7 +481,7 @@ function mountMagnetic(): AnyInstance {
 // ─── Particles ────────────────────────────────────────────────────────────────
 
 function mountParticles(): AnyInstance {
-  let mode: 'js' | 'jquery' = 'js';
+  let mode: CodeMode = 'js';
   const JQ = '$(document)';
   const COLORS = ['#c084fc', '#60a5fa', '#fbbf24', '#f472b6', '#34d399', '#fb923c'];
 
@@ -502,7 +533,7 @@ function mountParticles(): AnyInstance {
 // ─── Parallax ─────────────────────────────────────────────────────────────────
 
 function mountParallax(): AnyInstance {
-  let mode: 'js' | 'jquery' = 'js';
+  let mode: CodeMode = 'js';
   const JQ = "$('.parallax-target')";
 
   function opts() {
@@ -546,7 +577,7 @@ function mountParallax(): AnyInstance {
 // ─── Tilt ─────────────────────────────────────────────────────────────────────
 
 function mountTilt(): AnyInstance {
-  let mode: 'js' | 'jquery' = 'js';
+  let mode: CodeMode = 'js';
   const JQ = "$('.tilt-target')";
 
   function opts() {
@@ -594,7 +625,7 @@ function mountTilt(): AnyInstance {
 // ─── Spotlight ────────────────────────────────────────────────────────────────
 
 function mountSpotlight(): AnyInstance {
-  let mode: 'js' | 'jquery' = 'js';
+  let mode: CodeMode = 'js';
   const JQ = "$('.spotlight-target')";
 
   function opts() {
@@ -645,7 +676,7 @@ function mountSpotlight(): AnyInstance {
 // ─── Flashlight ───────────────────────────────────────────────────────────────
 
 function mountFlashlight(): AnyInstance {
-  let mode: 'js' | 'jquery' = 'js';
+  let mode: CodeMode = 'js';
   const JQ = '$(document)';
 
   function opts() {
@@ -695,7 +726,7 @@ function mountFlashlight(): AnyInstance {
 // ─── Image Cursor ─────────────────────────────────────────────────────────────
 
 function mountImage(): AnyInstance {
-  let mode: 'js' | 'jquery' = 'js';
+  let mode: CodeMode = 'js';
   const JQ = '$(document)';
 
   const PRESETS: Record<string, string> = {
