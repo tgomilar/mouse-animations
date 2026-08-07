@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/mouse-animations)](https://www.npmjs.com/package/mouse-animations)
 [![gzip size](https://img.shields.io/bundlephobia/minzip/mouse-animations)](https://bundlephobia.com/package/mouse-animations)
 
-Cursor and mouse effects for the web: trails, ripples, magnetic pulls, particles, parallax layers, 3D tilts, spotlights, and more. Drop it into any stack — vanilla JS, React, Vue, Svelte, or jQuery. Zero dependencies, under 5 kB gzipped, fully typed.
+Cursor and mouse effects for the web: trails, ripples, magnetic pulls, particles, parallax layers, 3D tilts, spotlights, and more. Drop it into any stack: vanilla JS, React, Vue, Svelte, Angular, Astro or jQuery. Zero dependencies, under 5 kB gzipped, fully typed.
 
 **[Live Playground →](https://tgomilar.github.io/mouse-animations/)**
 
@@ -70,7 +70,7 @@ interface MouseAnimationsBase {
 }
 ```
 
-All option types are exported and included — no `@types/` package needed:
+All option types are exported and included. No `@types/` package is needed:
 
 ```ts
 import type {
@@ -79,6 +79,17 @@ import type {
   TiltOptions, SpotlightOptions, FlashlightOptions, InvertOptions, ImageOptions,
 } from "mouse-animations";
 ```
+
+### Updating options at runtime
+
+`Trail`, `Ripple` and `Particles` pick up new options on the next frame or click. No need to destroy the instance.
+
+```ts
+const trail = new Trail({ color: "#a78bfa", size: 8 });
+trail.setOptions({ color: "#f43f5e", size: 12, length: 40 });
+```
+
+The other effects apply their options at construction. To change them, call `destroy()` and create a new instance.
 
 ---
 
@@ -95,7 +106,7 @@ const trail = new Trail({
   color: "#ffffff", // dot color
   size: 6, // max dot radius in px
   length: 20, // number of trail points to keep
-  decay: 0.05, // alpha subtracted per frame (0–1)
+  decay: 0.05, // alpha subtracted per frame (0 to 1)
   blur: 0, // CSS blur in px
 });
 ```
@@ -130,7 +141,7 @@ const cursor = new CustomCursor({
   outerSize: 36, // outer ring size in px
   innerColor: "#ffffff", // inner dot color
   outerColor: "rgba(255,255,255,0.5)", // outer ring color
-  smoothness: 0.15, // outer ring lerp factor (0–1); lower = more lag
+  smoothness: 0.15, // outer ring lerp factor (0 to 1); lower = more lag
   hideDefault: true, // hide the native cursor
 });
 ```
@@ -148,7 +159,7 @@ const magnetic = new Magnetic({
   selector: ".btn", // CSS selector for elements to magnetise (required)
   strength: 0.3, // pull strength multiplier
   radius: 100, // activation radius in px
-  ease: 0.15, // lerp ease factor (0–1)
+  ease: 0.15, // lerp ease factor (0 to 1)
 });
 ```
 
@@ -182,7 +193,7 @@ import { Parallax } from "mouse-animations";
 const parallax = new Parallax({
   selector: ".layer", // CSS selector for elements to shift (required)
   depth: 20, // max translation in px at the viewport edge
-  ease: 0.1, // lerp ease factor (0–1)
+  ease: 0.1, // lerp ease factor (0 to 1)
 });
 ```
 
@@ -199,7 +210,7 @@ const tilt = new Tilt({
   selector: ".card", // CSS selector for elements to tilt (required)
   maxTilt: 15, // max tilt angle in degrees
   perspective: 800, // CSS perspective distance in px
-  ease: 0.1, // lerp ease factor (0–1)
+  ease: 0.1, // lerp ease factor (0 to 1)
   glare: false, // show a glare highlight overlay
 });
 ```
@@ -216,7 +227,7 @@ Renders a radial gradient glow that follows the cursor inside each matched eleme
 import { Spotlight } from "mouse-animations";
 
 const glow = new Spotlight({
-  selector: ".card", // optional — omit to skip targeting
+  selector: ".card", // optional; omit to skip targeting
   color: "rgba(255,255,255,0.12)",
   size: 200,
 });
@@ -235,7 +246,7 @@ const flashlight = new Flashlight({
   backdrop: "rgba(0,0,0,0.85)", // overlay tint
   size: 200,                     // light radius
   blur: 0,                       // blur outside the light
-  smoothness: 0.15,              // lerp smoothness (0–1)
+  smoothness: 0.15,              // lerp smoothness (0 to 1)
 });
 ```
 
@@ -245,15 +256,15 @@ const flashlight = new Flashlight({
 
 Renders an opaque circle that follows the cursor and inverts the colors of everything beneath it using `mix-blend-mode: difference`. Works on text, images, and any colored content.
 
-> The inversion result depends on the circle color. White (`#ffffff`, default) produces the classic full inversion. Use a different color if the page background is light — for example `#000000` inverts on white backgrounds identically.
+> The inversion result depends on the circle color. White (`#ffffff`, default) produces the classic full inversion. Use a different color if the page background is light. For example `#000000` inverts on white backgrounds identically.
 
 ```ts
 import { Invert } from "mouse-animations";
 
 const cursor = new Invert({
   size: 40,          // circle diameter in px
-  color: "#ffffff",  // circle color — affects the inversion output. Default: '#ffffff'
-  smoothness: 1,     // lerp factor (0–1); 1 = instant snap, lower = lag
+  color: "#ffffff",  // circle color. Affects the inversion output. Default: '#ffffff'
+  smoothness: 1,     // lerp factor (0 to 1); 1 = instant snap, lower = lag
   hideDefault: true, // hide the native cursor
 });
 ```
@@ -278,9 +289,9 @@ const cursor = new Image({
   height: 32,        // cursor element height in px
   offsetX: 0,        // horizontal offset from cursor position in px
   offsetY: 0,        // vertical offset from cursor position in px
-  smoothness: 1,     // lerp factor (0–1); 1 = instant snap, lower = lag
+  smoothness: 1,     // lerp factor (0 to 1); 1 = instant snap, lower = lag
   hideDefault: true, // hide the native cursor
-  overrideAll: false, // inject * { cursor: none !important } — defeats cursor: pointer on buttons/links
+  overrideAll: false, // injects * { cursor: none !important } to defeat cursor: pointer on buttons and links
   states: {               // alternate images per interaction state (optional)
     hover: "<svg .../>",  // built-in: shown over a, button, input, select, textarea…
     active: "<svg .../>", // built-in: shown while mousedown is held
@@ -334,7 +345,7 @@ npm install mouse-animations jquery
 ```js
 import "mouse-animations/jquery";
 
-// Global effects — bound to a container element
+// Global effects are bound to a container element
 $("body").trail({ color: "#a78bfa", size: 8 });
 $("body").ripple({ duration: 700, maxSize: 120 });
 $("body").customCursor({ innerColor: "#a78bfa", smoothness: 0.12 });
@@ -343,7 +354,7 @@ $("body").invert({ size: 40, color: "#ffffff" });
 $("body").image({ src: "<svg .../>", overrideAll: true, states: { hover: "<svg .../>" } });
 $("body").flashlight({ backdrop: "rgba(0,0,0,0.85)", size: 200 });
 
-// Selector-based effects — one instance covers all matched elements.
+// Selector-based effects: one instance covers all matched elements.
 // The selector option is optional: if omitted, a unique class is stamped
 // onto the matched elements automatically.
 $(".btn").magnetic({ strength: 0.4, radius: 120 });
@@ -355,6 +366,141 @@ $(".card").spotlight({ color: "rgba(255,255,255,0.12)", size: 200 });
 $("body").trail("disable");
 $("body").trail("enable");
 $("body").trail("destroy");
+```
+
+---
+
+## Framework integration
+
+The library only uses the browser DOM. It has no dependency on any framework, so the same classes work in React, Vue, Svelte, Angular and Astro. The pattern is always the same: create an effect instance when the component appears, and destroy it when the component disappears.
+
+### React
+
+Create the effect in `useEffect` and destroy it in the cleanup function.
+
+```tsx
+import { useEffect } from "react";
+import { Trail } from "mouse-animations";
+
+export default function CursorTrail() {
+  useEffect(() => {
+    const trail = new Trail({ color: "#a78bfa", size: 8 });
+    return () => trail.destroy();
+  }, []);
+
+  return <main style={{ minHeight: "100vh" }}>{/* your app */}</main>;
+}
+```
+
+Recreate the effect when an option changes by listing the option in the dependency array.
+
+```tsx
+useEffect(() => {
+  const cursor = new CustomCursor({ smoothness });
+  return () => cursor.destroy();
+}, [smoothness]);
+```
+
+Reusable hook for any effect:
+
+```tsx
+import { useEffect } from "react";
+
+export function useMouseAnimation(Ctor, options, deps = []) {
+  useEffect(() => {
+    const instance = new Ctor(options);
+    return () => instance.destroy();
+  }, deps);
+}
+```
+
+```tsx
+useMouseAnimation(Trail, { color: "#a78bfa", size: 8 });
+useMouseAnimation(CustomCursor, { smoothness: 0.15 }, [smoothness]);
+```
+
+Two things to keep in mind:
+
+- **StrictMode**. React 18 runs effect setup and cleanup twice in development. The cleanup function handles this, so always return it. If you forget, the first effect instance keeps running and is never destroyed.
+- **Stale elements**. Magnetic, Parallax, Tilt and Spotlight match elements once at construction. When a component re-renders, React may replace those DOM nodes. The effect then still targets the old nodes. List the elements the effect depends on in the dependency array so React destroys the old instance and creates a new one.
+
+### Vue
+
+```vue
+<script setup>
+import { onMounted, onBeforeUnmount } from "vue";
+import { Trail } from "mouse-animations";
+
+let trail;
+
+onMounted(() => {
+  trail = new Trail({ color: "#a78bfa", size: 8 });
+});
+
+onBeforeUnmount(() => {
+  trail.destroy();
+});
+</script>
+```
+
+### Svelte
+
+```svelte
+<script>
+  import { onMount } from "svelte";
+  import { Trail } from "mouse-animations";
+
+  onMount(() => {
+    const trail = new Trail({ color: "#a78bfa", size: 8 });
+    return () => trail.destroy();
+  });
+</script>
+```
+
+### Angular
+
+Create the effect when the component starts and destroy it when it ends.
+
+```ts
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Trail } from "mouse-animations";
+
+@Component({ selector: "app-cursor-trail", template: "<main><ng-content></ng-content></main>" })
+export class CursorTrailComponent implements OnInit, OnDestroy {
+  private trail?: Trail;
+
+  ngOnInit(): void {
+    this.trail = new Trail({ color: "#a78bfa", size: 8 });
+  }
+
+  ngOnDestroy(): void {
+    this.trail?.destroy();
+  }
+}
+```
+
+### Astro
+
+Astro sends no JavaScript to the browser unless you add it. Put the effect in a module `<script>` in a layout or page. The script runs once on the client and the bundle is loaded lazily.
+
+```astro
+<script>
+  import { Trail } from "mouse-animations";
+
+  const trail = new Trail({ color: "#a78bfa", size: 8 });
+</script>
+```
+
+If you use Astro View Transitions, destroy the effect when the page swaps so it does not linger across pages.
+
+```astro
+<script>
+  import { Trail } from "mouse-animations";
+
+  const trail = new Trail({ color: "#a78bfa", size: 8 });
+
+  document.addEventListener("astro:before-swap", () => trail.destroy());
+</script>
 ```
 
 ---

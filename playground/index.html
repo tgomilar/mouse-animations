@@ -138,7 +138,7 @@
       .slide {
         flex: 0 0 100vw;
         width: 100vw;
-        height: 100vh;
+        height: 100%;
         position: relative;
         display: flex;
         align-items: center;
@@ -347,7 +347,11 @@
         opacity: 0;
       }
 
-      .ctrl-drawer.open { max-height: 360px; opacity: 1; }
+      .ctrl-drawer.open {
+        max-height: min(360px, 60vh);
+        opacity: 1;
+        overflow-y: auto;
+      }
 
       .ctrl-inner {
         margin-top: 1rem;
@@ -505,6 +509,9 @@
         display: flex;
         align-items: center;
         gap: 1.5rem;
+        padding: 0.55rem 1.1rem;
+        border-radius: 100px;
+        background: linear-gradient(to top, rgba(10,10,15,0.9), rgba(10,10,15,0.35));
       }
 
       .footer-links a {
@@ -646,6 +653,7 @@
           flex-wrap: wrap;
           justify-content: center;
           padding: 0.9rem 1rem 1rem;
+          border-radius: 0;
           background: linear-gradient(to top, rgba(10,10,15,0.96) 65%, transparent);
           pointer-events: none;
         }
@@ -677,7 +685,7 @@
 
       @media (max-width: 480px) {
         h2 { font-size: clamp(1.7rem, 10vw, 2.5rem); }
-        .panel { padding: 1rem 0.75rem; }
+        .panel { padding: 3.5rem 0.75rem 4.5rem; }
         .code-block { font-size: 0.65rem; min-height: 15rem; }
         .demo-zone { gap: 0.6rem; }
       }
@@ -717,6 +725,7 @@
               <div class="mode-toggle" id="toggle-invert">
               <button class="toggle-btn active" data-mode="js">JS</button>
               <button class="toggle-btn" data-mode="jquery">jQuery</button>
+              <button class="toggle-btn" data-mode="react">React</button>
             </div>
             <pre class="code-block"><code id="code-invert"></code></pre>
               <button class="customize-btn" data-ctrl="ctrl-invert">⚙ Customize</button>
@@ -725,13 +734,13 @@
               <div class="ctrl-inner">
                 <div class="ctrl-row">
                   <label>size</label>
-                  <input type="range" id="invert-size" min="20" max="150" value="50" step="2" />
-                  <output id="invert-size-val">50</output>
+                  <input type="range" id="invert-size" min="20" max="150" value="64" step="2" />
+                  <output id="invert-size-val">64</output>
                 </div>
                 <div class="ctrl-row">
                   <label>smoothness</label>
-                  <input type="range" id="invert-smooth" min="1" max="50" value="8" step="1" />
-                  <output id="invert-smooth-val">0.08</output>
+                  <input type="range" id="invert-smooth" min="1" max="100" value="50" step="1" />
+                  <output id="invert-smooth-val">0.50</output>
                 </div>
               </div>
             </div>
@@ -749,6 +758,7 @@
               <div class="mode-toggle" id="toggle-trail">
               <button class="toggle-btn active" data-mode="js">JS</button>
               <button class="toggle-btn" data-mode="jquery">jQuery</button>
+              <button class="toggle-btn" data-mode="react">React</button>
             </div>
             <pre class="code-block"><code id="code-trail"></code></pre>
               <button class="customize-btn" data-ctrl="ctrl-trail">⚙ Customize</button>
@@ -796,6 +806,7 @@
               <div class="mode-toggle" id="toggle-ripple">
               <button class="toggle-btn active" data-mode="js">JS</button>
               <button class="toggle-btn" data-mode="jquery">jQuery</button>
+              <button class="toggle-btn" data-mode="react">React</button>
             </div>
             <pre class="code-block"><code id="code-ripple"></code></pre>
               <button class="customize-btn" data-ctrl="ctrl-ripple">⚙ Customize</button>
@@ -838,6 +849,7 @@
               <div class="mode-toggle" id="toggle-cursor">
               <button class="toggle-btn active" data-mode="js">JS</button>
               <button class="toggle-btn" data-mode="jquery">jQuery</button>
+              <button class="toggle-btn" data-mode="react">React</button>
             </div>
             <pre class="code-block"><code id="code-cursor"></code></pre>
               <button class="customize-btn" data-ctrl="ctrl-cursor">⚙ Customize</button>
@@ -891,6 +903,7 @@
               <div class="mode-toggle" id="toggle-magnetic">
               <button class="toggle-btn active" data-mode="js">JS</button>
               <button class="toggle-btn" data-mode="jquery">jQuery</button>
+              <button class="toggle-btn" data-mode="react">React</button>
             </div>
             <pre class="code-block"><code id="code-magnetic"></code></pre>
               <button class="customize-btn" data-ctrl="ctrl-magnetic">⚙ Customize</button>
@@ -928,6 +941,7 @@
               <div class="mode-toggle" id="toggle-particles">
               <button class="toggle-btn active" data-mode="js">JS</button>
               <button class="toggle-btn" data-mode="jquery">jQuery</button>
+              <button class="toggle-btn" data-mode="react">React</button>
             </div>
             <pre class="code-block"><code id="code-particles"></code></pre>
               <button class="customize-btn" data-ctrl="ctrl-particles">⚙ Customize</button>
@@ -972,6 +986,7 @@
               <div class="mode-toggle" id="toggle-parallax">
               <button class="toggle-btn active" data-mode="js">JS</button>
               <button class="toggle-btn" data-mode="jquery">jQuery</button>
+              <button class="toggle-btn" data-mode="react">React</button>
             </div>
             <pre class="code-block"><code id="code-parallax"></code></pre>
               <button class="customize-btn" data-ctrl="ctrl-parallax">⚙ Customize</button>
@@ -1018,6 +1033,7 @@
               <div class="mode-toggle" id="toggle-tilt">
               <button class="toggle-btn active" data-mode="js">JS</button>
               <button class="toggle-btn" data-mode="jquery">jQuery</button>
+              <button class="toggle-btn" data-mode="react">React</button>
             </div>
             <pre class="code-block"><code id="code-tilt"></code></pre>
               <button class="customize-btn" data-ctrl="ctrl-tilt">⚙ Customize</button>
@@ -1059,6 +1075,7 @@
               <div class="mode-toggle" id="toggle-spotlight">
               <button class="toggle-btn active" data-mode="js">JS</button>
               <button class="toggle-btn" data-mode="jquery">jQuery</button>
+              <button class="toggle-btn" data-mode="react">React</button>
             </div>
             <pre class="code-block"><code id="code-spotlight"></code></pre>
               <button class="customize-btn" data-ctrl="ctrl-spotlight">⚙ Customize</button>
@@ -1096,6 +1113,7 @@
               <div class="mode-toggle" id="toggle-flashlight">
               <button class="toggle-btn active" data-mode="js">JS</button>
               <button class="toggle-btn" data-mode="jquery">jQuery</button>
+              <button class="toggle-btn" data-mode="react">React</button>
             </div>
             <pre class="code-block"><code id="code-flashlight"></code></pre>
               <button class="customize-btn" data-ctrl="ctrl-flashlight">⚙ Customize</button>
@@ -1140,6 +1158,7 @@
               <div class="mode-toggle" id="toggle-image">
               <button class="toggle-btn active" data-mode="js">JS</button>
               <button class="toggle-btn" data-mode="jquery">jQuery</button>
+              <button class="toggle-btn" data-mode="react">React</button>
             </div>
             <pre class="code-block"><code id="code-image"></code></pre>
               <button class="customize-btn" data-ctrl="ctrl-image">⚙ Customize</button>
