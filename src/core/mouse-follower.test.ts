@@ -107,4 +107,41 @@ describe('MouseFollower', () => {
 
     expect(onFrame).not.toHaveBeenCalled();
   });
+
+  it('setting smoothness to 1 makes onFrame fire from mousemove', () => {
+    const onFrame = vi.fn();
+    const follower = createFollower({ smoothness: 0.5, onFrame });
+
+    follower.start();
+    follower.smoothness = 1;
+    dispatchMouseMove(100, 200);
+
+    expect(onFrame).toHaveBeenCalledWith(100, 200);
+  });
+
+  it('setting smoothness below 1 starts the rAF loop', () => {
+    vi.useFakeTimers();
+    const onFrame = vi.fn();
+    const follower = createFollower({ smoothness: 1, onFrame });
+
+    follower.start();
+    follower.smoothness = 0.5;
+    dispatchMouseMove(100, 0);
+    vi.advanceTimersToNextTimer();
+
+    expect(onFrame).toHaveBeenCalledWith(100, 0);
+  });
+
+  it('setting smoothness to 1 stops the rAF loop', () => {
+    vi.useFakeTimers();
+    const onFrame = vi.fn();
+    const follower = createFollower({ smoothness: 0.5, onFrame });
+
+    follower.start();
+    follower.smoothness = 1;
+    dispatchMouseMove(100, 0);
+    vi.advanceTimersByTime(100);
+
+    expect(onFrame).toHaveBeenCalledTimes(1);
+  });
 });

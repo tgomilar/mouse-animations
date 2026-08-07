@@ -9,7 +9,7 @@ interface TrailPoint {
 }
 
 export class Trail implements MouseAnimationsBase {
-  private readonly options: Required<TrailOptions>;
+  private options: Required<TrailOptions>;
   private readonly tracker: MouseTracker;
   private readonly overlay: CanvasOverlay;
   private points: TrailPoint[] = [];
@@ -64,6 +64,11 @@ export class Trail implements MouseAnimationsBase {
     this.active = true;
     this.tracker.subscribe(this.onMove);
     this.rafId = requestAnimationFrame(this.loop);
+  }
+
+  /** Update options live. The trail picks them up on the next frame. */
+  setOptions(options: Partial<TrailOptions>): void {
+    Object.assign(this.options, options);
   }
 
   disable(): void {

@@ -34,6 +34,29 @@ export class MouseFollower {
     this.options = options;
   }
 
+  /**
+   * Lerp factor (0–1). Lower values give a smoother, laggier follow.
+   * Setting it at runtime switches between the rAF lerp loop and the
+   * instant mousemove path, and starts or stops the loop as needed.
+   */
+  set smoothness(value: number) {
+    this.options.smoothness = value;
+    if (!this.active) return;
+    if (value >= 1) {
+      if (this.rafId !== null) {
+        cancelAnimationFrame(this.rafId);
+        this.rafId = null;
+      }
+    } else if (this.rafId === null) {
+      this.rafId = requestAnimationFrame(this.loop);
+    }
+  }
+
+  /** Current lerp factor. */
+  get smoothness(): number {
+    return this.options.smoothness;
+  }
+
   /** Attach the mousemove listener. Resets first-move state. */
   start(): void {
     if (this.active) return;

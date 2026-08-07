@@ -14,7 +14,7 @@ interface Particle {
 const DEFAULT_COLORS = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#c77dff', '#ff9f1c'];
 
 export class Particles implements MouseAnimationsBase {
-  private readonly options: Required<ParticlesOptions>;
+  private options: Required<ParticlesOptions>;
   private readonly overlay: CanvasOverlay;
   private pool: Particle[] = [];
   private rafId: number | null = null;
@@ -79,6 +79,11 @@ export class Particles implements MouseAnimationsBase {
     this.active = true;
     document.addEventListener('click', this.onClick);
     this.rafId = requestAnimationFrame(this.loop);
+  }
+
+  /** Update options live. New bursts use the updated values. */
+  setOptions(options: Partial<ParticlesOptions>): void {
+    Object.assign(this.options, options);
   }
 
   disable(): void {
