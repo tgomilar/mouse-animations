@@ -1,6 +1,6 @@
 {
   "name": "mouse-animations",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Cursor & mouse effects library for TypeScript & JavaScript — trail, ripple, custom cursor, magnetic, particles, parallax, tilt, spotlight, flashlight, invert, image cursor. Zero dependencies, under 5 kB gzipped, optional jQuery plugin.",
   "author": "Tanja Gomilar",
   "type": "module",
