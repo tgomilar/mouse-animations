@@ -1,7 +1,7 @@
 import type { MouseAnimationsBase, RippleOptions } from '../core/types';
 
 export class Ripple implements MouseAnimationsBase {
-  private readonly options: Required<RippleOptions>;
+  private options: Required<RippleOptions>;
   private readonly containerElement: HTMLDivElement;
   private readonly styleElement: HTMLStyleElement;
   private active = false;
@@ -62,6 +62,11 @@ export class Ripple implements MouseAnimationsBase {
     if (this.active) return;
     this.active = true;
     document.addEventListener('click', this.onClick);
+  }
+
+  /** Update options live. New ripples use the updated values. */
+  setOptions(options: Partial<RippleOptions>): void {
+    Object.assign(this.options, options);
   }
 
   disable(): void {
