@@ -118,10 +118,10 @@ function setupModeToggle(toggleId: string, onChange: (mode: CodeMode) => void): 
 
 const TOTAL = 11;
 const ACCENTS = [
-  '#f43f5e', '#c084fc', '#60a5fa', '#34d399', '#f472b6',
-  '#fbbf24', '#a78bfa', '#38bdf8', '#fb923c', '#94a3b8', '#4ade80',
+  '#f43f5e', '#60a5fa', '#34d399', '#4ade80', '#94a3b8',
+  '#c084fc', '#f472b6', '#fbbf24', '#a78bfa', '#38bdf8', '#fb923c',
 ];
-const CURSOR_NONE = new Set([0, 3, 10]); // invert, cursor, image
+const CURSOR_NONE = new Set([0, 2, 3]); // invert, cursor, image
 
 let current = 0;
 let sliding  = false;
@@ -199,8 +199,8 @@ type AnyInstance = { destroy(): void };
 let instance: AnyInstance | null = null;
 
 const MOUNTS: Array<() => AnyInstance> = [
-  mountInvert, mountTrail, mountRipple, mountCursor, mountMagnetic, mountParticles,
-  mountParallax, mountTilt, mountSpotlight, mountFlashlight, mountImage,
+  mountInvert, mountRipple, mountCursor, mountImage, mountFlashlight, mountTrail,
+  mountMagnetic, mountParticles, mountParallax, mountTilt, mountSpotlight,
 ];
 
 function mountEffect(idx: number): void { instance = MOUNTS[idx]!(); }

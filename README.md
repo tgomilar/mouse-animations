@@ -1,7 +1,9 @@
-# mouse-animations
+# Mouse Animations
 
+<a href="https://vibing.inc/library/mouse-animations-vg-0130?ref=badge"><img src="https://vibing.inc/api/public/library/badge/mouse-animations-vg-0130.svg?theme=light" alt="Featured in the Vibing Library" height="30"></a>
 [![npm version](https://img.shields.io/npm/v/mouse-animations)](https://www.npmjs.com/package/mouse-animations)
-[![gzip size](https://img.shields.io/bundlephobia/minzip/mouse-animations)](https://bundlephobia.com/package/mouse-animations)
+[![gzip size](https://deno.bundlejs.com/badge?q=mouse-animations)](https://bundlejs.com/?q=mouse-animations)
+[![types](https://img.shields.io/npm/types/mouse-animations)](https://www.npmjs.com/package/mouse-animations)
 
 Cursor and mouse effects for the web: trails, ripples, magnetic pulls, particles, parallax layers, 3D tilts, spotlights, and more. Drop it into any stack: vanilla JS, React, Vue, Svelte, Angular, Astro or jQuery. Zero dependencies, under 5 kB gzipped, fully typed.
 
@@ -11,19 +13,19 @@ Cursor and mouse effects for the web: trails, ripples, magnetic pulls, particles
 
 ## Effects
 
-| Effect           | Description                                                       |
-|------------------|-------------------------------------------------------------------|
-| **Trail**        | Fading dot trail that follows the cursor on a canvas overlay      |
-| **Ripple**       | Expanding circle at each click position                           |
-| **CustomCursor** | Dot + smoothly lagging outer ring replacing the native cursor     |
-| **Magnetic**     | Pulls matching elements toward the cursor as it approaches        |
-| **Particles**    | Burst of coloured particles on each click                         |
-| **Parallax**     | Elements shift subtly as the mouse moves across the viewport      |
-| **Tilt**         | 3D perspective tilt that follows the cursor within each element   |
-| **Spotlight**    | Radial gradient glow that follows the cursor inside each element  |
+| Effect           | Description                                                           |
+|------------------|-----------------------------------------------------------------------|
+| **Trail**        | Fading dot trail that follows the cursor on a canvas overlay          |
+| **Ripple**       | Expanding circle at each click position                               |
+| **CustomCursor** | Dot + smoothly lagging outer ring replacing the native cursor         |
+| **Magnetic**     | Pulls matching elements toward the cursor as it approaches            |
+| **Particles**    | Burst of coloured particles on each click                             |
+| **Parallax**     | Elements shift subtly as the mouse moves across the viewport          |
+| **Tilt**         | 3D perspective tilt that follows the cursor within each element       |
+| **Spotlight**    | Radial gradient glow that follows the cursor inside each element      |
 | **Flashlight**   | Full-page dark overlay with a transparent circle following the cursor |
-| **Invert**       | Colored circle that inverts content beneath it via mix-blend-mode |
-| **Image**        | Replaces the native cursor with a custom image or inline SVG      |
+| **Invert**       | Colored circle that inverts content beneath it via mix-blend-mode     |
+| **Image**        | Replaces the native cursor with a custom image or inline SVG          |
 
 ---
 

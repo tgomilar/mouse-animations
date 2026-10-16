@@ -541,6 +541,8 @@
         animation: pulse 1.5s infinite;
       }
 
+      .footer-links a.vibing-badge { display: flex; }
+
       .footer-links .divider {
         width: 1px;
         height: 0.9rem;
@@ -698,23 +700,23 @@
     <!-- ── Navigation ─────────────────────────────────────────── -->
     <nav class="effect-nav" id="effect-nav">
       <button class="nav-btn active" data-idx="0">Invert</button>
-      <button class="nav-btn" data-idx="1">Trail</button>
-      <button class="nav-btn" data-idx="2">Ripple</button>
-      <button class="nav-btn" data-idx="3">Cursor</button>
-      <button class="nav-btn" data-idx="4">Magnetic</button>
-      <button class="nav-btn" data-idx="5">Particles</button>
-      <button class="nav-btn" data-idx="6">Parallax</button>
-      <button class="nav-btn" data-idx="7">Tilt</button>
-      <button class="nav-btn" data-idx="8">Spotlight</button>
-      <button class="nav-btn" data-idx="9">Flashlight</button>
-      <button class="nav-btn" data-idx="10">Image</button>
+      <button class="nav-btn" data-idx="1">Ripple</button>
+      <button class="nav-btn" data-idx="2">Cursor</button>
+      <button class="nav-btn" data-idx="3">Image</button>
+      <button class="nav-btn" data-idx="4">Flashlight</button>
+      <button class="nav-btn" data-idx="5">Trail</button>
+      <button class="nav-btn" data-idx="6">Magnetic</button>
+      <button class="nav-btn" data-idx="7">Particles</button>
+      <button class="nav-btn" data-idx="8">Parallax</button>
+      <button class="nav-btn" data-idx="9">Tilt</button>
+      <button class="nav-btn" data-idx="10">Spotlight</button>
     </nav>
 
     <!-- ── Slider ─────────────────────────────────────────────── -->
     <div class="slider-wrapper">
       <div class="slider-track" id="slider-track">
 
-        <!-- ── 0: Invert ────────────────────────────────────── -->
+        <!-- ── 0: Invert ─────────────────────────────────────── -->
         <div class="slide" data-effect="invert">
           <div class="slide-glow"></div>
           <div class="panel">
@@ -747,55 +749,7 @@
           </div>
         </div>
 
-        <!-- ── 1: Trail ─────────────────────────────────────── -->
-        <div class="slide" data-effect="trail">
-          <div class="slide-glow"></div>
-          <div class="panel">
-            <span class="badge">npm i mouse-animations</span>
-            <h2>Trail</h2>
-            <p class="subtitle">// move your mouse around</p>
-            <div class="code-wrap">
-              <div class="mode-toggle" id="toggle-trail">
-              <button class="toggle-btn active" data-mode="js">JS</button>
-              <button class="toggle-btn" data-mode="jquery">jQuery</button>
-              <button class="toggle-btn" data-mode="react">React</button>
-            </div>
-            <pre class="code-block"><code id="code-trail"></code></pre>
-              <button class="customize-btn" data-ctrl="ctrl-trail">⚙ Customize</button>
-            </div>
-            <div class="ctrl-drawer" id="ctrl-trail">
-              <div class="ctrl-inner">
-                <div class="ctrl-row-color">
-                  <label>color</label>
-                  <input type="color" id="trail-color" value="#c084fc" />
-                  <span id="trail-color-hex">#c084fc</span>
-                </div>
-                <div class="ctrl-row">
-                  <label>size</label>
-                  <input type="range" id="trail-size" min="2" max="20" value="5" step="1" />
-                  <output id="trail-size-val">5</output>
-                </div>
-                <div class="ctrl-row">
-                  <label>length</label>
-                  <input type="range" id="trail-length" min="5" max="80" value="20" step="1" />
-                  <output id="trail-length-val">20</output>
-                </div>
-                <div class="ctrl-row">
-                  <label>decay</label>
-                  <input type="range" id="trail-decay" min="1" max="99" value="5" step="1" />
-                  <output id="trail-decay-val">0.05</output>
-                </div>
-                <div class="ctrl-row">
-                  <label>blur</label>
-                  <input type="range" id="trail-blur" min="0" max="20" value="0" step="1" />
-                  <output id="trail-blur-val">0</output>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ── 1: Ripple ────────────────────────────────────── -->
+        <!-- ── 1: Ripple ─────────────────────────────────────── -->
         <div class="slide" data-effect="ripple">
           <div class="slide-glow"></div>
           <div class="panel">
@@ -886,7 +840,137 @@
           </div>
         </div>
 
-        <!-- ── 3: Magnetic ──────────────────────────────────── -->
+        <!-- ── 3: Image Cursor ───────────────────────────────── -->
+        <div class="slide" data-effect="image">
+          <div class="slide-glow"></div>
+          <div class="panel" style="max-width:600px;">
+            <span class="badge">npm i mouse-animations</span>
+            <h2>Image Cursor</h2>
+            <p class="subtitle">// custom SVG replaces your cursor</p>
+            <div class="demo-zone" id="imgcursor-presets">
+              <button class="demo-card preset-btn active" data-preset="star">★</button>
+              <button class="demo-card preset-btn" data-preset="arrow">↖</button>
+              <button class="demo-card preset-btn" data-preset="crosshair">⊕</button>
+              <button class="demo-card preset-btn" data-preset="heart">♥</button>
+            </div>
+            <div class="code-wrap">
+              <div class="mode-toggle" id="toggle-image">
+              <button class="toggle-btn active" data-mode="js">JS</button>
+              <button class="toggle-btn" data-mode="jquery">jQuery</button>
+              <button class="toggle-btn" data-mode="react">React</button>
+            </div>
+            <pre class="code-block"><code id="code-image"></code></pre>
+              <button class="customize-btn" data-ctrl="ctrl-image">⚙ Customize</button>
+            </div>
+            <div class="ctrl-drawer" id="ctrl-image">
+              <div class="ctrl-inner">
+                <div class="ctrl-row">
+                  <label>width</label>
+                  <input type="range" id="imgcursor-width" min="16" max="80" value="32" step="2" />
+                  <output id="imgcursor-width-val">32</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>height</label>
+                  <input type="range" id="imgcursor-height" min="16" max="80" value="32" step="2" />
+                  <output id="imgcursor-height-val">32</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>smoothness</label>
+                  <input type="range" id="imgcursor-smooth" min="1" max="100" value="100" step="1" />
+                  <output id="imgcursor-smooth-val">1.00</output>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 4: Flashlight ─────────────────────────────────── -->
+        <div class="slide" data-effect="flashlight">
+          <div class="slide-glow"></div>
+          <div class="panel">
+            <span class="badge">npm i mouse-animations</span>
+            <h2>Flashlight</h2>
+            <p class="subtitle">// move to reveal</p>
+            <div class="code-wrap">
+              <div class="mode-toggle" id="toggle-flashlight">
+              <button class="toggle-btn active" data-mode="js">JS</button>
+              <button class="toggle-btn" data-mode="jquery">jQuery</button>
+              <button class="toggle-btn" data-mode="react">React</button>
+            </div>
+            <pre class="code-block"><code id="code-flashlight"></code></pre>
+              <button class="customize-btn" data-ctrl="ctrl-flashlight">⚙ Customize</button>
+            </div>
+            <div class="ctrl-drawer" id="ctrl-flashlight">
+              <div class="ctrl-inner">
+                <div class="ctrl-row">
+                  <label>opacity</label>
+                  <input type="range" id="fl-opacity" min="20" max="98" value="85" step="1" />
+                  <output id="fl-opacity-val">0.85</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>size</label>
+                  <input type="range" id="fl-size" min="50" max="400" value="180" step="10" />
+                  <output id="fl-size-val">180</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>blur</label>
+                  <input type="range" id="fl-blur" min="0" max="40" value="8" step="1" />
+                  <output id="fl-blur-val">8</output>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 5: Trail ──────────────────────────────────────── -->
+        <div class="slide" data-effect="trail">
+          <div class="slide-glow"></div>
+          <div class="panel">
+            <span class="badge">npm i mouse-animations</span>
+            <h2>Trail</h2>
+            <p class="subtitle">// move your mouse around</p>
+            <div class="code-wrap">
+              <div class="mode-toggle" id="toggle-trail">
+              <button class="toggle-btn active" data-mode="js">JS</button>
+              <button class="toggle-btn" data-mode="jquery">jQuery</button>
+              <button class="toggle-btn" data-mode="react">React</button>
+            </div>
+            <pre class="code-block"><code id="code-trail"></code></pre>
+              <button class="customize-btn" data-ctrl="ctrl-trail">⚙ Customize</button>
+            </div>
+            <div class="ctrl-drawer" id="ctrl-trail">
+              <div class="ctrl-inner">
+                <div class="ctrl-row-color">
+                  <label>color</label>
+                  <input type="color" id="trail-color" value="#c084fc" />
+                  <span id="trail-color-hex">#c084fc</span>
+                </div>
+                <div class="ctrl-row">
+                  <label>size</label>
+                  <input type="range" id="trail-size" min="2" max="20" value="5" step="1" />
+                  <output id="trail-size-val">5</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>length</label>
+                  <input type="range" id="trail-length" min="5" max="80" value="20" step="1" />
+                  <output id="trail-length-val">20</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>decay</label>
+                  <input type="range" id="trail-decay" min="1" max="99" value="5" step="1" />
+                  <output id="trail-decay-val">0.05</output>
+                </div>
+                <div class="ctrl-row">
+                  <label>blur</label>
+                  <input type="range" id="trail-blur" min="0" max="20" value="0" step="1" />
+                  <output id="trail-blur-val">0</output>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 6: Magnetic ───────────────────────────────────── -->
         <div class="slide" data-effect="magnetic">
           <div class="slide-glow"></div>
           <div class="panel" style="max-width:580px;">
@@ -930,7 +1014,7 @@
           </div>
         </div>
 
-        <!-- ── 4: Particles ─────────────────────────────────── -->
+        <!-- ── 7: Particles ──────────────────────────────────── -->
         <div class="slide" data-effect="particles">
           <div class="slide-glow"></div>
           <div class="panel">
@@ -968,7 +1052,7 @@
           </div>
         </div>
 
-        <!-- ── 5: Parallax ──────────────────────────────────── -->
+        <!-- ── 8: Parallax ───────────────────────────────────── -->
         <div class="slide" data-effect="parallax">
           <div class="slide-glow"></div>
           <div class="parallax-scene">
@@ -1008,7 +1092,7 @@
           </div>
         </div>
 
-        <!-- ── 6: Tilt ──────────────────────────────────────── -->
+        <!-- ── 9: Tilt ───────────────────────────────────────── -->
         <div class="slide" data-effect="tilt">
           <div class="slide-glow"></div>
           <div class="panel" style="max-width:680px;">
@@ -1059,7 +1143,7 @@
           </div>
         </div>
 
-        <!-- ── 7: Spotlight ─────────────────────────────────── -->
+        <!-- ── 10: Spotlight ─────────────────────────────────── -->
         <div class="slide" data-effect="spotlight">
           <div class="slide-glow"></div>
           <div class="panel" style="max-width:680px;">
@@ -1102,89 +1186,6 @@
           </div>
         </div>
 
-        <!-- ── 8: Flashlight ────────────────────────────────── -->
-        <div class="slide" data-effect="flashlight">
-          <div class="slide-glow"></div>
-          <div class="panel">
-            <span class="badge">npm i mouse-animations</span>
-            <h2>Flashlight</h2>
-            <p class="subtitle">// move to reveal</p>
-            <div class="code-wrap">
-              <div class="mode-toggle" id="toggle-flashlight">
-              <button class="toggle-btn active" data-mode="js">JS</button>
-              <button class="toggle-btn" data-mode="jquery">jQuery</button>
-              <button class="toggle-btn" data-mode="react">React</button>
-            </div>
-            <pre class="code-block"><code id="code-flashlight"></code></pre>
-              <button class="customize-btn" data-ctrl="ctrl-flashlight">⚙ Customize</button>
-            </div>
-            <div class="ctrl-drawer" id="ctrl-flashlight">
-              <div class="ctrl-inner">
-                <div class="ctrl-row">
-                  <label>opacity</label>
-                  <input type="range" id="fl-opacity" min="20" max="98" value="85" step="1" />
-                  <output id="fl-opacity-val">0.85</output>
-                </div>
-                <div class="ctrl-row">
-                  <label>size</label>
-                  <input type="range" id="fl-size" min="50" max="400" value="180" step="10" />
-                  <output id="fl-size-val">180</output>
-                </div>
-                <div class="ctrl-row">
-                  <label>blur</label>
-                  <input type="range" id="fl-blur" min="0" max="40" value="8" step="1" />
-                  <output id="fl-blur-val">8</output>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ── 9: Invert ────────────────────────────────────── -->
-        <!-- ── 10: Image Cursor ──────────────────────────────── -->
-        <div class="slide" data-effect="image">
-          <div class="slide-glow"></div>
-          <div class="panel" style="max-width:600px;">
-            <span class="badge">npm i mouse-animations</span>
-            <h2>Image Cursor</h2>
-            <p class="subtitle">// custom SVG replaces your cursor</p>
-            <div class="demo-zone" id="imgcursor-presets">
-              <button class="demo-card preset-btn active" data-preset="star">★</button>
-              <button class="demo-card preset-btn" data-preset="arrow">↖</button>
-              <button class="demo-card preset-btn" data-preset="crosshair">⊕</button>
-              <button class="demo-card preset-btn" data-preset="heart">♥</button>
-            </div>
-            <div class="code-wrap">
-              <div class="mode-toggle" id="toggle-image">
-              <button class="toggle-btn active" data-mode="js">JS</button>
-              <button class="toggle-btn" data-mode="jquery">jQuery</button>
-              <button class="toggle-btn" data-mode="react">React</button>
-            </div>
-            <pre class="code-block"><code id="code-image"></code></pre>
-              <button class="customize-btn" data-ctrl="ctrl-image">⚙ Customize</button>
-            </div>
-            <div class="ctrl-drawer" id="ctrl-image">
-              <div class="ctrl-inner">
-                <div class="ctrl-row">
-                  <label>width</label>
-                  <input type="range" id="imgcursor-width" min="16" max="80" value="32" step="2" />
-                  <output id="imgcursor-width-val">32</output>
-                </div>
-                <div class="ctrl-row">
-                  <label>height</label>
-                  <input type="range" id="imgcursor-height" min="16" max="80" value="32" step="2" />
-                  <output id="imgcursor-height-val">32</output>
-                </div>
-                <div class="ctrl-row">
-                  <label>smoothness</label>
-                  <input type="range" id="imgcursor-smooth" min="0" max="50" value="10" step="1" />
-                  <output id="imgcursor-smooth-val">0.10</output>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div><!-- /slider-track -->
     </div><!-- /slider-wrapper -->
 
@@ -1213,6 +1214,10 @@
       <span class="divider"></span>
       <a href="https://github.com/tgomilar/mouse-animations#jquery-plugin" target="_blank" rel="noopener">
         jQuery plugin
+      </a>
+      <span class="divider"></span>
+      <a class="vibing-badge" href="https://vibing.inc/library/mouse-animations-vg-0130?ref=badge" target="_blank" rel="noopener">
+        <img src="https://vibing.inc/api/public/library/badge/mouse-animations-vg-0130.svg" alt="Featured in the Vibing Library" height="42" style="height:42px;width:auto" loading="lazy" />
       </a>
     </div>
 
