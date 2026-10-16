@@ -1,6 +1,7 @@
+<a href="https://vibing.inc/library/mouse-animations-vg-0130?ref=badge"><img align="right" src="https://vibing.inc/api/public/library/badge/mouse-animations-vg-0130.svg?theme=light" alt="Featured in the Vibing Library" height="30"></a>
+
 # Mouse Animations
 
-<a href="https://vibing.inc/library/mouse-animations-vg-0130?ref=badge"><img src="https://vibing.inc/api/public/library/badge/mouse-animations-vg-0130.svg?theme=light" alt="Featured in the Vibing Library" height="30"></a>
 [![npm version](https://img.shields.io/npm/v/mouse-animations)](https://www.npmjs.com/package/mouse-animations)
 [![gzip size](https://deno.bundlejs.com/badge?q=mouse-animations)](https://bundlejs.com/?q=mouse-animations)
 [![types](https://img.shields.io/npm/types/mouse-animations)](https://www.npmjs.com/package/mouse-animations)
