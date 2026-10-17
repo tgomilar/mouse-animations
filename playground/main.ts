@@ -2,6 +2,11 @@ import {
   Trail, Ripple, CustomCursor, Magnetic, Particles, Parallax,
   Tilt, Spotlight, Flashlight, Invert, Image,
 } from 'mouse-animations';
+import 'motion-components/motion-stagger';
+import 'motion-components/motion-headline';
+import 'motion-components/motion-typewriter';
+import 'motion-components/motion-underline';
+import 'motion-components/preload.css';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -114,12 +119,26 @@ function setupModeToggle(toggleId: string, onChange: (mode: CodeMode) => void): 
   return () => { btns.forEach(btn => { btn.onclick = null; }); };
 }
 
+// ─── Title color ramp ─────────────────────────────────────────────────────────
+
+// Gives each title letter a position from 0 (white) to 1 (accent), read by CSS.
+customElements.whenDefined('motion-headline').then(() => {
+  document.querySelectorAll<HTMLElement & { updateComplete: Promise<boolean> }>('h2 motion-headline').forEach(async title => {
+    await title.updateComplete;
+    const letters = title.querySelectorAll<HTMLElement>('[data-unit]');
+    letters.forEach((letter, i) => {
+      const t = i / Math.max(1, letters.length - 1);
+      letter.style.setProperty('--ramp', Math.min(1, Math.max(0, (t - 0.1) / 0.8)).toFixed(2));
+    });
+  });
+});
+
 // ─── Slider ───────────────────────────────────────────────────────────────────
 
 const TOTAL = 11;
 const ACCENTS = [
-  '#f43f5e', '#60a5fa', '#34d399', '#4ade80', '#94a3b8',
-  '#c084fc', '#f472b6', '#fbbf24', '#a78bfa', '#38bdf8', '#fb923c',
+  '#f43f5e', '#60a5fa', '#34d399', '#e879f9', '#fb923c',
+  '#94a3b8', '#c084fc', '#fbbf24', '#f472b6', '#a78bfa', '#38bdf8',
 ];
 const CURSOR_NONE = new Set([0, 2, 3]); // invert, cursor, image
 
@@ -131,6 +150,14 @@ const prevBtn = el<HTMLButtonElement>('arrow-prev');
 const nextBtn = el<HTMLButtonElement>('arrow-next');
 const counter = el('slide-counter');
 const navBtns = document.querySelectorAll<HTMLButtonElement>('.nav-btn');
+const slides  = track.querySelectorAll<HTMLElement>('.slide');
+
+// Replays the motion-components entrance (stagger, headline, typewriter, underline) of a slide.
+function replayIntro(idx: number): void {
+  slides[idx]!
+    .querySelectorAll<HTMLElement & { replay(): void }>('motion-stagger, motion-headline, motion-typewriter, motion-underline')
+    .forEach(intro => intro.replay());
+}
 
 function updateUI(idx: number): void {
   counter.textContent = `${idx + 1} / ${TOTAL}`;
@@ -148,10 +175,13 @@ function goTo(idx: number): void {
   track.style.transform = `translateX(${-idx * 100}vw)`;
   current = idx;
   updateUI(idx);
+  // Mount before the slide arrives so its code is already rendered when the
+  // intro reveals it; mounting after the transition made the layout jump.
+  mountEffect(idx);
+  replayIntro(idx);
   track.addEventListener('transitionend', function handler() {
     track.removeEventListener('transitionend', handler);
     sliding = false;
-    mountEffect(idx);
   }, { once: true });
 }
 
@@ -199,8 +229,8 @@ type AnyInstance = { destroy(): void };
 let instance: AnyInstance | null = null;
 
 const MOUNTS: Array<() => AnyInstance> = [
-  mountInvert, mountRipple, mountCursor, mountImage, mountFlashlight, mountTrail,
-  mountMagnetic, mountParticles, mountParallax, mountTilt, mountSpotlight,
+  mountInvert, mountRipple, mountCursor, mountImage, mountSpotlight, mountFlashlight,
+  mountTrail, mountParticles, mountMagnetic, mountParallax, mountTilt,
 ];
 
 function mountEffect(idx: number): void { instance = MOUNTS[idx]!(); }
@@ -626,13 +656,13 @@ function mountTilt(): AnyInstance {
 
 function mountSpotlight(): AnyInstance {
   let mode: CodeMode = 'js';
-  const JQ = "$('.spotlight-target')";
+  const JQ = "$('body, .spotlight-target')";
 
   function opts() {
     const hex     = inp('spotlight-color').value;
     const opacity = +inp('spotlight-opacity').value / 100;
     return {
-      selector: '.spotlight-target',
+      selector: 'body, .spotlight-target',
       color:    hexToRgba(hex, opacity),
       size:     +inp('spotlight-size').value,
     };
